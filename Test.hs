@@ -1,10 +1,13 @@
 {-# LANGUAGE StandaloneDeriving  #-}
 {-# LANGUAGE DeriveDataTypeable  #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE RecordWildCards     #-}
+{-# LANGUAGE FlexibleContexts    #-}
 module Homplexity where
 
 import Data.Data
 import Data.List
+import Control.Arrow
 import Control.Exception
 
 import Language.Haskell.Exts.Syntax
@@ -43,6 +46,8 @@ data Message = Message { msgSeverity :: Severity
                        , msgSrc      :: SrcLoc   }
 
 data Program = Program [Module]
+
+-- CodeFragment a == Biplate Program codeFragment
 
 makeMetric :: (Biplate Program codeFragment, Show unit) =>
                  MetricCalculator codeFragment unit ->
@@ -99,9 +104,41 @@ numFunctionsMsg = "More than 20 functions per module"
 
 numFunctionsSeverity = Warning
 
+data SrcSlice = SrcSlice {
+    sliceFilename  ::  String
+  , sliceFirstLine
+  , sliceLastLine  ::  Int
+  -- TODO: do we want to show columns too?
+  , sliceLocs      :: [SrcLoc]
+  }
+
+class (Show a, Data a, Biplate a SrcLoc) => CodeFragment a
+
+srcSlice :: CodeFragment a => a -> SrcSlice
+srcSlice codeFragment = assert (allEqual $ map srcFilename sliceLocs) $
+                          case sliceLocs of
+                            []    -> error $ "Don't know how make a SrcSlice for this code fragment:" ++ show codeFragment
+                            other -> SrcSlice {..}
+  where
+    sliceFilename                   = srcFilename $ head sliceLocs
+    (sliceFirstLine, sliceLastLine) = (minimum &&& maximum) $
+                                      map srcLine sliceLocs
+    sliceLocs                      :: [SrcLoc]
+    sliceLocs                       = universeBi codeFragment
+
+-- Number of lines of code within @SrcSlice@
+numLoc = nub
+       . sort
+       . map srcLine
+       . sliceLocs
+
+headIfPresent = foldr const
+
 main :: IO ()
 main = do
   ParseOk r <- parseFile "Test.hs"
   return (universeBi :: Module -> [Decl])
-  print $ funBinds r 
+  print $ funBinds r
+  putStr "All locations: "
+  print $ (universeBi :: Module -> [SrcLoc]) r
 
