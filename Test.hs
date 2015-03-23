@@ -16,8 +16,7 @@ import Control.Exception
 
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts
---import Data.Iterable
---import Data.Iterable.Instantiate
+import Language.Haskell.Homplexity.Cyclomatic
 
 import Data.Generics.Uniplate.Data
 
@@ -36,26 +35,40 @@ funBinds = filter isFunBind
          . getModuleDecls
 
 data Program = Program { allModules :: [Module] }
+  deriving (Data, Typeable, Show)
+
 
 -- * Type aliases for easier matching of substructures
 -- ** Alias for a function declaration
-data Function = Function [Match]
+data Function = Function { functionMatches :: [Match] }
+  deriving (Data, Typeable, Show)
 
+{-
+instance Show Function where
+  show = show . srcSlice . functionMatches
+ -}
+  
+
+maybeFunction ::  Decl -> Maybe Function
 maybeFunction (FunBind ms) = Just $ Function ms
 maybeFunction  _           = Nothing
+
+type MatchSet = [Match]
 
 -- ** Alias for a type signature of a function
 data TypeSignature = TypeSignature { loc         :: SrcLoc
                                    , identifiers :: [Name]
                                    , theType     :: Type }
+  deriving (Data, Typeable, Show)
 
+maybeTypeSignature ::  Decl -> Maybe TypeSignature
 maybeTypeSignature (TypeSig loc identifiers theType) = Just $ TypeSignature {..}
 maybeTypeSignature  _                                = Nothing
 
 -- TODO: class signatures (number of function decls inside)
 -- ** Alias for a class signature
 data ClassSignature = ClassSignature
-                                    
+  deriving (Data, Typeable)
 
 {-
 data Metric codeFrag unit = Metric {
@@ -138,6 +151,9 @@ data SrcSlice = SrcSlice {
   , sliceLocs      :: [SrcLoc]
   }
 
+instance Show SrcSlice where
+  show (SrcSlice {..}) = unwords [sliceFilename, show sliceFirstLine ++ "-" ++ show sliceLastLine]
+
 class Code c where
   occurs :: Program -> [c]
 
@@ -160,10 +176,17 @@ class (Show a, Biplate a SrcLoc) => NamedCode a where
   -- | name of the object described by code fragment
   fragmentName :: a -> String
   isIgnored    :: a -> Bool
+  isIgnored  _  = False 
 
 instance NamedCode Module where
   fragmentName (Module _ (ModuleName theName) _ _ _ _ _) = "module " ++ theName
   isIgnored     _                                        = False
+
+
+instance NamedCode Function where
+  fragmentName (Function (Match _ theName _ _ _ _:_)) = "function " ++ unName theName
+  fragmentName  _                                    = error "Not yet implemented!"
+
 
 instance NamedCode Decl where
   fragmentName (FunBind (Match _ theName _ _ _ _:_)) = "function " ++ unName theName
@@ -206,4 +229,5 @@ main = do
       print $ funBinds r
       putStr "All locations: "
       print $ (universeBi :: Module -> [SrcLoc]) r
+      print   $ unlines $ map ( show . (fragmentName &&& ((' ':) . show . cyclomatic))) $ funBinds r
     other     -> print other
