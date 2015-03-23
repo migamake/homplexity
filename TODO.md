@@ -6,7 +6,7 @@
 4. Complexity measures:
   * McCabe "Cyclomatic number" - number of linearly independent paths through code, tends to be PL independent
     # ~number of conditional branches (ifs, cases) that may be taken,
-    # also iteration constructs (like foldr, not map!)
+    # also iteration constructs (like foldr, not map!?)
     # also exception catches
     # also || and && shortcut evaluations?
     -> should be <15 for a function

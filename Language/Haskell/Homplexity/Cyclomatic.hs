@@ -3,11 +3,12 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE UndecidableInstances  #-}
-module Language.Haskell.Homplexity.Cyclomatic(cyclomatic) where
+module Language.Haskell.Homplexity.Cyclomatic(cyclomatic, depth) where
 
 import Data.Data
 import Data.Generics.Uniplate.Data
 import Language.Haskell.Exts.Syntax
+import Language.Haskell.Homplexity.Matcher
 
 type MatchSet = [Match]
 
@@ -37,3 +38,25 @@ cyclomaticOfExprs = sumOf armCount . universeBi
     armCount (LCase   alts) = length alts - 1
     armCount _              = 0               -- others are ignored
 
+-- | Sum the results of mapping the function over the list.
+maxOf :: (a -> Int) -> [a] -> Int
+maxOf f = maximum . map f
+
+-- * Decision depth
+--dcond :: Data from => from -> Int
+--dcond = maxOf depthOfMatches . childrenBi
+
+depthOfMatches (FunBind [m ] ) =   maxOf depthOfExpr           (childrenBi m )
+depthOfMatches (FunBind  ms  ) = 1+maxOf depthOfExpr (concatMap childrenBi ms)
+depthOfMatches  _              = 0
+
+depthOfExpr :: Exp -> Int
+depthOfExpr x = fromEnum (isDecision x)+maxOf depthOfExpr (children x)
+
+isDecision             :: Exp -> Bool
+isDecision (If      {}) = True
+isDecision (MultiIf {}) = True 
+isDecision (LCase   {}) = True
+isDecision _            = False
+
+depth = undefined
