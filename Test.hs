@@ -1,8 +1,9 @@
-{-# LANGUAGE StandaloneDeriving  #-}
-{-# LANGUAGE DeriveDataTypeable  #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE RecordWildCards     #-}
-{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE StandaloneDeriving    #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE DeriveDataTypeable    #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE FlexibleContexts      #-}
 module Homplexity where
 
 import Data.Data
@@ -67,11 +68,11 @@ data ExecutableMetric = {
 -- TODO: need combination of Fold and Biplate
 -- Resulting record may be created to make pa
 
-class CodeFragment c => 
+class CodeFragment c =>
 
 class (CodeFragment c) => CheckMetric a b where
-  
-  
+
+
  -}
 
 -- | Check that all elements of a given list are equal.
@@ -112,13 +113,30 @@ data SrcSlice = SrcSlice {
   , sliceLocs      :: [SrcLoc]
   }
 
-class (Show a, Data a, Biplate a SrcLoc) => CodeFragment a
+class (Show a, Data a, Biplate a SrcLoc) => CodeFragment a where
+  -- | name of the object described by code fragment
+  fragmentName :: a -> String
+  isIgnored    :: a -> Bool
+
+instance CodeFragment Module where
+  fragmentName (Module _ (ModuleName theName) _ _ _ _ _) = "module " ++ theName
+  isIgnored     _                                        = False
+
+instance CodeFragment Decl where
+  fragmentName (FunBind (Match _ theName _ _ _ _:_)) = "function " ++ unName theName
+  fragmentName  _                                    = error "Not yet implemented!"
+  isIgnored    (FunBind _                          ) = False
+  isIgnored     _                                    = True
+
+unName ::  Name -> String
+unName (Symbol s) = s
+unName (Ident  i) = i 
 
 srcSlice :: CodeFragment a => a -> SrcSlice
 srcSlice codeFragment = assert (allEqual $ map srcFilename sliceLocs) $
                           case sliceLocs of
                             []    -> error $ "Don't know how make a SrcSlice for this code fragment:" ++ show codeFragment
-                            other -> SrcSlice {..}
+                            _     -> SrcSlice {..}
   where
     sliceFilename                   = srcFilename $ head sliceLocs
     (sliceFirstLine, sliceLastLine) = (minimum &&& maximum) $
@@ -127,18 +145,22 @@ srcSlice codeFragment = assert (allEqual $ map srcFilename sliceLocs) $
     sliceLocs                       = universeBi codeFragment
 
 -- Number of lines of code within @SrcSlice@
+numLoc ::  SrcSlice -> [Int]
 numLoc = nub
        . sort
        . map srcLine
        . sliceLocs
 
+headIfPresent ::  b -> [b] -> b
 headIfPresent = foldr const
 
 main :: IO ()
 main = do
-  ParseOk r <- parseFile "Test.hs"
-  return (universeBi :: Module -> [Decl])
-  print $ funBinds r
-  putStr "All locations: "
-  print $ (universeBi :: Module -> [SrcLoc]) r
-
+  parsed <- parseFile "Test.hs"
+  case parsed of
+    ParseOk r -> do 
+      --return (universeBi :: Module -> [Decl])
+      print $ funBinds r
+      putStr "All locations: "
+      print $ (universeBi :: Module -> [SrcLoc]) r
+    other     -> print other
