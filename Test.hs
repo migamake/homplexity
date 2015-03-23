@@ -4,10 +4,13 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE UndecidableInstances  #-}
 module Homplexity where
 
 import Data.Data
 import Data.List
+import Data.Maybe
 import Control.Arrow
 import Control.Exception
 
@@ -32,6 +35,28 @@ funBinds ::  Module -> [Decl]
 funBinds = filter isFunBind
          . getModuleDecls
 
+data Program = Program { allModules :: [Module] }
+
+-- * Type aliases for easier matching of substructures
+-- ** Alias for a function declaration
+data Function = Function [Match]
+
+maybeFunction (FunBind ms) = Just $ Function ms
+maybeFunction  _           = Nothing
+
+-- ** Alias for a type signature of a function
+data TypeSignature = TypeSignature { loc         :: SrcLoc
+                                   , identifiers :: [Name]
+                                   , theType     :: Type }
+
+maybeTypeSignature (TypeSig loc identifiers theType) = Just $ TypeSignature {..}
+maybeTypeSignature  _                                = Nothing
+
+-- TODO: class signatures (number of function decls inside)
+-- ** Alias for a class signature
+data ClassSignature = ClassSignature
+                                    
+
 {-
 data Metric codeFrag unit = Metric {
     Show (codeFrag, unitOfMetric)
@@ -48,7 +73,7 @@ data Message = Message { msgSeverity :: Severity
 
 data Program = Program [Module]
 
--- CodeFragment a == Biplate Program codeFragment
+-- NamedCode a == Biplate Program codeFragment
 
 makeMetric :: (Biplate Program codeFragment, Show unit) =>
                  MetricCalculator codeFragment unit ->
@@ -68,9 +93,9 @@ data ExecutableMetric = {
 -- TODO: need combination of Fold and Biplate
 -- Resulting record may be created to make pa
 
-class CodeFragment c =>
+class NamedCode c =>
 
-class (CodeFragment c) => CheckMetric a b where
+class (NamedCode c) => CheckMetric a b where
 
 
  -}
@@ -113,16 +138,34 @@ data SrcSlice = SrcSlice {
   , sliceLocs      :: [SrcLoc]
   }
 
-class (Show a, Data a, Biplate a SrcLoc) => CodeFragment a where
+class Code c where
+  occurs :: Program -> [c]
+
+instance Code Program where
+  occurs = (:[])
+
+instance Code Module where
+  occurs = allModules
+
+instance (Biplate Module c, Data c) => Code c where
+  occurs = universeBi . allModules
+
+instance Code Function where
+  occurs = mapMaybe maybeFunction      . occurs
+
+instance Code TypeSignature where
+  occurs = mapMaybe maybeTypeSignature . occurs
+
+class (Show a, Biplate a SrcLoc) => NamedCode a where
   -- | name of the object described by code fragment
   fragmentName :: a -> String
   isIgnored    :: a -> Bool
 
-instance CodeFragment Module where
+instance NamedCode Module where
   fragmentName (Module _ (ModuleName theName) _ _ _ _ _) = "module " ++ theName
   isIgnored     _                                        = False
 
-instance CodeFragment Decl where
+instance NamedCode Decl where
   fragmentName (FunBind (Match _ theName _ _ _ _:_)) = "function " ++ unName theName
   fragmentName  _                                    = error "Not yet implemented!"
   isIgnored    (FunBind _                          ) = False
@@ -132,7 +175,7 @@ unName ::  Name -> String
 unName (Symbol s) = s
 unName (Ident  i) = i 
 
-srcSlice :: CodeFragment a => a -> SrcSlice
+srcSlice :: NamedCode a => a -> SrcSlice
 srcSlice codeFragment = assert (allEqual $ map srcFilename sliceLocs) $
                           case sliceLocs of
                             []    -> error $ "Don't know how make a SrcSlice for this code fragment:" ++ show codeFragment
