@@ -17,6 +17,7 @@ import Control.Exception
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts
 import Language.Haskell.Homplexity.Cyclomatic
+import System.Environment
 
 import Data.Generics.Uniplate.Data
 
@@ -112,6 +113,20 @@ class (NamedCode c) => CheckMetric a b where
 
 
  -}
+
+{-
+kloc = declareMetric :: (from -> metric)
+
+check \f :: Function -> kloc f `checkValue` [(1,  debug "very simple function")
+                                            ,(20, info "is complex function")
+                                            ,(50, warn "should be splitted into smaller fragments")]
+or:
+  \f::Function -> if loc>50
+                    then if loc - 5< maximum (map srcLines (caseStatements f) loc)
+                           then debug "is a very long case statement with many arms"
+                           else warn "should be splitted into smaller fragments"
+ - }
+
 
 -- | Check that all elements of a given list are equal.
 allEqual ::  Eq a => [a] -> Bool
@@ -220,14 +235,20 @@ numLoc = nub
 headIfPresent ::  b -> [b] -> b
 headIfPresent = foldr const
 
-main :: IO ()
-main = do
+processFile         :: FilePath -> IO ()
+processFile filename = do
   parsed <- parseFile "Test.hs"
   case parsed of
     ParseOk r -> do 
-      --return (universeBi :: Module -> [Decl])
       print $ funBinds r
-      putStr "All locations: "
+      putStr  "All locations: "
       print $ (universeBi :: Module -> [SrcLoc]) r
       print   $ unlines $ map ( show . (fragmentName &&& ((' ':) . show . cyclomatic))) $ funBinds r
     other     -> print other
+
+main :: IO ()
+main = do
+  args <- getArgs
+  if null args
+    then processFile "Test.hs"
+    else mapM_ processFile args
