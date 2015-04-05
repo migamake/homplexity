@@ -13,25 +13,22 @@ module Language.Haskell.Homplexity.Code (
     Code(name)
   , occurs
   , allOccurs
-  , Program
-  , Function
-  , TypeSignature
+  , Program      (..)
+  , Function     (..)
+  , TypeSignature(..)
   -- TODO: add ClassSignature
-  , SrcSlice
-  , srcLines
-  , numLoc
   ) where
 
 import Data.Data
+import Data.Generics.Uniplate.Data
 import Data.List
 import Data.Maybe
 import Control.Arrow
 import Control.Exception
-
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts
 
-import Data.Generics.Uniplate.Data
+--import Language.Haskell.Homplexity.SrcSlice
 
 -- | Program
 data Program = Program { allModules :: [Module] }
@@ -49,7 +46,7 @@ data Function = Function { functionMatches :: [Match] }
 data TypeSignature = TypeSignature { loc         :: SrcLoc
                                    , identifiers :: [Name]
                                    , theType     :: Type }
-  deriving (Data, Typeable, Show)
+  deriving (Data, Typeable)
 
 -- TODO: class signatures (number of function decls inside)
 -- ** Alias for a class signature
@@ -57,74 +54,13 @@ data ClassSignature = ClassSignature
   deriving (Data, Typeable)
 
 {-
-data Metric codeFrag unit = Metric {
-    Show (codeFrag, unitOfMetric)
-  , codeFrag     :: *
-  , unitOfMetric :: *
-  , name         :: String
-  , severity     :: Severity
-  , compute      :: codeFrag -> metricUnit
-  }
 
 data Message = Message { msgSeverity :: Severity
                        , msgText     :: String
-                       , msgSrc      :: SrcLoc   }
-
-data Program = Program [Module]
-
--- NamedCode a == Biplate Program codeFragment
-
-makeMetric :: (Biplate Program codeFragment, Show unit) =>
-                 MetricCalculator codeFragment unit ->
-                 MetricChecker    codeFragment unit
-
--- * Ops on metrics:
-data ExecutableMetric = {
-    Metric codeFrag unit :: *
-  -- | Compute metric for each relevant fragment.
-  , computeMetric :: (Biplate codeFrag1 codeFrag2           ) => Metric codeFrag2 unit  -> codeFrag1 -> unit
-  -- | Show metric for each relevant fragment.
-  , showMetric    :: (Biplate codeFrag1 codeFrag2, Show unit) => Metric codeFrag2 unit  -> codeFrag1 -> [Message]
-  -- | Check computed metric for each relevant fragment.
-  , checkMetric   :: (Biplate codeFrag1 codeFrag2           ) => Metric codeFrag2 alpha -> codeFrag1 -> [Message]
-  }
+                       , msgSrc      :: SrcLoc   } -}
 
 -- TODO: need combination of Fold and Biplate
 -- Resulting record may be created to make pa
-
-class NamedCode c =>
-
-class (NamedCode c) => CheckMetric a b where
-
-
- -}
-
--- | Check that all elements of a given list are equal.
-allEqual ::  Eq a => [a] -> Bool
-allEqual []     = True
-allEqual (b:bs) = all (b==) bs
-
--- | Number of effective (non-comment, non-empty) source lines withi a given code fragment.
-srcLines ::  Data from => from -> Int
-srcLines frag = check $ if null allLines
-                          then 0
-                          else length $ nub $ sort allLines
-  where
-    check    = assert $ allEqual $ map srcFilename locs
-    allLines = map srcLine locs
-    locs    :: [SrcLoc]
-    locs     = universeBi frag
-
-data SrcSlice = SrcSlice {
-    sliceFilename  ::  String
-  , sliceFirstLine
-  , sliceLastLine  ::  Int
-  -- TODO: do we want to show columns too?
-  , sliceLocs      :: [SrcLoc]
-  }
-
-instance Show SrcSlice where
-  show (SrcSlice {..}) = unwords [sliceFilename, show sliceFirstLine ++ "-" ++ show sliceLastLine]
 
 -- | Class @Code@ allows for:
 -- * both selecting direct or all descendants
@@ -135,7 +71,7 @@ instance Show SrcSlice where
 -- In order to compute selection, we just need to know which
 -- @AST@ nodes contain the given object, and how to extract
 -- this given object from @AST@, if it is there (@matchAST@).:w
-class (Data (AST c)) => Code c where
+class (Data (AST c), Data c) => Code c where
   type        AST c
   matchAST :: AST c -> Maybe c
   name     ::     c -> String
@@ -154,13 +90,6 @@ occurs  = mapMaybe matchAST . childrenBi
 allOccurs :: (Code c, Data from) => from -> [c]
 allOccurs = mapMaybe matchAST . universeBi
 
-{-
--- | Code fragment
-class Code c where
-  occurs         :: (Data prog) => prog -> [c]
-  allOccurs      :: (Data prog) => prog -> [c]
- -}
-
 instance Code Program where
   type AST Program = Program
   matchAST  = Just
@@ -170,16 +99,6 @@ instance Code Module where
   type AST Module = Module
   matchAST = Just 
   name (Module _ (ModuleName theName) _ _ _ _ _) = "module " ++ theName
-
-{-
-instance Named Decl where
-  name = show . srcSlice-}
-
-{-
-instance {-# OVERLAPPED #-} (Biplate Module c, Data c) => Code c where
-  occurs = universeBi . allModules
-  name a = "fragment " ++ show (srcSlice a)
- -}
 
 instance Code TypeSignature where
   type AST TypeSignature = Decl
@@ -191,21 +110,3 @@ unName ::  Name -> String
 unName (Symbol s) = s
 unName (Ident  i) = i 
 
---srcSlice :: NamedCode a => a -> SrcSlice
-srcSlice codeCodement = assert (allEqual $ map srcFilename sliceLocs) $
-                          case sliceLocs of
-                            []    -> error $ "Don't know how make a SrcSlice for this code fragment:" ++ show codeCodement
-                            _     -> SrcSlice {..}
-  where
-    sliceFilename                   = srcFilename $ head sliceLocs
-    (sliceFirstLine, sliceLastLine) = (minimum &&& maximum) $
-                                      map srcLine sliceLocs
-    sliceLocs                      :: [SrcLoc]
-    sliceLocs                       = universeBi codeCodement
-
--- Number of lines of code within @SrcSlice@
-numLoc ::  SrcSlice -> [Int]
-numLoc = nub
-       . sort
-       . map srcLine
-       . sliceLocs
