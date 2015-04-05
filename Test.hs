@@ -57,6 +57,20 @@ showMeasure metricType fragType c = ((fragmentName c)++)
 
 eoln = ('\n':)
 
+type Messenger = Program -> [Message]
+
+mergeMessages      :: [Messenger] -> Program -> Message
+mergeMessages tests prog tail = foldr merge   tail $ 
+                                map   (foldr merge id . ($prog)) tests
+  where
+    a `merge` b = a . ('\n':) $ b
+
+_u ::  [Messenger]
+_u = [measureTopOccurs locT        programT,
+      measureTopOccurs locT        functionT,
+      measureTopOccurs depthT      functionT,
+      measureTopOccurs cyclomaticT functionT]
+
 processFile         :: FilePath -> IO ()
 processFile filename = do
   parsed <- parseFile "Test.hs"

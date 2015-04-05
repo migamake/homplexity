@@ -5,6 +5,7 @@
 module Language.Haskell.Homplexity.Metric (
     Metric (..)
   , LOC
+  , locT
   , measureAs
   , measureFor
   ) where
@@ -29,6 +30,10 @@ class (CodeFragment c, Show m) => Metric m c where
 -- (example metric)
 newtype LOC = LOC { asInt :: Int }
   deriving (Ord, Eq, Enum, Num, Real, Integral)
+
+-- | Proxy for passing @LOC@ type as parameter.
+locT :: Proxy LOC
+locT  = Proxy
 
 instance Show LOC where
   showsPrec _ (LOC l) = shows l . shows "lines of code"

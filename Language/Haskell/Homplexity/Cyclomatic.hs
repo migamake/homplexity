@@ -4,10 +4,15 @@
 {-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE UndecidableInstances       #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-module Language.Haskell.Homplexity.Cyclomatic(Cyclomatic, Depth) where
+module Language.Haskell.Homplexity.Cyclomatic(
+    Cyclomatic
+  , cyclomaticT
+  , Depth
+  , depthT) where
 
 import Data.Data
 import Data.Generics.Uniplate.Data
+import Data.Proxy(Proxy)
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Metric
@@ -17,6 +22,10 @@ type MatchSet = [Match]
 -- | Represents cyclomatic complexity
 newtype Cyclomatic = Cyclomatic { unCyclo :: Int }
   deriving (Eq, Ord, Enum, Num, Real, Integral)
+
+-- | For passing @Cyclomatic@ type as parameter.
+cyclomaticT :: Proxy Cyclomatic 
+cyclomaticT  = Proxy
 
 instance Show Cyclomatic where
   showsPrec _ (Cyclomatic cc) = ("cyclomatic complexity of " ++)
@@ -58,6 +67,10 @@ maxOf f = maximum . map f
 -- | Decision depth
 newtype Depth = Depth Int
   deriving (Eq, Ord, Enum, Num, Real, Integral)
+
+-- | For passing @Depth@ type as parameter.
+depthT :: Proxy Depth 
+depthT  = Proxy
 
 instance Metric Depth Function where
   measure (Function matches) = Depth $ depthOfMatches matches

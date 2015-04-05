@@ -14,8 +14,11 @@ module Language.Haskell.Homplexity.CodeFragment (
   , occurs
   , allOccurs
   , Program      (..)
+  , programT
   , Function     (..)
+  , functionT
   , TypeSignature(..)
+  , typeSignatureT
   -- TODO: add ClassSignature
   ) where
 
@@ -37,10 +40,18 @@ data Program = Program { allModules :: [Module] }
 -- | Smart constructor for adding cross-references in the future.
 program  = Program
 
+-- | Proxy for passing @Program@ type as an argument.
+programT :: Proxy Program
+programT  = Proxy
+
 -- * Type aliases for type-based matching of substructures
 -- | Alias for a function declaration
 data Function = Function { functionMatches :: [Match] }
   deriving (Data, Typeable, Show)
+
+-- | Proxy for passing @Function@ type as an argument.
+functionT :: Proxy Function
+functionT  = Proxy
 
 -- ** Alias for a type signature of a function
 data TypeSignature = TypeSignature { loc         :: SrcLoc
@@ -48,16 +59,14 @@ data TypeSignature = TypeSignature { loc         :: SrcLoc
                                    , theType     :: Type }
   deriving (Data, Typeable)
 
+-- | Proxy for passing @Program@ type as an argument.
+typeSignatureT :: Proxy TypeSignature
+typeSignatureT  = Proxy
+
 -- TODO: class signatures (number of function decls inside)
 -- ** Alias for a class signature
 data ClassSignature = ClassSignature
   deriving (Data, Typeable)
-
-{-
-
-data Message = Message { msgSeverity :: Severity
-                       , msgText     :: String
-                       , msgSrc      :: SrcLoc   } -}
 
 -- TODO: need combination of Fold and Biplate
 -- Resulting record may be created to make pa
@@ -77,7 +86,7 @@ class (Data (AST c), Data c) => CodeFragment c where
   fragmentName ::     c -> String
 
 instance CodeFragment Function where
-  type AST Function = Decl
+  type AST Function     = Decl
   matchAST (FunBind ms) = Just $ Function ms
   matchAST  _           = Nothing
   fragmentName (Function (Match _ theName _ _ _ _:_)) = "function " ++ unName theName
@@ -106,6 +115,7 @@ instance CodeFragment TypeSignature where
   matchAST  _                                = Nothing
   fragmentName (TypeSignature {..}) = "type signature for " ++ intercalate ", " (map unName identifiers)
 
+-- | Unpack @Name@ identifier into a @String@.
 unName ::  Name -> String
 unName (Symbol s) = s
 unName (Ident  i) = i 
