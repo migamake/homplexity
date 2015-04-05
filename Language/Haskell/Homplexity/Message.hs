@@ -1,7 +1,8 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE RecordWildCards            #-}
 module Language.Haskell.Homplexity.Message (
-    Message
+    Log
+  , Message
   , warn
   , info
   , debug
@@ -55,16 +56,16 @@ error :: SrcLoc -> String -> Seq Message
 error  = message Error
 
 -- | Log a warning
-warn ::  SrcLoc -> String -> Seq Message
-warn  = message Warning
+warn  ::  SrcLoc -> String -> Seq Message
+warn   = message Warning
 
 -- | Log informational message
-info ::  SrcLoc -> String -> Seq Message
-info  = message Info
+info  ::  SrcLoc -> String -> Seq Message
+info   = message Info
 
 -- | Log debugging message
 debug ::  SrcLoc -> String -> Seq Message
-debug = message Debug
+debug  = message Debug
 
 -- TODO: check if this is not too slow
 msgOrdering ::  Message -> Message -> Ordering

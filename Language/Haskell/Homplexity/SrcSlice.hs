@@ -1,11 +1,13 @@
 {-# LANGUAGE RecordWildCards   #-}
 {-# LANGUAGE FlexibleInstances #-}
 -- | Showing references to slices of code
-module Language.Haskell.Homplexity.Metric (
+module Language.Haskell.Homplexity.SrcSlice (
     SrcSlice
   , srcSlice
+  , srcLoc
   ) where
 
+import Data.Data
 import Data.Generics.Uniplate.Data
 import Data.List
 import Control.Arrow
@@ -21,6 +23,9 @@ data SrcSlice = SrcSlice {
   -- TODO: do we want to show columns too?
   --, sliceLocs      :: [SrcLoc]
   }
+
+srcLoc :: (Data code) => code -> SrcLoc
+srcLoc = head . universeBi
 
 -- | Compute the slice of code that given source fragment is in (for naming)
 srcSlice code = assert (allEqual $ map srcFilename sliceLocs) $

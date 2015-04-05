@@ -30,8 +30,7 @@ import Control.Arrow
 import Control.Exception
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts
-
---import Language.Haskell.Homplexity.SrcSlice
+import Language.Haskell.Homplexity.SrcSlice
 
 -- | Program
 data Program = Program { allModules :: [Module] }
@@ -57,7 +56,7 @@ functionT  = Proxy
 data TypeSignature = TypeSignature { loc         :: SrcLoc
                                    , identifiers :: [Name]
                                    , theType     :: Type }
-  deriving (Data, Typeable)
+  deriving (Data, Typeable, Show)
 
 -- | Proxy for passing @Program@ type as an argument.
 typeSignatureT :: Proxy TypeSignature
@@ -80,10 +79,12 @@ data ClassSignature = ClassSignature
 -- In order to compute selection, we just need to know which
 -- @AST@ nodes contain the given object, and how to extract
 -- this given object from @AST@, if it is there (@matchAST@).:w
-class (Data (AST c), Data c) => CodeFragment c where
+class (Show c, Data (AST c), Data c) => CodeFragment c where
   type            AST c
-  matchAST     :: AST c -> Maybe c
-  fragmentName ::     c -> String
+  matchAST      :: AST c -> Maybe c
+  fragmentName  ::     c -> String
+  fragmentSlice ::     c -> SrcSlice
+  fragmentSlice  = srcSlice
 
 instance CodeFragment Function where
   type AST Function     = Decl

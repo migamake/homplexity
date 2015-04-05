@@ -20,6 +20,7 @@ import Language.Haskell.Exts
 import Language.Haskell.Homplexity.Cyclomatic
 import Language.Haskell.Homplexity.Metric
 import Language.Haskell.Homplexity.CodeFragment
+import Language.Haskell.Homplexity.Message
 import System.Environment
 
 data Severity = Error
@@ -40,26 +41,27 @@ numFunctionsSeverity = Warning
 
 type Message = ShowS
 
-measureAll  :: (CodeFragment c, Metric m c) => (Program -> [c]) -> Proxy m -> Proxy c -> Program -> [Message]
-measureAll generator metricType fragType = map (showMeasure metricType fragType) . generator
+measureAll  :: (CodeFragment c, Metric m c) => (Program -> [c]) -> Proxy m -> Proxy c -> Program -> Log
+measureAll generator metricType fragType = mconcat
+                                         . map       (showMeasure metricType fragType)
+                                         . generator
 
-measureTopOccurs  :: (CodeFragment c, Metric m c) => Proxy m -> Proxy c -> Program -> [Message]
+measureTopOccurs  :: (CodeFragment c, Metric m c) => Proxy m -> Proxy c -> Program -> Log
 measureTopOccurs = measureAll occurs
 
-measureAllOccurs  :: (CodeFragment c, Metric m c) => Proxy m -> Proxy c -> Program -> [Message]
+measureAllOccurs  :: (CodeFragment c, Metric m c) => Proxy m -> Proxy c -> Program -> Log
 measureAllOccurs = measureAll allOccurs
 
-showMeasure :: (CodeFragment c, Metric m c) => Proxy m -> Proxy c -> c -> Message
-showMeasure metricType fragType c = ((fragmentName c)++)
-                                  . (" has "         ++)
-                                  . shows (measureFor metricType fragType c)
-                                  . eoln
+showMeasure :: (CodeFragment c, Metric m c) => Proxy m -> Proxy c -> c -> Log
+showMeasure metricType fragType c = info ((fragmentName c)++)
+                                         . (" has "         ++)
+                                         . shows (measureFor metricType fragType c)
 
 eoln = ('\n':)
 
-type Messenger = Program -> [Message]
+type Messenger = Program -> Log
 
-mergeMessages      :: [Messenger] -> Program -> Message
+mergeMessages      :: [Messenger] -> Program -> Log
 mergeMessages tests prog tail = foldr merge   tail $ 
                                 map   (foldr merge id . ($prog)) tests
   where
