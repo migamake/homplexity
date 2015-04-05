@@ -1,0 +1,27 @@
+digraph Concepts {
+  code    [ label="Code fragment"];
+  code -> Function;
+  code -> Program;
+  code -> "Type signature";
+
+  Metric -> code [label="is applied to"];
+
+  Metric -> "Lines of code";
+  Metric -> "Cyclomatic complexity";
+  Metric -> "Branching depth";
+  
+  Metric -> "Type tree nodes"       [border="dashed"];
+  Metric -> "Expression tree nodes" [border="dashed"];
+  
+  Criterion [label="Validation criterion"];
+  Criterion -> Metric    [label="uses"];
+
+  Criterion -> Threshold [label="meets"];
+
+  Threshold -> Message   [label="displays"];
+
+  Message -> Debug;
+  Message -> Info;
+  Message -> Warning;
+}
+
