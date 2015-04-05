@@ -9,8 +9,8 @@
 {-# LANGUAGE TypeFamilies          #-}
 -- | This module generalizes over types of code fragments
 -- that may need to be iterated upon and measured separately.
-module Language.Haskell.Homplexity.Code (
-    Code(name)
+module Language.Haskell.Homplexity.CodeFragment (
+    CodeFragment(fragmentName)
   , occurs
   , allOccurs
   , Program      (..)
@@ -62,7 +62,7 @@ data Message = Message { msgSeverity :: Severity
 -- TODO: need combination of Fold and Biplate
 -- Resulting record may be created to make pa
 
--- | Class @Code@ allows for:
+-- | Class @CodeFragment@ allows for:
 -- * both selecting direct or all descendants
 --   of the given type of object within another structure
 --   (with @occurs@ and @allOccurs@)
@@ -71,40 +71,40 @@ data Message = Message { msgSeverity :: Severity
 -- In order to compute selection, we just need to know which
 -- @AST@ nodes contain the given object, and how to extract
 -- this given object from @AST@, if it is there (@matchAST@).:w
-class (Data (AST c), Data c) => Code c where
-  type        AST c
-  matchAST :: AST c -> Maybe c
-  name     ::     c -> String
+class (Data (AST c), Data c) => CodeFragment c where
+  type            AST c
+  matchAST     :: AST c -> Maybe c
+  fragmentName ::     c -> String
 
-instance Code Function where
+instance CodeFragment Function where
   type AST Function = Decl
   matchAST (FunBind ms) = Just $ Function ms
   matchAST  _           = Nothing
-  name     (Function (Match _ theName _ _ _ _:_)) = "function " ++ unName theName
+  fragmentName (Function (Match _ theName _ _ _ _:_)) = "function " ++ unName theName
 
--- | Direct occurences of given @Code@ fragment within another structure.
-occurs :: (Code c, Data from) => from -> [c]
+-- | Direct occurences of given @CodeFragment@ fragment within another structure.
+occurs :: (CodeFragment c, Data from) => from -> [c]
 occurs  = mapMaybe matchAST . childrenBi
 
--- | All occurences of given type of @Code@ fragment within another structure.
-allOccurs :: (Code c, Data from) => from -> [c]
+-- | All occurences of given type of @CodeFragment@ fragment within another structure.
+allOccurs :: (CodeFragment c, Data from) => from -> [c]
 allOccurs = mapMaybe matchAST . universeBi
 
-instance Code Program where
+instance CodeFragment Program where
   type AST Program = Program
-  matchAST  = Just
-  name _    = "program"
+  matchAST         = Just
+  fragmentName _   = "program"
 
-instance Code Module where
+instance CodeFragment Module where
   type AST Module = Module
   matchAST = Just 
-  name (Module _ (ModuleName theName) _ _ _ _ _) = "module " ++ theName
+  fragmentName (Module _ (ModuleName theName) _ _ _ _ _) = "module " ++ theName
 
-instance Code TypeSignature where
+instance CodeFragment TypeSignature where
   type AST TypeSignature = Decl
   matchAST (TypeSig loc identifiers theType) = Just $ TypeSignature {..}
   matchAST  _                                = Nothing
-  name (TypeSignature {..}) = "type signature for " ++ intercalate ", " (map unName identifiers)
+  fragmentName (TypeSignature {..}) = "type signature for " ++ intercalate ", " (map unName identifiers)
 
 unName ::  Name -> String
 unName (Symbol s) = s

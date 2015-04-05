@@ -9,7 +9,7 @@ module Language.Haskell.Homplexity.Cyclomatic(Cyclomatic, Depth) where
 import Data.Data
 import Data.Generics.Uniplate.Data
 import Language.Haskell.Exts.Syntax
-import Language.Haskell.Homplexity.Code
+import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Metric
 
 type MatchSet = [Match]
