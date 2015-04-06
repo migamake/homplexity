@@ -62,7 +62,7 @@ cyclomaticOfExprs = sumOf armCount . universeBi
 
 -- | Sum the results of mapping the function over the list.
 maxOf :: (a -> Int) -> [a] -> Int
-maxOf f = maximum . map f
+maxOf f = maximum . (0:). map f
 
 -- | Decision depth
 newtype Depth = Depth Int
