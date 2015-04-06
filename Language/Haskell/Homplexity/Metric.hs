@@ -36,7 +36,7 @@ locT :: Proxy LOC
 locT  = Proxy
 
 instance Show LOC where
-  showsPrec _ (LOC l) = shows l . shows "lines of code"
+  showsPrec _ (LOC l) = shows l . (" lines of code"++)
 
 instance (CodeFragment c) => Metric LOC c where
   measure = LOC
