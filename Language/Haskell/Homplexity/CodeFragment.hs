@@ -19,6 +19,7 @@ module Language.Haskell.Homplexity.CodeFragment (
   , functionT
   , TypeSignature(..)
   , typeSignatureT
+  , fragmentLoc
   -- TODO: add ClassSignature
   ) where
 
@@ -29,6 +30,7 @@ import Data.Maybe
 import Control.Arrow
 import Control.Exception
 import Language.Haskell.Exts.Syntax
+import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts
 import Language.Haskell.Homplexity.SrcSlice
 
@@ -80,11 +82,15 @@ data ClassSignature = ClassSignature
 -- @AST@ nodes contain the given object, and how to extract
 -- this given object from @AST@, if it is there (@matchAST@).:w
 class (Show c, Data (AST c), Data c) => CodeFragment c where
-  type            AST c
+  type             AST c
   matchAST      :: AST c -> Maybe c
   fragmentName  ::     c -> String
   fragmentSlice ::     c -> SrcSlice
   fragmentSlice  = srcSlice
+
+fragmentLoc :: (CodeFragment c) => c -> SrcLoc
+fragmentLoc =  getPointLoc
+            .  fragmentSlice
 
 instance CodeFragment Function where
   type AST Function     = Decl

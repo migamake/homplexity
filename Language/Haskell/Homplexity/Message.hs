@@ -47,24 +47,24 @@ instance Show Severity where
   showsPrec _ Debug   = ("DEBUG"  ++)
 
 -- | Helper for logging a message with given severity.
-message ::  Severity -> SrcLoc -> String -> Seq Message
-message msgSeverity msgSrc msgText = Seq.singleton $ Message {..}
+message ::  Severity -> SrcLoc -> String -> Log
+message msgSeverity msgSrc msgText = Log $ Seq.singleton $ Message {..}
 
 -- | TODO: automatic inference of the srcLine 
 -- | Log a certain error
-error :: SrcLoc -> String -> Seq Message
+error :: SrcLoc -> String -> Log
 error  = message Error
 
 -- | Log a warning
-warn  ::  SrcLoc -> String -> Seq Message
+warn  ::  SrcLoc -> String -> Log
 warn   = message Warning
 
 -- | Log informational message
-info  ::  SrcLoc -> String -> Seq Message
+info  ::  SrcLoc -> String -> Log
 info   = message Info
 
 -- | Log debugging message
-debug ::  SrcLoc -> String -> Seq Message
+debug ::  SrcLoc -> String -> Log
 debug  = message Debug
 
 -- TODO: check if this is not too slow

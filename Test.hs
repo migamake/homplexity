@@ -11,6 +11,7 @@ module Homplexity where
 import Data.Data
 import Data.List
 import Data.Maybe
+import Data.Monoid
 import Data.Proxy
 import Control.Arrow
 import Control.Exception
@@ -53,25 +54,23 @@ measureAllOccurs  :: (CodeFragment c, Metric m c) => Proxy m -> Proxy c -> Progr
 measureAllOccurs = measureAll allOccurs
 
 showMeasure :: (CodeFragment c, Metric m c) => Proxy m -> Proxy c -> c -> Log
-showMeasure metricType fragType c = info ((fragmentName c)++)
-                                         . (" has "         ++)
-                                         . shows (measureFor metricType fragType c)
-
-eoln = ('\n':)
-
-type Messenger = Program -> Log
-
-mergeMessages      :: [Messenger] -> Program -> Log
-mergeMessages tests prog tail = foldr merge   tail $ 
-                                map   (foldr merge id . ($prog)) tests
+showMeasure metricType fragType c = info (        fragmentLoc  c)
+                                         (concat [fragmentName c
+                                                 ," has "
+                                                 ,show result   ])
   where
-    a `merge` b = a . ('\n':) $ b
+    result = measureFor metricType fragType c
 
-_u ::  [Messenger]
-_u = [measureTopOccurs locT        programT,
-      measureTopOccurs locT        functionT,
-      measureTopOccurs depthT      functionT,
-      measureTopOccurs cyclomaticT functionT]
+--          $
+                             --map ($ prog) tests
+--  where
+--    a `merge` b = a . ('\n':) $ b
+
+_u :: [Program -> Log]
+_u  = [measureTopOccurs locT        programT,
+       measureTopOccurs locT        functionT,
+       measureTopOccurs depthT      functionT,
+       measureTopOccurs cyclomaticT functionT]
 
 processFile         :: FilePath -> IO ()
 processFile filename = do

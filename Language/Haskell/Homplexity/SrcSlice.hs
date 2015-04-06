@@ -5,6 +5,11 @@ module Language.Haskell.Homplexity.SrcSlice (
     SrcSlice
   , srcSlice
   , srcLoc
+  , showSrcSpan
+  , mergeSrcLocs
+  , sliceFirstLine
+  , sliceLastLine
+  , sliceFilename
   ) where
 
 import Data.Data
@@ -14,39 +19,48 @@ import Control.Arrow
 import Control.Exception (assert)
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts
+import Language.Haskell.Exts.SrcLoc
 
 -- * Slice of code
-data SrcSlice = SrcSlice {
-    sliceFilename  ::  String
-  , sliceFirstLine
-  , sliceLastLine  ::  Int
-  -- TODO: do we want to show columns too?
-  --, sliceLocs      :: [SrcLoc]
-  }
+type SrcSlice  = SrcSpan
+sliceFilename  = srcSpanFilename
+sliceFirstLine = srcSpanStartLine
+sliceLastLine  = srcSpanEndLine
 
-srcLoc :: (Data code) => code -> SrcLoc
-srcLoc = head . universeBi
+srcLoc :: (Data code, Show code) => code -> SrcLoc
+srcLoc code = checkHead  $
+              universeBi   code
+  where
+    msg              = "Cannot find SrcLoc in the code fragment: " ++ show code
+    checkHead []     = error msg
+    checkHead (e:es) = e
 
 -- | Compute the slice of code that given source fragment is in (for naming)
-srcSlice code = assert (allEqual $ map srcFilename sliceLocs) $
-    case sliceLocs of
-      []    -> error $ "Don't know how make a SrcSlice for this code fragment:" ++ show code
-      _     -> SrcSlice {..}
+srcSlice code = mergeSrcLocs
+              . checkNonEmpty
+              . universeBi    $ code
   where
-    sliceFilename                   = srcFilename $ head sliceLocs
-    (sliceFirstLine, sliceLastLine) = (minimum &&& maximum) $
-                                      map srcLine sliceLocs
-    sliceLocs                      :: [SrcLoc]
-    sliceLocs                       = universeBi code
+    checkNonEmpty []    = error $ "Can't know how make a SrcSlice from code fragment: " ++ show code
+    checkNonEmpty other = other
+
+mergeSrcLocs :: [SrcLoc] -> SrcSpan
+mergeSrcLocs []        = error "Don't know how make a SrcSpan from an empty list of locations!"
+mergeSrcLocs sliceLocs = assert (allEqual $ map srcFilename sliceLocs) $
+                           SrcSpan {..}
+  where
+    srcSpanFilename = srcFilename $ head sliceLocs
+    ((srcSpanStartLine, srcSpanStartColumn),
+     (srcSpanEndLine,   srcSpanEndColumn  )) = (minimum &&& maximum) $
+                                               map (srcLine &&& srcColumn) sliceLocs
 
 allEqual       ::  Eq a => [a] -> Bool
 allEqual []     = True
 allEqual (b:bs) = all (b==) bs
 
-instance Show SrcSlice where
-  showsPrec _ (SrcSlice {..}) = shows sliceFilename
-                              . (':':)
-                              . shows sliceFirstLine
-                              . ('-':)
-                              . shows sliceLastLine
+showSrcSpan               :: SrcSpan -> ShowS
+showSrcSpan (SrcSpan {..}) = shows srcSpanFilename
+                           . (':':)
+                           . shows srcSpanStartLine
+                           . ('-':)
+                           . shows srcSpanEndLine
 
