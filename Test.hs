@@ -6,7 +6,7 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE UndecidableInstances  #-}
-module Homplexity where
+module Main (main) where
 
 import Data.Data
 import Data.List
@@ -23,6 +23,7 @@ import Language.Haskell.Homplexity.Metric
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Message
 import System.Environment
+import System.IO
 
 data Severity = Error
               | Warn
@@ -66,26 +67,33 @@ showMeasure metricType fragType c = info (        fragmentLoc  c)
 --  where
 --    a `merge` b = a . ('\n':) $ b
 
-_u :: [Program -> Log]
-_u  = [measureTopOccurs locT        programT,
-       measureTopOccurs locT        functionT,
-       measureTopOccurs depthT      functionT,
-       measureTopOccurs cyclomaticT functionT]
+metrics :: [Program -> Log]
+metrics  = [measureTopOccurs locT        programT,
+            measureTopOccurs locT        functionT,
+            measureTopOccurs depthT      functionT,
+            measureTopOccurs cyclomaticT functionT]
 
-processFile         :: FilePath -> IO ()
-processFile filename = do
-  parsed <- parseFile "Test.hs"
-  case parsed of
-    ParseOk r -> do print r {-
-      print $ funBinds r
-      putStr  "All locations: "
-      print $ (universeBi :: Module -> [SrcLoc]) r
-      print   $ unlines $ map ( show . (fragmentName &&& ((' ':) . show . cyclomatic))) $ funBinds r-}
-    other     -> print other
+report = hPutStrLn stderr
+
+processFiles filenames = do
+  log <- mconcat metrics <$> parseFiles filenames
+  print log
+   
+
+parseFiles :: [FilePath] -> IO Program
+parseFiles files = (Program . catMaybes) <$> mapM parseAndReportError files
+  where
+    parseAndReportError filename = do
+      parsed <- parseFile "Test.hs"
+      case parsed of
+        ParseOk r ->    return $ Just r
+        other     -> do report $ show other
+                        return   Nothing
 
 main :: IO ()
 main = do
   args <- getArgs
   if null args
-    then processFile "Test.hs"
-    else mapM_ processFile args
+    then processFiles ["Test.hs"]
+    else processFiles args
+
