@@ -16,7 +16,7 @@ import Data.Maybe
 import Data.Monoid
 import Data.Proxy
 import Control.Arrow
-import Control.Exception
+import Control.Exception as E
 import Control.Monad
 
 import Language.Haskell.Exts.Syntax
@@ -138,7 +138,7 @@ processFile filename = do
     putStrLn $ "\nProcessing " ++ filename ++ ":"
     input   <- readFile filename
     parseModuleWithMode mode <$> runCpphs cppHsOptions filename input)
-      `catch` handleException (ParseFailed $ noLoc { srcFilename = filename })
+      `E.catch` handleException (ParseFailed $ noLoc { srcFilename = filename })
   case parsed of
     ParseOk parsed -> do analyzeModule parsed
                          return True
