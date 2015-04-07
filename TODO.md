@@ -27,3 +27,4 @@ check all source instances within given structure, for example).
 12. Try to guess extra params, or read them from file:
   * cpphs
   * LANGUAGE pragmas
+13. Catch "invalid byte sequence" errors, and report as incorrect files.

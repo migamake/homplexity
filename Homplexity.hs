@@ -20,17 +20,39 @@ import Control.Exception
 import Control.Monad
 
 import Language.Haskell.Exts.Syntax
+import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts
 import Language.Haskell.Homplexity.Cyclomatic
 import Language.Haskell.Homplexity.Metric
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Message
+import Language.Preprocessor.Cpphs
 import System.Directory
 import System.Environment
 import System.FilePath
 import System.IO
 
 import HFlags
+
+-- | Maximally permissive list of language extensions.
+myExtensions = map EnableExtension
+               [ScopedTypeVariables, CPP, MultiParamTypeClasses, TemplateHaskell,  RankNTypes, UndecidableInstances,
+                FlexibleContexts, KindSignatures, EmptyDataDecls, BangPatterns, ForeignFunctionInterface,
+                Generics, MagicHash, ViewPatterns, PatternGuards, TypeOperators, GADTs, PackageImports,
+                MultiWayIf, SafeImports, ConstraintKinds, TypeFamilies, IncoherentInstances, FunctionalDependencies,
+                ExistentialQuantification, ImplicitParams, UnicodeSyntax]
+
+-- | CppHs options that should be compatible with haskell-src-exts
+cppHsOptions = defaultCpphsOptions {
+                 boolopts = defaultBoolOptions {
+                              macros    = False,
+                              stripEol  = True,
+                              stripC89  = True,
+                              pragma    = False,
+                              hashline  = False,
+                              locations = True -- or False if doesn't compile...
+                            }
+               }
 
 -- * Command line flags
 defineFlag "severity" Info (concat ["level of output verbosity (", severityOptions, ")"])
@@ -109,13 +131,28 @@ subTrees'  fp                    = do
 getDirectoryPaths        :: FilePath -> IO [FilePath]
 getDirectoryPaths dirPath = map (dirPath </>) <$> getDirectoryContents dirPath
 
-processFile :: FilePath -> IO ()
+processFile :: FilePath -> IO Bool
 processFile filename = do
-  putStrLn $ "\nProcessing " ++ filename ++ ":"
-  parsed <- parseFile filename
+  parsed <- (do
+    putStrLn $ "\nProcessing " ++ filename ++ ":"
+    input   <- readFile filename
+    parseModuleWithMode mode <$> runCpphs cppHsOptions filename input)
+      `catch` handleException (ParseFailed $ noLoc { srcFilename = filename })
   case parsed of
-    ParseOk parsed -> analyzeModule parsed
-    other          -> report $ show other
+    ParseOk parsed -> do analyzeModule parsed
+                         return True
+    other          -> do report $ concat ["Cannot parse ", filename, ": ", show other]
+                         return False
+  where
+    handleException helper (e :: SomeException) = return $ helper $ show e
+    mode = ParseMode {
+             parseFilename         = filename,
+             baseLanguage          = Haskell2010,
+             extensions            = myExtensions,
+             ignoreLanguagePragmas = False,
+             ignoreLinePragmas     = False,
+             fixities              = Just preludeFixities
+           }
 
 -- | Commonly defined function - should be added to base...
 concatMapM  :: (Monad m) => (a -> m [b]) -> [a] -> m [b]
@@ -125,5 +162,9 @@ main :: IO ()
 main = do
   args <- $initHFlags "json-autotype -- automatic type and parser generation from JSON"
   if null args
-    then processFile "Test.hs"
-    else mapM_ processFile =<< concatMapM subTrees args
+    then    void $ processFile "Test.hs"
+    else do sums <- mapM processFile =<< concatMapM subTrees args
+            putStrLn $ unwords ["Correctly parsed", show $ length $ filter id sums,
+                                "out of",           show $ length             sums,
+                                "input files."]
+
