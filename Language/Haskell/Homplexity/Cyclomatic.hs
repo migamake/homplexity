@@ -43,6 +43,7 @@ instance Metric Cyclomatic Function where
 cyclomatic :: Data from => from -> Int
 cyclomatic x = cyclomaticOfMatches x
              + cyclomaticOfExprs   x
+             + 1
 
 -- | Sum the results of mapping the function over the list.
 sumOf :: (a -> Int) -> [a] -> Int
@@ -84,7 +85,7 @@ instance Metric Depth Function where
 
 instance Show Depth where
   showsPrec _ (Depth d) = ("branching depth of "++)
-                        . shows d
+                        .  shows d
 
 depthOfMatches []   = 0 -- Should never happen
 depthOfMatches [m ] =   maxOf depthOfExpr           (childrenBi m )

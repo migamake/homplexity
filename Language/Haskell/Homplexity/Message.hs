@@ -1,20 +1,25 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE RecordWildCards            #-}
+{-# LANGUAGE TemplateHaskell            #-}
 module Language.Haskell.Homplexity.Message (
     Log
   , Message
+  , Severity (..)
   , warn
   , info
   , debug
+  , message
   , extract
   ) where
 
 import Control.Arrow
-import Data.Function (on)
-import Data.Sequence as Seq
-import Data.Foldable as Foldable
+import Data.Function                                        (on)
+import Data.Sequence                            as Seq
+import Data.Foldable                            as Foldable
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Exts
+import Language.Haskell.TH.Syntax                           (Lift(..))
+import HFlags
 
 -- | Keeps a set of messages
 newtype Log = Log { unLog :: Seq Message }
@@ -38,13 +43,24 @@ data Severity = Debug
               | Info
               | Warning
               | Error
-  deriving (Eq, Ord, Read, Enum, Bounded)
+  deriving (Eq, Ord, Read, Show, Enum, Bounded)
 
+{-
 instance Show Severity where
   showsPrec _ Error   = ("ERROR"  ++)
   showsPrec _ Warning = ("WARNING"++)
   showsPrec _ Info    = ("INFO"   ++)
   showsPrec _ Debug   = ("DEBUG"  ++)
+ -}
+
+instance Lift Severity where
+  lift Debug   = [| Debug   |]
+  lift Info    = [| Info    |]
+  lift Warning = [| Warning |]
+  lift Error   = [| Error   |]
+
+instance FlagType Severity where
+  defineFlag n v = defineEQFlag n [| v :: Severity |] "{Debug|Info|Warning|Error}"
 
 -- | Helper for logging a message with given severity.
 message ::  Severity -> SrcLoc -> String -> Log
