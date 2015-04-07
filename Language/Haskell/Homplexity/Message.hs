@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns               #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE TemplateHaskell            #-}
@@ -14,6 +15,7 @@ module Language.Haskell.Homplexity.Message (
   ) where
 
 import Control.Arrow
+import Control.DeepSeq
 import Data.Function                                        (on)
 import Data.Sequence                            as Seq
 import Data.Foldable                            as Foldable
@@ -26,12 +28,21 @@ import HFlags
 newtype Log = Log { unLog :: Seq Message }
   deriving(Monoid)
 
+instance NFData Log where
+  rnf = rnf . unLog
+
 -- | Message from analysis
-data Message = Message { msgSeverity :: Severity
-                       , msgText     :: String
-                       , msgSrc      :: SrcLoc
+data Message = Message { msgSeverity :: !Severity
+                       , msgText     :: !String
+                       , msgSrc      :: !SrcLoc
                        }
   deriving (Eq)
+
+instance NFData Message where
+  rnf (Message {..}) = rnf msgSeverity `seq` rnf msgText `seq` rnf msgSrc
+
+instance NFData SrcLoc where
+  rnf (SrcLoc {..}) = rnf srcFilename `seq` rnf srcLine `seq` rnf srcColumn
 
 instance Show Message where
   showsPrec _ (Message {msgSrc=SrcLoc{..}, ..}) = shows msgSeverity
@@ -50,6 +61,9 @@ data Severity = Debug
               | Warning
               | Error
   deriving (Eq, Ord, Read, Show, Enum, Bounded)
+
+instance NFData Severity where
+  rnf !a = ()
 
 -- | String showing all possible values for @Severity@.
 severityOptions :: String

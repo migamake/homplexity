@@ -57,6 +57,7 @@ cppHsOptions = defaultCpphsOptions {
 -- * Command line flags
 defineFlag "severity" Info (concat ["level of output verbosity (", severityOptions, ")"])
 defineFlag "fakeFlag" Info "this flag is fake"
+
 {-
 numFunctions = length
              . filter isFunBind
