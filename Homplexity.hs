@@ -32,6 +32,9 @@ import System.IO
 
 import HFlags
 
+-- * Command line flags
+defineFlag "severity" Info (concat ["level of output verbosity (", severityOptions, ")"])
+defineFlag "fakeFlag" Info "this flag is fake"
 {-
 numFunctions = length
              . filter isFunBind
@@ -44,6 +47,7 @@ numFunctionsMsg = "More than 20 functions per module"
 numFunctionsSeverity = Warning
  -}
 
+-- * Showing metric measurements
 measureAll  :: (CodeFragment c, Metric m c) => Severity -> (Program -> [c]) -> Proxy m -> Proxy c -> Program -> Log
 measureAll severity generator metricType fragType = mconcat
                                                   . map       (showMeasure severity metricType fragType)
@@ -56,7 +60,7 @@ measureAllOccurs  :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Prox
 measureAllOccurs severity = measureAll severity allOccurs
 
 showMeasure :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> c -> Log
-showMeasure severity metricType fragType c = message severity (        fragmentLoc  c)
+showMeasure severity metricType fragType c = message severity (        fragmentLoc  c )
                                                               (concat [fragmentName c
                                                                       ," has "
                                                                       ,show result   ])
@@ -73,7 +77,7 @@ report = hPutStrLn stderr
 
 analyzeModule  = analyzeModules . (:[])
 
-analyzeModules = print . mconcat metrics . Program
+analyzeModules = putStr . concatMap show . extract flags_severity . mconcat metrics . Program
 
 -- | Find all Haskell source files within a given path.
 -- Recurse down the tree, if the path points to directory.
@@ -107,6 +111,7 @@ getDirectoryPaths dirPath = map (dirPath </>) <$> getDirectoryContents dirPath
 
 processFile :: FilePath -> IO ()
 processFile filename = do
+  putStrLn $ "\nProcessing " ++ filename ++ ":"
   parsed <- parseFile filename
   case parsed of
     ParseOk parsed -> analyzeModule parsed
@@ -116,15 +121,9 @@ processFile filename = do
 concatMapM  :: (Monad m) => (a -> m [b]) -> [a] -> m [b]
 concatMapM f = fmap concat . mapM f
 
-defineFlag "v:verbosity" Info (concat ["level of output verbosity (", severityOptions, ")"])
-
 main :: IO ()
 main = do
   args <- $initHFlags "json-autotype -- automatic type and parser generation from JSON"
   if null args
     then processFile "Test.hs"
-    else mapM_ processFile =<< debugM =<< concatMapM subTrees args
-
-debugM list = do print $ unwords list
-                 return          list
-
+    else mapM_ processFile =<< concatMapM subTrees args
