@@ -5,6 +5,7 @@ module Language.Haskell.Homplexity.Message (
     Log
   , Message
   , Severity (..)
+  , severityOptions
   , warn
   , info
   , debug
@@ -33,10 +34,15 @@ data Message = Message { msgSeverity :: Severity
   deriving (Eq)
 
 instance Show Message where
-  showsPrec _ (Message {..}) = shows msgSeverity
-                             . (':':)
-                             . (msgText++)
-                             . ('\n':)
+  showsPrec _ (Message {msgSrc=SrcLoc{..}, ..}) = shows msgSeverity
+                                                . (':':)
+                                                . (srcFilename++)
+                                                . (':':)
+                                                . shows srcLine
+                                                -- . shows srcColumn
+                                                . (':':)
+                                                . (msgText++)
+                                                . ('\n':)
 
 -- | Message severity
 data Severity = Debug
@@ -45,13 +51,9 @@ data Severity = Debug
               | Error
   deriving (Eq, Ord, Read, Show, Enum, Bounded)
 
-{-
-instance Show Severity where
-  showsPrec _ Error   = ("ERROR"  ++)
-  showsPrec _ Warning = ("WARNING"++)
-  showsPrec _ Info    = ("INFO"   ++)
-  showsPrec _ Debug   = ("DEBUG"  ++)
- -}
+-- | String showing all possible values for @Severity@.
+severityOptions :: String
+severityOptions  = unwords $ map show [minBound..(maxBound::Severity)]
 
 instance Lift Severity where
   lift Debug   = [| Debug   |]

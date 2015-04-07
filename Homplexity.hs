@@ -7,6 +7,7 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE ViewPatterns          #-}
 module Main (main) where
 
 import Data.Data
@@ -43,31 +44,24 @@ numFunctionsMsg = "More than 20 functions per module"
 numFunctionsSeverity = Warning
  -}
 
-type Message = ShowS
-
---measureAll  :: (CodeFragment c, Metric m c) => (Program -> [c]) -> Proxy m -> Proxy c -> Program -> Log
+measureAll  :: (CodeFragment c, Metric m c) => Severity -> (Program -> [c]) -> Proxy m -> Proxy c -> Program -> Log
 measureAll severity generator metricType fragType = mconcat
                                                   . map       (showMeasure severity metricType fragType)
                                                   . generator
 
---measureTopOccurs  :: (CodeFragment c, Metric m c) => Proxy m -> Proxy c -> Program -> Log
+measureTopOccurs  :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> Program -> Log
 measureTopOccurs severity = measureAll severity occurs
 
---measureAllOccurs  :: (CodeFragment c, Metric m c) => Proxy m -> Proxy c -> Program -> Log
+measureAllOccurs  :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> Program -> Log
 measureAllOccurs severity = measureAll severity allOccurs
 
---showMeasure :: (CodeFragment c, Metric m c) => Proxy m -> Proxy c -> c -> Log
+showMeasure :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> c -> Log
 showMeasure severity metricType fragType c = message severity (        fragmentLoc  c)
                                                               (concat [fragmentName c
                                                                       ," has "
                                                                       ,show result   ])
   where
     result = measureFor metricType fragType c
-
---          $
-                             --map ($ prog) tests
---  where
---    a `merge` b = a . ('\n':) $ b
 
 metrics :: [Program -> Log]
 metrics  = [measureTopOccurs Info  locT        programT,
@@ -77,49 +71,60 @@ metrics  = [measureTopOccurs Info  locT        programT,
 
 report = hPutStrLn stderr
 
-processFiles :: [FilePath] -> IO ()
-processFiles filenames = do
-  log <- mconcat metrics <$> parseFiles filenames
-  print log
+analyzeModule  = analyzeModules . (:[])
 
-subTrees     :: FilePath -> IO [FilePath]
-subTrees ".." = return []
-subTrees  fp  = do
+analyzeModules = print . mconcat metrics . Program
+
+-- | Find all Haskell source files within a given path.
+-- Recurse down the tree, if the path points to directory.
+subTrees          :: FilePath -> IO [FilePath]
+-- Recurse to . or .. only at the first level, to prevent looping:
+subTrees dir      | dir `elem` [".", ".."] = concatMapM subTrees' =<< getDirectoryPaths dir
+subTrees filepath                          = do
+  isDir <- doesDirectoryExist filepath
+  if isDir
+     then subTrees' filepath
+     else do
+       exists <- doesFileExist filepath
+       if exists
+          then    return [filepath]
+          else do report $ "File does not exist: " ++ filepath
+                  return []
+
+-- | Return filepath if normal file, or recurse down the directory if it is not special directory ("." or "..")
+subTrees'                       :: FilePath -> IO [FilePath]
+subTrees' (takeFileName -> "..") = return []
+subTrees' (takeFileName -> "." ) = return []
+subTrees'  fp                    = do
   isDir <- doesDirectoryExist fp
   if isDir
-    then concatMapM subTrees =<< getDirectoryPaths fp
-    else return [fp]
+    then concatMapM subTrees' =<< getDirectoryPaths fp
+    else return $ filter (".hs" `isSuffixOf`) [fp]
 
 -- | Get contents of a given directory, and return their full paths.
 getDirectoryPaths        :: FilePath -> IO [FilePath]
-getDirectoryPaths dirPath = map addPrefix <$> (filterM isSourceFileOrDirectory =<< getDirectoryContents dirPath)
-  where
-    isSourceFileOrDirectory fp | ".hs" `isSuffixOf` fp = return True
-                               | otherwise             = doesDirectoryExist fp
-    addPrefix | dirPath == "." =  id
-              | otherwise      = (dirPath </>)
+getDirectoryPaths dirPath = map (dirPath </>) <$> getDirectoryContents dirPath
 
-parseFiles :: [FilePath] -> IO Program
-parseFiles files = (Program . catMaybes) <$> mapM parseAndReportError files
-  where
-    parseAndReportError filename = do
-      parsed <- parseFile filename
-      case parsed of
-        ParseOk r -> do --print r
-                        return $ Just r
-        other     -> do report $ show other
-                        return   Nothing
+processFile :: FilePath -> IO ()
+processFile filename = do
+  parsed <- parseFile filename
+  case parsed of
+    ParseOk parsed -> analyzeModule parsed
+    other          -> report $ show other
 
 -- | Commonly defined function - should be added to base...
 concatMapM  :: (Monad m) => (a -> m [b]) -> [a] -> m [b]
 concatMapM f = fmap concat . mapM f
 
-defineFlag "v:verbosity" Info (concat ["level of output verbosity (", unwords $ map show [minBound..(maxBound::Severity)], ")"])
+defineFlag "v:verbosity" Info (concat ["level of output verbosity (", severityOptions, ")"])
 
 main :: IO ()
 main = do
   args <- $initHFlags "json-autotype -- automatic type and parser generation from JSON"
   if null args
-    then processFiles ["Test.hs"]
-    else processFiles =<< concatMapM subTrees args
+    then processFile "Test.hs"
+    else mapM_ processFile =<< debugM =<< concatMapM subTrees args
+
+debugM list = do print $ unwords list
+                 return          list
 
