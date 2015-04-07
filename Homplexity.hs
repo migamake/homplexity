@@ -137,7 +137,8 @@ processFile filename = do
   parsed <- (do
     putStrLn $ "\nProcessing " ++ filename ++ ":"
     input   <- readFile filename
-    parseModuleWithMode mode <$> runCpphs cppHsOptions filename input)
+    result  <- parseModuleWithMode mode <$> runCpphs cppHsOptions filename input
+    evaluate result)
       `E.catch` handleException (ParseFailed $ noLoc { srcFilename = filename })
   case parsed of
     ParseOk parsed -> do analyzeModule parsed
