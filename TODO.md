@@ -22,3 +22,8 @@
   * Iterable instances for haskell-src-exts (so that there is convenient interface to quickly
 check all source instances within given structure, for example).
   * Lens instances.
+10. Count errors, and show how many files couldn't be parsed.
+11. Treat classes similar to records - limit number of symbols.
+12. Try to guess extra params, or read them from file:
+  * cpphs
+  * LANGUAGE pragmas
