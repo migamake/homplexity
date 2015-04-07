@@ -1,6 +1,7 @@
 {-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Language.Haskell.Homplexity.Metric (
     Metric (..)
@@ -40,12 +41,10 @@ instance Show LOC where
 
 instance (CodeFragment c) => Metric LOC c where
   measure = LOC
-          . length
-          . nub
-          . sort
-          . map ((srcFilename . head) &&& map srcLine)
-          . groupBy ((==) `on` srcFilename)
-          . universeBi
+          . length                          -- total number of lines that contain at least one object with SrcLoc
+          . concatMap (nub . map srcLine)   -- remove duplicate lines within the same file
+          . groupBy ((==) `on` srcFilename) -- group by filename
+          . universeBi                      -- all SrcLoc objects
 
 -- | Convenience function for fixing the @Metric@ type.
 measureAs :: (Metric m c) => Proxy m -> c -> m

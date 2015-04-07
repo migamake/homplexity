@@ -7,6 +7,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE ViewPatterns          #-}
 -- | This module generalizes over types of code fragments
 -- that may need to be iterated upon and measured separately.
 module Language.Haskell.Homplexity.CodeFragment (
@@ -47,7 +48,12 @@ programT  = Proxy
 
 -- * Type aliases for type-based matching of substructures
 -- | Alias for a function declaration
-data Function = Function { functionMatches :: [Match] }
+data Function = Function {
+                  functionNames     :: [String]
+                , functionLocations :: [SrcLoc]
+                , functionRhs       :: [Rhs]
+                , functionBinds     :: [Binds]
+                }
   deriving (Data, Typeable, Show)
 
 -- | Proxy for passing @Function@ type as an argument.
@@ -94,9 +100,24 @@ fragmentLoc =  getPointLoc
 
 instance CodeFragment Function where
   type AST Function     = Decl
-  matchAST (FunBind ms) = Just $ Function ms
-  matchAST  _           = Nothing
-  fragmentName (Function (Match _ theName _ _ _ _:_)) = "function " ++ unName theName
+  matchAST (FunBind matches) = Just $ Function {..}
+    where
+      (functionLocations, (unName <$>) . take 1 -> functionNames, functionRhs, functionBinds) = unzip4 $ map extract matches
+      extract (Match srcLoc name _ _ rhs binds) = (srcLoc, name, rhs, binds)
+  matchAST (PatBind (singleton -> functionLocations) pat
+                    (singleton -> functionRhs      )
+                    (singleton -> functionBinds    )) = Just $ Function {..}
+    where
+      functionNames  = wildcards ++ map unName (universeBi pat)
+      wildcards = catMaybes $ map wildcard $ universeBi pat
+        where
+          wildcard PWildCard = Just    ".."
+          wildcard _         = Nothing
+  matchAST _                                          = Nothing
+  fragmentName (Function {..}) = unwords $ "function":functionNames
+
+singleton :: a -> [a]
+singleton  = (:[])
 
 -- | Direct occurences of given @CodeFragment@ fragment within another structure.
 occurs :: (CodeFragment c, Data from) => from -> [c]

@@ -2,6 +2,7 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE UndecidableInstances       #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Language.Haskell.Homplexity.Cyclomatic(
@@ -16,6 +17,7 @@ import Data.Proxy(Proxy)
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Metric
+import Debug.Trace
 
 type MatchSet = [Match]
 
@@ -32,7 +34,9 @@ instance Show Cyclomatic where
                               . shows cc
 
 instance Metric Cyclomatic Function where
-  measure = Cyclomatic . cyclomatic
+  measure x = tracer . Cyclomatic . cyclomatic $ x
+    where
+      tracer r = r -- trace (concat ["Cyclomatic of:\n", show x, "\nis: ", show r]) r
 
 -- * Cyclomatic complexity
 -- | Computing cyclomatic complexity on a code fragment
@@ -58,6 +62,7 @@ cyclomaticOfExprs = sumOf armCount . universeBi
     armCount (If      {}  ) = 2           - 1
     armCount (MultiIf alts) = length alts - 1
     armCount (LCase   alts) = length alts - 1
+    armCount (Case  _ alts) = length alts - 1
     armCount _              = 0               -- others are ignored
 
 -- | Sum the results of mapping the function over the list.
@@ -73,7 +78,9 @@ depthT :: Proxy Depth
 depthT  = Proxy
 
 instance Metric Depth Function where
-  measure (Function matches) = Depth $ depthOfMatches matches
+  measure f@(Function {..}) = tracer $ Depth $ depthOfMatches functionRhs `max` depthOfMatches functionBinds
+    where
+      tracer r = r --trace (concat ["Depth of:\n", show f, "\nis: ", show r]) r
 
 instance Show Depth where
   showsPrec _ (Depth d) = ("branching depth of "++)
@@ -90,4 +97,5 @@ isDecision             :: Exp -> Bool
 isDecision (If      {}) = True
 isDecision (MultiIf {}) = True 
 isDecision (LCase   {}) = True
+isDecision (Case    {}) = True
 isDecision _            = False

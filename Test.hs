@@ -86,12 +86,15 @@ parseFiles files = (Program . catMaybes) <$> mapM parseAndReportError files
     parseAndReportError filename = do
       parsed <- parseFile "Test.hs"
       case parsed of
-        ParseOk r ->    return $ Just r
+        ParseOk r -> do print r
+                        return $ Just r
         other     -> do report $ show other
                         return   Nothing
 
-main :: IO ()
-main = do
+main = maino
+
+maino :: IO ()
+maino = do
   args <- getArgs
   if null args
     then processFiles ["Test.hs"]
