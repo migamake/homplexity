@@ -10,6 +10,7 @@
 {-# LANGUAGE ViewPatterns          #-}
 module Main (main) where
 
+import Data.Char
 import Data.Data
 import Data.List
 import Data.Maybe
@@ -36,7 +37,8 @@ import HFlags
 
 -- | Maximally permissive list of language extensions.
 myExtensions = map EnableExtension
-               [ScopedTypeVariables, CPP, MultiParamTypeClasses, TemplateHaskell,  RankNTypes, UndecidableInstances,
+               [RecordWildCards,
+                ScopedTypeVariables, CPP, MultiParamTypeClasses, TemplateHaskell,  RankNTypes, UndecidableInstances,
                 FlexibleContexts, KindSignatures, EmptyDataDecls, BangPatterns, ForeignFunctionInterface,
                 Generics, MagicHash, ViewPatterns, PatternGuards, TypeOperators, GADTs, PackageImports,
                 MultiWayIf, SafeImports, ConstraintKinds, TypeFamilies, IncoherentInstances, FunctionalDependencies,
@@ -132,17 +134,51 @@ subTrees'  fp                    = do
 getDirectoryPaths        :: FilePath -> IO [FilePath]
 getDirectoryPaths dirPath = map (dirPath </>) <$> getDirectoryContents dirPath
 
+-- | Describes the comment span, and the way it may be connected to the
+-- source code
+data CommentLink = CommentLink { commentSpan :: SrcSpan
+                               , commentType :: CommentType
+                               }
+  deriving(Eq, Ord, Show) 
+
+-- | Possible link between comment and commented entity.
+data CommentType = CommentsBefore -- ^ May be counted as commenting object that starts just before.
+                 | CommentsInside -- ^ May be counted as commenting object within which it exists.
+                 | CommentsAfter  -- ^ May be counted as commenting object that starts just after.
+  deriving (Eq, Ord, Enum, Show)
+
+-- | Classifies all comments in list, so they can be assigned to declarations later.
+classifyComments :: [Comment] -> [CommentLink]
+classifyComments  = map classifyComment
+  where
+    classifyComment (Comment _ commentSpan (findCommentType -> commentType)) = CommentLink {..}
+
+-- | Finds Haddock markers of which declarations the comment pertains to.
+findCommentType :: String -> CommentType
+findCommentType txt = case find (not . isSpace) txt of
+  Just '^' -> CommentsBefore
+  Just '|' -> CommentsAfter
+  Just '*' -> CommentsInside -- since it comments out the group of declarations, it belongs to the containing object
+  _        -> CommentsInside
+
+-- * Tests for comments
+prop_commentsAfter  txt = findCommentType "  |" == CommentsAfter
+prop_commentsBefore txt = findCommentType "  ^" == CommentsBefore
+prop_commentsGroup  txt = findCommentType "  *" == CommentsInside
+prop_commentsInside txt = findCommentType "  a" == CommentsInside
+
 processFile :: FilePath -> IO Bool
 processFile filename = do
   parsed <- (do
     putStrLn $ "\nProcessing " ++ filename ++ ":"
     input   <- readFile filename
-    result  <- parseModuleWithMode mode <$> runCpphs cppHsOptions filename input
+    result  <- parseModuleWithComments mode <$> runCpphs cppHsOptions filename input
     evaluate result)
       `E.catch` handleException (ParseFailed $ noLoc { srcFilename = filename })
   case parsed of
-    ParseOk parsed -> do analyzeModule parsed
-                         return True
+    ParseOk (parsed, comments) -> do putStrLn $ unlines $ map show $ classifyComments comments
+                                     analyzeModule parsed
+                                     return True
     other          -> do report $ concat ["Cannot parse ", filename, ": ", show other]
                          return False
   where
