@@ -8,54 +8,24 @@
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
+-- | Main module parsing inputs, and running analysis.
 module Main (main) where
 
-import Data.Char
 import Data.Data
 import Data.List
-import Data.Maybe
-import Data.Monoid
-import Data.Proxy
-import Control.Arrow
-import Control.Exception as E
 import Control.Monad
 
 import Language.Haskell.Exts.Syntax
-import Language.Haskell.Exts.SrcLoc
-import Language.Haskell.Exts
-import Language.Haskell.Homplexity.Cyclomatic
-import Language.Haskell.Homplexity.Metric
 import Language.Haskell.Homplexity.CodeFragment
-import Language.Haskell.Homplexity.Comments
+import Language.Haskell.Homplexity.Cyclomatic
 import Language.Haskell.Homplexity.Message
-import Language.Preprocessor.Cpphs
+import Language.Haskell.Homplexity.Metric
+import Language.Haskell.Homplexity.Parse
 import System.Directory
-import System.Environment
 import System.FilePath
 import System.IO
 
 import HFlags
-
--- | Maximally permissive list of language extensions.
-myExtensions = map EnableExtension
-               [RecordWildCards,
-                ScopedTypeVariables, CPP, MultiParamTypeClasses, TemplateHaskell,  RankNTypes, UndecidableInstances,
-                FlexibleContexts, KindSignatures, EmptyDataDecls, BangPatterns, ForeignFunctionInterface,
-                Generics, MagicHash, ViewPatterns, PatternGuards, TypeOperators, GADTs, PackageImports,
-                MultiWayIf, SafeImports, ConstraintKinds, TypeFamilies, IncoherentInstances, FunctionalDependencies,
-                ExistentialQuantification, ImplicitParams, UnicodeSyntax]
-
--- | CppHs options that should be compatible with haskell-src-exts
-cppHsOptions = defaultCpphsOptions {
-                 boolopts = defaultBoolOptions {
-                              macros    = False,
-                              stripEol  = True,
-                              stripC89  = True,
-                              pragma    = False,
-                              hashline  = False,
-                              locations = True -- or False if doesn't compile...
-                            }
-               }
 
 -- * Command line flags
 defineFlag "severity" Info (concat ["level of output verbosity (", severityOptions, ")"])
@@ -99,10 +69,16 @@ metrics  = [measureTopOccurs Info  locT        programT,
             measureTopOccurs Debug depthT      functionT,
             measureTopOccurs Debug cyclomaticT functionT]
 
+-- | Report to standard error output.
+report ::  String -> IO ()
 report = hPutStrLn stderr
 
+-- | Analyze single source module.
+analyzeModule ::  Module -> IO ()
 analyzeModule  = analyzeModules . (:[])
 
+-- | Analyze a set of modules.
+analyzeModules ::  [Module] -> IO ()
 analyzeModules = putStr . concatMap show . extract flags_severity . mconcat metrics . Program
 
 -- | Find all Haskell source files within a given path.
@@ -135,30 +111,14 @@ subTrees'  fp                    = do
 getDirectoryPaths        :: FilePath -> IO [FilePath]
 getDirectoryPaths dirPath = map (dirPath </>) <$> getDirectoryContents dirPath
 
-processFile :: FilePath -> IO Bool
-processFile filename = do
-  parsed <- (do
-    putStrLn $ "\nProcessing " ++ filename ++ ":"
-    input   <- readFile filename
-    result  <- parseModuleWithComments mode <$> runCpphs cppHsOptions filename input
-    evaluate result)
-      `E.catch` handleException (ParseFailed $ noLoc { srcFilename = filename })
-  case parsed of
-    ParseOk (parsed, comments) -> do putStrLn $ unlines $ map show $ classifyComments comments
-                                     analyzeModule parsed
-                                     return True
-    other          -> do report $ concat ["Cannot parse ", filename, ": ", show other]
-                         return False
-  where
-    handleException helper (e :: SomeException) = return $ helper $ show e
-    mode = ParseMode {
-             parseFilename         = filename,
-             baseLanguage          = Haskell2010,
-             extensions            = myExtensions,
-             ignoreLanguagePragmas = False,
-             ignoreLinePragmas     = False,
-             fixities              = Just preludeFixities
-           }
+-- | Process each separate input file.
+processFile ::  FilePath -> IO Bool
+processFile filepath = do src <- parseSource filepath
+                          case src of
+                            Left  msg              -> do report $ show msg
+                                                         return False
+                            Right (ast, _comments) -> do analyzeModule ast
+                                                         return True
 
 -- | Commonly defined function - should be added to base...
 concatMapM  :: (Monad m) => (a -> m [b]) -> [a] -> m [b]

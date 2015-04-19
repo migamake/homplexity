@@ -7,6 +7,7 @@ module Language.Haskell.Homplexity.Message (
   , Message
   , Severity (..)
   , severityOptions
+  , critical
   , warn
   , info
   , debug
@@ -59,7 +60,7 @@ instance Show Message where
 data Severity = Debug
               | Info
               | Warning
-              | Error
+              | Critical
   deriving (Eq, Ord, Read, Show, Enum, Bounded)
 
 instance NFData Severity where
@@ -70,22 +71,22 @@ severityOptions :: String
 severityOptions  = unwords $ map show [minBound..(maxBound::Severity)]
 
 instance Lift Severity where
-  lift Debug   = [| Debug   |]
-  lift Info    = [| Info    |]
-  lift Warning = [| Warning |]
-  lift Error   = [| Error   |]
+  lift Debug    = [| Debug    |]
+  lift Info     = [| Info     |]
+  lift Warning  = [| Warning  |]
+  lift Critical = [| Critical |]
 
 instance FlagType Severity where
   defineFlag n v = defineEQFlag n [| v :: Severity |] "{Debug|Info|Warning|Error}"
 
 -- | Helper for logging a message with given severity.
 message ::  Severity -> SrcLoc -> String -> Log
-message msgSeverity msgSrc msgText = Log $ Seq.singleton $ Message {..}
+message msgSeverity msgSrc msgText = Log $ Seq.singleton Message {..}
 
 -- | TODO: automatic inference of the srcLine 
 -- | Log a certain error
-error :: SrcLoc -> String -> Log
-error  = message Error
+critical :: SrcLoc -> String -> Log
+critical  = message Critical
 
 -- | Log a warning
 warn  ::  SrcLoc -> String -> Log
