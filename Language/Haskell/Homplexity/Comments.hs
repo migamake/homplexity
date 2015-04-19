@@ -46,3 +46,10 @@ findCommentType txt = case find (not . isSpace) txt of
   Just '*' -> CommentsInside -- since it comments out the group of declarations, it belongs to the containing object
   _        -> CommentsInside
 
+-- * Tests for comments
+prop_commentsAfter :: Bool
+prop_commentsAfter  = findCommentType "  |" == CommentsAfter
+prop_commentsBefore = findCommentType "  ^" == CommentsBefore
+prop_commentsGroup  = findCommentType "  *" == CommentsInside
+prop_commentsInside = findCommentType "  a" == CommentsInside
+
