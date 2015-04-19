@@ -1,0 +1,72 @@
+language: haskell
+
+matrix:
+  allow_failures:
+    - env: GHCVER=7.8.4  CABALVER=1.18 COVOPT=--enable-library-coverage
+    - env: GHCVER=7.6.3  CABALVER=1.18 COVOPT=--enable-library-coverage
+    #- env: GHCVER=head   CABALVER=head COVOPT=--enable-coverage
+
+env:
+ - GHCVER=7.10.1 CABALVER=1.22 COVOPT=--enable-coverage
+ - GHCVER=7.8.3  CABALVER=1.18 COVOPT=--enable-library-coverage
+ - GHCVER=7.6.3  CABALVER=1.18 COVOPT=--enable-library-coverage
+ #- GHCVER=head   CABALVER=head COVOPT=--enable-coverage
+
+before_install:
+ - sudo add-apt-repository -y ppa:hvr/ghc
+ - travis_retry sudo apt-get update
+ - travis_retry sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER
+ - export PATH=/opt/ghc/$GHCVER/bin:$PATH
+ - echo "Check version again"
+ - ghc   --version
+ - cabal --version
+
+install:
+  - travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests
+  #- travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests ${COVOPT}
+
+#script:
+# - bash testit.sh
+# - echo "All done."
+
+script:
+  # -v2 provides useful information for debugging
+  #- cabal-$CABALVER configure --enable-tests ${COVOPT} --enable-benchmarks -v2
+  - cabal-$CABALVER configure --enable-tests --enable-benchmarks -v2
+
+  # this builds all libraries and executables
+  # (including tests/benchmarks)
+  - cabal-$CABALVER build
+  - find . -iname '*.tix'
+  - find . -iname '*.mix'
+
+  #- cabal-$CABALVER test --keep-tix-files
+  - cabal-$CABALVER test
+  - find . -iname '*.tix'
+
+  - bash testit.sh
+  - echo "Unit tests successful!"
+
+  - cabal-$CABALVER check
+
+  # tests that a source-distribution can be generated
+  - cabal-$CABALVER sdist
+
+  # check that the generated source-distribution can be built & installed
+  - export SRC_TGZ=$(cabal info . | awk '{print $2 ".tar.gz";exit}') ;
+    cd dist/;
+    if [ -f "$SRC_TGZ" ]; then
+       cabal install "$SRC_TGZ";
+    else
+       echo "expected '$SRC_TGZ' not found";
+       exit 1;
+    fi
+  - echo ${PWD}
+
+#after_script:
+#  - echo ${PWD}
+#  - find dist -iname '*.tix'
+#  - travis_retry cabal install codecov-haskell hpc-coveralls
+#  - codecov-haskell                               json-autotype-random-test json-autotype-qc-test 
+#  - hpc-coveralls   --repo-token ${COVERALLS_KEY} json-autotype-random-test json-autotype-qc-test
+#
