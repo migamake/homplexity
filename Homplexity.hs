@@ -44,30 +44,58 @@ numFunctionsSeverity = Warning
  -}
 
 -- * Showing metric measurements
-measureAll  :: (CodeFragment c, Metric m c) => Severity -> (Program -> [c]) -> Proxy m -> Proxy c -> Program -> Log
-measureAll severity generator metricType fragType = mconcat
-                                                  . map       (showMeasure severity metricType fragType)
-                                                  . generator
+--measureAll  :: (CodeFragment c, Metric m c) => Severity -> (Program -> [c]) -> Proxy m -> Proxy c -> Program -> Log
+measureAll :: Metric m c =>Assessment m -> (a -> [c]) -> Proxy m -> Proxy c -> a -> Log
+measureAll assess generator metricType fragType = mconcat
+                                                . map       (warnOfMeasure assess metricType fragType)
+                                                . generator
 
-measureTopOccurs  :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> Program -> Log
-measureTopOccurs severity = measureAll severity occurs
+--measureTopOccurs  :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> Program -> Log
+measureTopOccurs :: (Data from, Metric m c) =>Assessment m -> Proxy m -> Proxy c -> from -> Log
+measureTopOccurs assess = measureAll assess occurs
 
-measureAllOccurs  :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> Program -> Log
-measureAllOccurs severity = measureAll severity allOccurs
+--measureAllOccurs  :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> Program -> Log
+measureAllOccurs :: (Data from, Metric m c) =>Assessment m -> Proxy m -> Proxy c -> from -> Log
+measureAllOccurs assess = measureAll assess allOccurs
 
-showMeasure :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> c -> Log
-showMeasure severity metricType fragType c = message severity (        fragmentLoc  c )
-                                                              (concat [fragmentName c
-                                                                      ," has "
-                                                                      ,show result   ])
+type Assessment m = m -> (Severity, String)
+
+warnOfMeasure :: (CodeFragment c, Metric m c) => Assessment m -> Proxy m -> Proxy c -> c -> Log
+warnOfMeasure assess metricType fragType c = message  severity
+                                                     (        fragmentLoc  c )
+                                                     (unwords [fragmentName c
+                                                              ,"has"
+                                                              ,show result
+                                                              ,recommendation])
   where
+    (severity, recommendation) = assess result
     result = measureFor metricType fragType c
 
+assessFunctionLength :: Assessment LOC
+assessFunctionLength lines | lines > 20 = (Warning,  "should be kept below 20 lines of code." )
+                | lines > 40 = (Critical, "this function exceeds 50 lines of code.")
+                | otherwise  = (Info,     ""                                       )
+
+assessModuleLength :: Assessment LOC
+assessModuleLength lines | lines > 500  = (Warning,  "should be kept below 500 lines of code."  )
+                         | lines > 3000 = (Critical, "this function exceeds 3000 lines of code.")
+                         | otherwise    = (Info,     ""                                         )
+
+assessFunctionDepth :: Assessment Depth
+assessFunctionDepth depth | depth > 4 = (Warning, "should have no more than four nested conditionals"    )
+                          | depth > 8 = (Warning, "should never exceed 8 nesting levels for conditionals")
+                          | otherwise = (Info,    ""                                                     )
+
+assessFunctionCC :: Assessment Cyclomatic
+assessFunctionCC cy | cy > 20   = (Warning, "should not exceed 20"  )
+                    | cy > 50   = (Warning, "should never exceed 50")
+                    | otherwise = (Info,    ""                      )
+
 metrics :: [Program -> Log]
-metrics  = [measureTopOccurs Info  locT        programT,
-            measureTopOccurs Debug locT        functionT,
-            measureTopOccurs Debug depthT      functionT,
-            measureTopOccurs Debug cyclomaticT functionT]
+metrics  = [measureTopOccurs assessModuleLength   locT        programT ,
+            measureTopOccurs assessFunctionLength locT        functionT,
+            measureTopOccurs assessFunctionDepth  depthT      functionT,
+            measureTopOccurs assessFunctionCC     cyclomaticT functionT]
 
 -- | Report to standard error output.
 report ::  String -> IO ()
@@ -124,11 +152,14 @@ processFile filepath = do src <- parseSource filepath
 concatMapM  :: (Monad m) => (a -> m [b]) -> [a] -> m [b]
 concatMapM f = fmap concat . mapM f
 
+testFilename :: FilePath
+testFilename = "Homplexity.hs"
+
 main :: IO ()
 main = do
   args <- $initHFlags "json-autotype -- automatic type and parser generation from JSON"
   if null args
-    then    void $ processFile "Test.hs"
+    then    void $ processFile testFilename
     else do sums <- mapM processFile =<< concatMapM subTrees args
             putStrLn $ unwords ["Correctly parsed", show $ length $ filter id sums,
                                 "out of",           show $ length             sums,

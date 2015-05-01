@@ -5,6 +5,7 @@
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE UndecidableInstances       #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+-- | Computing cyclomatic complexity and branching depth.
 module Language.Haskell.Homplexity.Cyclomatic(
     Cyclomatic
   , cyclomaticT
@@ -21,6 +22,7 @@ import Debug.Trace
 
 type MatchSet = [Match]
 
+-- * Cyclomatic complexity
 -- | Represents cyclomatic complexity
 newtype Cyclomatic = Cyclomatic { unCyclo :: Int }
   deriving (Eq, Ord, Enum, Num, Real, Integral)
@@ -38,7 +40,6 @@ instance Metric Cyclomatic Function where
     where
       tracer r = r -- trace (concat ["Cyclomatic of:\n", show x, "\nis: ", show r]) r
 
--- * Cyclomatic complexity
 -- | Computing cyclomatic complexity on a code fragment
 cyclomatic :: Data from => from -> Int
 cyclomatic x = cyclomaticOfMatches x
@@ -66,6 +67,7 @@ cyclomaticOfExprs = sumOf armCount . universeBi
     armCount (Case  _ alts) = length alts - 1
     armCount _              = 0               -- others are ignored
 
+-- * Decision depth
 -- | Sum the results of mapping the function over the list.
 maxOf :: (a -> Int) -> [a] -> Int
 maxOf f = maximum . (0:). map f
@@ -79,24 +81,27 @@ depthT :: Proxy Depth
 depthT  = Proxy
 
 instance Metric Depth Function where
-  measure f@(Function {..}) = tracer $ Depth $ depthOfMatches functionRhs `max` depthOfMatches functionBinds
-    where
-      tracer r = r --trace (concat ["Depth of:\n", show f, "\nis: ", show r]) r
+  measure f@(Function {..}) = Depth $ depthOfMatches functionRhs `max` depthOfMatches functionBinds
 
 instance Show Depth where
   showsPrec _ (Depth d) = ("branching depth of "++)
                         .  shows d
 
+-- | Depth of branching within @Exp@ression.
+depthOfExpr :: Exp -> Int
+depthOfExpr x = fromEnum (isDecision x)+maxOf depthOfExpr (children x)
+
+-- | Helper function to compute depth of branching within @case@ expression match.
+depthOfMatches ::  Data from => [from] -> Int
 depthOfMatches []   = 0 -- Should never happen
 depthOfMatches [m ] =   maxOf depthOfExpr           (childrenBi m )
 depthOfMatches  ms  = 1+maxOf depthOfExpr (concatMap childrenBi ms)
 
-depthOfExpr :: Exp -> Int
-depthOfExpr x = fromEnum (isDecision x)+maxOf depthOfExpr (children x)
-
+-- | Check whether given @Exp@ression node is a decision node (conditional branch.)
 isDecision             :: Exp -> Bool
 isDecision (If      {}) = True
 isDecision (MultiIf {}) = True 
 isDecision (LCase   {}) = True
 isDecision (Case    {}) = True
 isDecision _            = False
+

@@ -68,8 +68,7 @@ parseSource filename = do
     evaluate result)
       `E.catch` handleException (ParseFailed thisFileLoc)
   case parsed of
-    ParseOk (parsed, comments) -> do putStrLn $ unlines $ map show $ classifyComments comments
-                                     -- analyzeModule parsed
+    ParseOk (parsed, comments) ->    --putStrLn $ unlines $ map show $ classifyComments comments
                                      return $ Right (parsed, classifyComments comments)
     ParseFailed loc msg        ->    return $ Left $ critical loc msg
   where
