@@ -1,4 +1,3 @@
-{-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE DeriveDataTypeable    #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
@@ -100,22 +99,23 @@ fragmentLoc =  getPointLoc
 
 instance CodeFragment Function where
   type AST Function     = Decl
-  matchAST (FunBind matches) = Just $ Function {..}
+  matchAST (FunBind matches) = Just Function {..}
     where
       (functionLocations, (unName <$>) . take 1 -> functionNames, functionRhs, functionBinds) = unzip4 $ map extract matches
       extract (Match srcLoc name _ _ rhs binds) = (srcLoc, name, rhs, binds)
   matchAST (PatBind (singleton -> functionLocations) pat
                     (singleton -> functionRhs      )
-                    (singleton -> functionBinds    )) = Just $ Function {..}
+                    (singleton -> functionBinds    )) = Just Function {..}
     where
       functionNames  = wildcards ++ map unName (universeBi pat)
-      wildcards = catMaybes $ map wildcard $ universeBi pat
+      wildcards = mapMaybe wildcard $ universeBi pat
         where
           wildcard PWildCard = Just    ".."
           wildcard _         = Nothing
   matchAST _                                          = Nothing
   fragmentName (Function {..}) = unwords $ "function":functionNames
 
+-- | Make a single element list.
 singleton :: a -> [a]
 singleton  = (:[])
 
@@ -139,7 +139,7 @@ instance CodeFragment Module where
 
 instance CodeFragment TypeSignature where
   type AST TypeSignature = Decl
-  matchAST (TypeSig loc identifiers theType) = Just $ TypeSignature {..}
+  matchAST (TypeSig loc identifiers theType) = Just TypeSignature {..}
   matchAST  _                                = Nothing
   fragmentName (TypeSignature {..}) = "type signature for " ++ intercalate ", " (map unName identifiers)
 
