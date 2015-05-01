@@ -23,6 +23,7 @@ before_install:
 
 install:
   - travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests
+  - travis_retry cabal-$CABALVER install happy
   #- travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests ${COVOPT}
 
 #script:
