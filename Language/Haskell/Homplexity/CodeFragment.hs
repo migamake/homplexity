@@ -15,6 +15,8 @@ module Language.Haskell.Homplexity.CodeFragment (
   , allOccurs
   , Program      (..)
   , programT
+  , Module       (..)
+  , moduleT
   , Function     (..)
   , functionT
   , TypeSignature(..)
@@ -136,6 +138,10 @@ instance CodeFragment Module where
   type AST Module = Module
   matchAST = Just 
   fragmentName (Module _ (ModuleName theName) _ _ _ _ _) = "module " ++ theName
+
+-- | Proxy for passing @Module@ type as an argument.
+moduleT :: Proxy Module
+moduleT  = Proxy
 
 instance CodeFragment TypeSignature where
   type AST TypeSignature = Decl

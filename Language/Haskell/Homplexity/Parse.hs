@@ -34,7 +34,7 @@ import HFlags
 
 -- | Maximally permissive list of language extensions.
 myExtensions ::  [Extension]
-myExtensions = map EnableExtension
+myExtensions = EnableExtension `map`
                [RecordWildCards,
                 ScopedTypeVariables, CPP, MultiParamTypeClasses, TemplateHaskell,  RankNTypes, UndecidableInstances,
                 FlexibleContexts, KindSignatures, EmptyDataDecls, BangPatterns, ForeignFunctionInterface,

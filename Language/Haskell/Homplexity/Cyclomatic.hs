@@ -10,7 +10,11 @@ module Language.Haskell.Homplexity.Cyclomatic(
     Cyclomatic
   , cyclomaticT
   , Depth
-  , depthT) where
+  , depthT
+  , ConDepth
+  , conDepthT
+  , NumFunArgs
+  , numFunArgsT) where
 
 import Data.Data
 import Data.Generics.Uniplate.Data
@@ -36,9 +40,7 @@ instance Show Cyclomatic where
                               . shows cc
 
 instance Metric Cyclomatic Function where
-  measure x = tracer . Cyclomatic . cyclomatic $ x
-    where
-      tracer r = r -- trace (concat ["Cyclomatic of:\n", show x, "\nis: ", show r]) r
+  measure x = Cyclomatic . cyclomatic $ x
 
 -- | Computing cyclomatic complexity on a code fragment
 cyclomatic :: Data from => from -> Int
@@ -104,4 +106,37 @@ isDecision (MultiIf {}) = True
 isDecision (LCase   {}) = True
 isDecision (Case    {}) = True
 isDecision _            = False
+
+-- * Depth of type constructor nesting
+newtype ConDepth = ConDepth { unConDepth :: Int }
+  deriving (Eq, Ord, Enum, Num, Real, Integral)
+
+conDepthT :: Proxy ConDepth
+conDepthT  = Proxy
+
+instance Show ConDepth where
+  showsPrec _ (ConDepth cc) = ("type constructor nesting of " ++)
+                            . shows cc
+
+instance Metric ConDepth TypeSignature where
+  measure = ConDepth . conDepth
+
+conDepth = undefined
+
+-- * Number of function arguments
+newtype NumFunArgs = NumFunArgs { unNumFunArgs :: Int }
+  deriving (Eq, Ord, Enum, Num, Real, Integral)
+
+numFunArgsT :: Proxy NumFunArgs
+numFunArgsT  = Proxy
+
+instance Show NumFunArgs where
+  showsPrec _ (NumFunArgs cc) = ("function has " ++)
+                              .  shows cc
+                              . (" arguments"    ++)
+
+instance Metric NumFunArgs TypeSignature where
+  measure = NumFunArgs . numFunArgs
+
+numFunArgs = undefined
 

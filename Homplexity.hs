@@ -92,7 +92,7 @@ assessFunctionCC cy | cy > 20   = (Warning, "should not exceed 20"  )
                     | otherwise = (Info,    ""                      )
 
 metrics :: [Program -> Log]
-metrics  = [measureTopOccurs assessModuleLength   locT        programT ,
+metrics  = [measureTopOccurs assessModuleLength   locT        moduleT ,
             measureTopOccurs assessFunctionLength locT        functionT,
             measureTopOccurs assessFunctionDepth  depthT      functionT,
             measureTopOccurs assessFunctionCC     cyclomaticT functionT]
