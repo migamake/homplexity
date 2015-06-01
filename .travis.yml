@@ -23,9 +23,9 @@ before_install:
   - happy --version
 
 install:
-  - travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests
   - travis_retry cabal-$CABALVER install happy-1.19.4
   - happy --version
+  - travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests
   #- travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests ${COVOPT}
 
 #script:
