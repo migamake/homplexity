@@ -13,17 +13,19 @@ env:
  - GHCVER=head   CABALVER=head COVOPT=--enable-coverage
 
 before_install:
- - sudo add-apt-repository -y ppa:hvr/ghc
- - travis_retry sudo apt-get update
- - travis_retry sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER
- - export PATH=/opt/ghc/$GHCVER/bin:$PATH
- - echo "Check version again"
- - ghc   --version
- - cabal --version
+  - sudo add-apt-repository -y ppa:hvr/ghc
+  - travis_retry sudo apt-get update
+  - travis_retry sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER
+  - export PATH=/opt/ghc/$GHCVER/bin:$PATH
+  - echo "Check version again"
+  - ghc   --version
+  - cabal --version
+  - happy --version
 
 install:
   - travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests
-  - travis_retry cabal-$CABALVER install happy
+  - travis_retry cabal-$CABALVER install happy 1.19.4
+  - happy --version
   #- travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests ${COVOPT}
 
 #script:
