@@ -2,15 +2,15 @@ language: haskell
 
 matrix:
   allow_failures:
-    - env: GHCVER=7.8.4  CABALVER=1.18 COVOPT=--enable-library-coverage
-    #- env: GHCVER=7.6.3  CABALVER=1.18 COVOPT=--enable-library-coverage
     - env: GHCVER=head   CABALVER=head COVOPT=--enable-coverage
+    #- env: GHCVER=7.8.4  CABALVER=1.18 COVOPT=--enable-library-coverage
+    #- env: GHCVER=7.6.3  CABALVER=1.18 COVOPT=--enable-library-coverage
 
 env:
   - GHCVER=7.10.1 CABALVER=1.22 COVOPT=--enable-coverage
-  - GHCVER=7.8.4  CABALVER=1.18 COVOPT=--enable-library-coverage
-  #- GHCVER=7.6.3  CABALVER=1.18 COVOPT=--enable-library-coverage
   - GHCVER=head   CABALVER=head COVOPT=--enable-coverage
+  #- GHCVER=7.8.4  CABALVER=1.18 COVOPT=--enable-library-coverage
+  #- GHCVER=7.6.3  CABALVER=1.18 COVOPT=--enable-library-coverage
 
 before_install:
   - sudo add-apt-repository -y ppa:hvr/ghc
@@ -21,9 +21,7 @@ before_install:
   - echo "Check version again"
   - ghc   --version
   - cabal --version
-  - dpkg --listfiles happy-1.19.4
   - happy --version
-  - apt-cache policy happy
 
 install:
   - travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests
@@ -54,6 +52,7 @@ script:
 
   # tests that a source-distribution can be generated
   - cabal-$CABALVER sdist
+  - echo "Package distribution built."
 
   # check that the generated source-distribution can be built & installed
   - export SRC_TGZ=$(cabal info . | awk '{print $2 ".tar.gz";exit}') ;
@@ -64,7 +63,7 @@ script:
        echo "expected '$SRC_TGZ' not found";
        exit 1;
     fi
-  - echo ${PWD}
+  - echo "Package built successfully!"
 
 #after_script:
 #  - echo ${PWD}
