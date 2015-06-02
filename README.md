@@ -10,7 +10,7 @@ and [cppHs](http://hackage.haskell.org/package/cppHs).
 [![Hackage](https://budueba.com/hackage/homplexity)](https://hackage.haskell.org/package/homplexity)
 [![Hackage Dependencies](https://img.shields.io/hackage-deps/v/homplexity.svg?style=flat)](http://packdeps.haskellers.com/feed?needle=homplexity)
 
-Details on official releases _will_ ultimately come to [Hackage](https://hackage.haskell.org/package/homplexity)
+Official releases are on [Hackage](https://hackage.haskell.org/package/homplexity)
 
 USAGE:
 ======
