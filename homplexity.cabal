@@ -14,7 +14,7 @@ description:         Homplexity aims to measure code complexity,
 
                       * too few comments
 
-homepage:            https://github.com/mjgajda/homplexity
+homepage:            https://github.com/mgajda/homplexity
 license:             BSD3
 license-file:        LICENSE
 author:              Michal J. Gajda
