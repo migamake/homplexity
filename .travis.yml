@@ -17,14 +17,11 @@ before_install:
   - travis_retry sudo apt-get update
   - travis_retry sudo apt-get purge happy 
   - travis_retry sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER happy-1.19.4
-  - export PATH=/opt/ghc/$GHCVER/bin:$PATH:$PWD
+  - export PATH=/opt/ghc/$GHCVER/bin:/opt/happy/1.19.4/bin/happy:$PATH
   - echo "Check version again"
   - ghc   --version
   - cabal --version
   - dpkg --listfiles happy-1.19.4
-  - happy-1.19.4 --version
-  - echo $PWD
-  - ln -s `which happy-*` $PWD/happy
   - happy --version
   - apt-cache policy happy
 
