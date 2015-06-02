@@ -2,4 +2,4 @@
 
 EXECUTABLE=dist/build/homplexity/homplexity
 
-${EXECUTABLE} `find . -iname '*.hs'`
+${EXECUTABLE} --severity=Warning `find . -iname '*.hs'`
