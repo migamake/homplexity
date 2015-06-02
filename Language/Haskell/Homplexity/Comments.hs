@@ -9,7 +9,7 @@ module Language.Haskell.Homplexity.Comments (
     CommentLink      (..)
   , CommentType      (..)
   , classifyComments
-  , findCommentType -- ^ exposed for testing only
+  , findCommentType -- exposed for testing only
   ) where
 
 import Data.Char

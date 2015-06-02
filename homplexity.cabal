@@ -7,9 +7,13 @@ synopsis:            Haskell code quality tool
 description:         Homplexity aims to measure code complexity,
                      warning about fragments that might have higher defect probability
                      due to bad coding style on-the-large:
+
                       * too large functions
+
                       * too deeply nested conditions
+
                       * too few comments
+
 homepage:            https://github.com/mjgajda/homplexity
 license:             BSD3
 license-file:        LICENSE
