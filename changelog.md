@@ -1,6 +1,6 @@
 Changelog
 =========
-    0.3.0.0  Jun 2015
+    0.4.0.0  Jun 2015
 
         * Added number of arguments, and constructor depth.
 
