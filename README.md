@@ -23,3 +23,4 @@ with your Haskell source
 
 Patches and suggestions are welcome.
 
+You may run `homplexity --help` to see options.
