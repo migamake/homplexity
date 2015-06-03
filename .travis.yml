@@ -26,10 +26,6 @@ before_install:
 install:
   - travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests
 
-#script:
-# - bash testit.sh
-# - echo "All done."
-
 script:
   # -v2 provides useful information for debugging
   #- cabal-$CABALVER configure --enable-tests ${COVOPT} --enable-benchmarks -v2
@@ -38,8 +34,8 @@ script:
   # this builds all libraries and executables
   # (including tests/benchmarks)
   - cabal-$CABALVER build
-  - find . -iname '*.tix'
-  - find . -iname '*.mix'
+  #- find . -iname '*.tix'
+  #- find . -iname '*.mix'
 
   #- cabal-$CABALVER test --keep-tix-files
   - cabal-$CABALVER test

@@ -2,6 +2,11 @@ Changelog
 =========
     0.4.0.0  Jun 2015
 
+        * Corrected embarassing missing module.
+        * Better documentation, cleanup.
+
+    0.4.0.0  Jun 2015
+
         * Added number of arguments, and constructor depth.
 
     0.3.0.0  Jun 2015
