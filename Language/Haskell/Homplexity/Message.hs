@@ -20,7 +20,7 @@ import Control.DeepSeq
 import Data.Function                                        (on)
 import Data.Sequence                            as Seq
 import Data.Foldable                            as Foldable
-import Language.Haskell.Homplexity.CodeFragment
+--import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Exts
 import Language.Haskell.TH.Syntax                           (Lift(..))
 import HFlags
@@ -64,7 +64,7 @@ data Severity = Debug
   deriving (Eq, Ord, Read, Show, Enum, Bounded)
 
 instance NFData Severity where
-  rnf !a = ()
+  rnf !_a = ()
 
 -- | String showing all possible values for @Severity@.
 severityOptions :: String

@@ -1,5 +1,5 @@
-{-# LANGUAGE RecordWildCards   #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE RecordWildCards   #-}
 -- | Showing references to slices of code
 module Language.Haskell.Homplexity.SrcSlice (
     SrcSlice
@@ -15,28 +15,34 @@ module Language.Haskell.Homplexity.SrcSlice (
 
 import Data.Data
 import Data.Generics.Uniplate.Data
-import Data.List
 import Control.Arrow
 import Control.Exception (assert)
 import Language.Haskell.Exts.Syntax
-import Language.Haskell.Exts
 import Language.Haskell.Exts.SrcLoc
 
 -- * Slice of code
 type SrcSlice  = SrcSpan
+
+sliceFilename :: SrcSpan -> String
 sliceFilename  = srcSpanFilename
+
+sliceFirstLine :: SrcSpan -> Int
 sliceFirstLine = srcSpanStartLine
+
+sliceLastLine :: SrcSpan -> Int
 sliceLastLine  = srcSpanEndLine
 
 srcLoc :: (Data code, Show code) => code -> SrcLoc
 srcLoc code = checkHead  $
               universeBi   code
   where
-    msg              = "Cannot find SrcLoc in the code fragment: " ++ show code
-    checkHead []     = error msg
-    checkHead (e:es) = e
+    msg             = "Cannot find SrcLoc in the code fragment: " ++ show code
+    checkHead []    = error msg
+    checkHead (e:_) = e
 
 -- | Compute the slice of code that given source fragment is in (for naming)
+srcSlice     :: (Data a, Show a)
+             => a -> SrcSpan
 srcSlice code = mergeSrcLocs
               . checkNonEmpty
               . universeBi    $ code

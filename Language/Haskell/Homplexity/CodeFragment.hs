@@ -10,13 +10,14 @@
 -- | This module generalizes over types of code fragments
 -- that may need to be iterated upon and measured separately.
 module Language.Haskell.Homplexity.CodeFragment (
-    CodeFragment(fragmentName, fragmentSlice)
+    CodeFragment (fragmentName, fragmentSlice)
   , occurs
   , occursOf
   , allOccurs
   , allOccursOf
   , Program      (..)
   , programT
+  , program
   , Module       (..)
   , moduleT
   , Function     (..)

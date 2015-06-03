@@ -38,7 +38,7 @@ analyzeModule  = analyzeModules . (:[])
 
 -- | Analyze a set of modules.
 analyzeModules ::  [Module] -> IO ()
-analyzeModules = putStr . concatMap show . extract flags_severity . mconcat metrics . Program
+analyzeModules = putStr . concatMap show . extract flags_severity . mconcat metrics . program
 
 -- | Find all Haskell source files within a given path.
 -- Recurse down the tree, if the path points to directory.
