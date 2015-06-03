@@ -41,8 +41,8 @@ script:
   - cabal-$CABALVER test
   - find . -iname '*.tix'
 
-  - bash testit.sh
-  - echo "Unit tests successful!"
+  #- bash testit.sh
+  #- echo "Unit tests successful!"
 
   - cabal-$CABALVER check
 
