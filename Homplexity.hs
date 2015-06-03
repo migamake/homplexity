@@ -29,7 +29,6 @@ import HFlags
 
 -- * Command line flags
 defineFlag "severity" Info (concat ["level of output verbosity (", severityOptions, ")"])
-defineFlag "fakeFlag" Info "this flag is fake"
 
 {-
 numFunctions = length
@@ -71,25 +70,54 @@ warnOfMeasure assess metricType fragType c = message  severity
     (severity, recommendation) = assess result
     result = measureFor metricType fragType c
 
+defineFlag "functionLinesWarning"  (20 :: Int) "issue warning when function exceeds this number of lines"
+defineFlag "functionLinesCritical" (40 :: Int) "issue critical when function exceeds this number of lines"
+
 assessFunctionLength :: Assessment LOC
-assessFunctionLength lines | lines > 20 = (Warning,  "should be kept below 20 lines of code." )
-                | lines > 40 = (Critical, "this function exceeds 50 lines of code.")
-                | otherwise  = (Info,     ""                                       )
+assessFunctionLength (fromIntegral -> lines)
+                   | lines > flags_functionLinesWarning  = (Warning,  "should be kept below "          ++
+                                                                       show flags_functionLinesWarning ++
+                                                                      " lines of code.")
+                   | lines > flags_functionLinesCritical = (Critical, "this function exceeds "          ++
+                                                                       show flags_functionLinesCritical ++
+                                                                      " lines of code.")
+                   | otherwise                           = (Info,     ""                                 )
+
+
+defineFlag "moduleLinesWarning"  (500  :: Int) "issue warning when module exceeds this number of lines"
+defineFlag "moduleLinesCritical" (3000 :: Int) "issue critical when module exceeds this number of lines"
 
 assessModuleLength :: Assessment LOC
-assessModuleLength lines | lines > 500  = (Warning,  "should be kept below 500 lines of code."  )
-                         | lines > 3000 = (Critical, "this function exceeds 3000 lines of code.")
-                         | otherwise    = (Info,     ""                                         )
+assessModuleLength (fromIntegral -> lines)
+                   | lines > flags_moduleLinesWarning  = (Warning,  "should be kept below "        ++
+                                                                     show flags_moduleLinesWarning ++
+                                                                    " lines of code.")
+                   | lines > flags_moduleLinesCritical = (Critical, "this function exceeds "       ++
+                                                                     show flags_moduleLinesCritical ++
+                                                                    " lines of code.")
+                   | otherwise    = (Info,     ""                                         )
+
+defineFlag "functionDepthWarning"  (4 :: Int) "issue warning when function exceeds this decision depth"
+defineFlag "functionDepthCritical" (8 :: Int) "issue critical when function exceeds this decision depth"
 
 assessFunctionDepth :: Assessment Depth
-assessFunctionDepth depth | depth > 4 = (Warning, "should have no more than four nested conditionals"    )
-                          | depth > 8 = (Warning, "should never exceed 8 nesting levels for conditionals")
-                          | otherwise = (Info,    ""                                                     )
+assessFunctionDepth (fromIntegral -> depth)
+                    | depth > flags_functionDepthWarning = (Warning, "should have no more than " ++
+                                                                      show depth                 ++
+                                                                     " nested conditionals"            )
+                    | depth > flags_functionDepthWarning = (Warning, "should never exceed " ++
+                                                                      show depth            ++
+                                                                     " nesting levels for conditionals")
+                    | otherwise = (Info,    ""                                )
+
+defineFlag "functionCCWarning"  (20::Int) "issue warning when function's cyclomatic complexity exceeds this number"
+defineFlag "functionCCCritical" (50::Int) "issue critical when function's cyclomatic complexity exceeds this number"
 
 assessFunctionCC :: Assessment Cyclomatic
-assessFunctionCC cy | cy > 20   = (Warning, "should not exceed 20"  )
-                    | cy > 50   = (Warning, "should never exceed 50")
-                    | otherwise = (Info,    ""                      )
+assessFunctionCC (fromIntegral -> cy)
+                 | cy > flags_functionCCWarning  = (Warning, "should not exceed "   ++ show cy)
+                 | cy > flags_functionCCCritical = (Warning, "should never exceed " ++ show cy)
+                 | otherwise                     = (Info,    ""                               )
 
 metrics :: [Program -> Log]
 metrics  = [measureTopOccurs assessModuleLength   locT        moduleT ,
@@ -154,6 +182,9 @@ concatMapM f = fmap concat . mapM f
 
 testFilename :: FilePath
 testFilename = "Homplexity.hs"
+
+-- | This flag exists only to make sure that HFLags work.
+defineFlag "fakeFlag" Info "this flag is fake"
 
 main :: IO ()
 main = do

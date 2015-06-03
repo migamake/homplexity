@@ -1,4 +1,3 @@
-{-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
@@ -22,6 +21,7 @@ import Language.Haskell.Exts
 
 import Language.Haskell.Homplexity.CodeFragment
 
+
 -- | Metric can be computed on a set of @CodeFragment@ fragments
 -- and then shown.
 class (CodeFragment c, Show m) => Metric m c where
@@ -38,6 +38,9 @@ locT  = Proxy
 
 instance Show LOC where
   showsPrec _ (LOC l) = shows l . (" lines of code"++)
+
+instance Read LOC where
+  readsPrec prec str = first LOC <$> readsPrec prec str
 
 instance (CodeFragment c) => Metric LOC c where
   measure = LOC
