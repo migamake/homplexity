@@ -61,7 +61,8 @@ data Function = Function {
 functionT :: Proxy Function
 functionT  = Proxy
 
--- ** Alias for a type signature of a function
+-- ** Type signature of a function
+-- | Type alias for a type signature of a function as a @CodeFragment@
 data TypeSignature = TypeSignature { loc         :: SrcLoc
                                    , identifiers :: [Name]
                                    , theType     :: Type }
@@ -71,8 +72,8 @@ data TypeSignature = TypeSignature { loc         :: SrcLoc
 typeSignatureT :: Proxy TypeSignature
 typeSignatureT  = Proxy
 
--- TODO: class signatures (number of function decls inside)
--- ** Alias for a class signature
+-- ** TODO: class signatures (number of function decls inside)
+-- | Alias for a class signature
 data ClassSignature = ClassSignature
   deriving (Data, Typeable)
 
