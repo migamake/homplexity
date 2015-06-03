@@ -119,9 +119,23 @@ instance Show ConDepth where
                             . shows cc
 
 instance Metric ConDepth TypeSignature where
-  measure = ConDepth . conDepth
+  measure = ConDepth . conDepth . theType
 
-conDepth = undefined
+{-# INLINE maxConDepth #-}
+maxConDepth = maximum . map conDepth
+
+-- | Function computing constructor depth of a @Type@.
+conDepth :: Type -> Int
+conDepth (TyVar _)                         = 0
+conDepth (TyCon _)                         = 0
+conDepth (TyForall _bind _context theType) = 1+conDepth theType
+conDepth (TyList theType)                  = 1+conDepth theType
+conDepth (TyParen theType)                 = conDepth theType 
+conDepth (TyKind theType _kind)            = conDepth theType
+conDepth (TyFun type1 type2)               = 1+maxConDepth [type1, type2]
+conDepth (TyApp type1 type2)               = 1+maxConDepth [type1, type2]
+conDepth (TyInfix type1 _ type2)           = 1+maxConDepth [type1, type2]
+conDepth (TyTuple _boxed types)            = 1+maxConDepth types
 
 -- * Number of function arguments
 newtype NumFunArgs = NumFunArgs { unNumFunArgs :: Int }
@@ -131,12 +145,22 @@ numFunArgsT :: Proxy NumFunArgs
 numFunArgsT  = Proxy
 
 instance Show NumFunArgs where
-  showsPrec _ (NumFunArgs cc) = ("function has " ++)
-                              .  shows cc
+  showsPrec _ (NumFunArgs cc) =  shows cc
                               . (" arguments"    ++)
 
 instance Metric NumFunArgs TypeSignature where
-  measure = NumFunArgs . numFunArgs
+  measure = NumFunArgs . numFunArgs . theType
 
-numFunArgs = undefined
+-- | Function computing constructor depth of a @Type@.
+numFunArgs :: Type -> Int
+numFunArgs (TyVar _)                         = 1
+numFunArgs (TyCon _)                         = 1
+numFunArgs (TyForall _bind _context theType) = 1+numFunArgs theType
+numFunArgs (TyList theType)                  = 1
+numFunArgs (TyParen theType)                 = numFunArgs theType
+numFunArgs (TyKind theType _kind)            = numFunArgs theType
+numFunArgs (TyFun type1 type2)               = 1+numFunArgs type2
+numFunArgs (TyApp type1 type2)               = 1
+numFunArgs (TyInfix type1 _ type2)           = 1
+numFunArgs (TyTuple _boxed types)            = 1
 

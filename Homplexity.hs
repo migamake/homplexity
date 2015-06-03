@@ -22,13 +22,14 @@ import Language.Haskell.Homplexity.Message
 import Language.Haskell.Homplexity.Metric
 import Language.Haskell.Homplexity.Parse
 import System.Directory
+import System.Exit
 import System.FilePath
 import System.IO
 
 import HFlags
 
 -- * Command line flags
-defineFlag "severity" Info (concat ["level of output verbosity (", severityOptions, ")"])
+defineFlag "severity" Warning (concat ["level of output verbosity (", severityOptions, ")"])
 
 {-
 numFunctions = length
@@ -115,15 +116,39 @@ defineFlag "functionCCCritical" (50::Int) "issue critical when function's cyclom
 
 assessFunctionCC :: Assessment Cyclomatic
 assessFunctionCC (fromIntegral -> cy)
-                 | cy > flags_functionCCWarning  = (Warning, "should not exceed "   ++ show cy)
-                 | cy > flags_functionCCCritical = (Warning, "should never exceed " ++ show cy)
+                 | cy > flags_functionCCWarning  = (Warning, "should be less than "        ++
+                                                              show flags_functionCCWarning)
+                 | cy > flags_functionCCCritical = (Warning, "must never be as high as " ++
+                                                              show flags_functionCCCritical)
                  | otherwise                     = (Info,    ""                               )
 
+defineFlag "typeConDepthWarning"  (6::Int) "issue warning when type constructor depth exceeds this number"
+defineFlag "typeConDepthCritical" (9::Int) "issue critical when type constructor depth exceeds this number"
+
+assessTypeConDepth :: Assessment ConDepth
+assessTypeConDepth (fromIntegral -> cy)
+                 | cy > flags_typeConDepthWarning  = (Warning, "should be less than "        ++
+                                                                show flags_typeConDepthWarning )
+                 | cy > flags_typeConDepthCritical = (Warning, "must never be as high as " ++
+                                                                show flags_typeConDepthCritical)
+                 | otherwise                       = (Info,    ""                              )
+
+defineFlag "numFunArgsWarning"  (5::Int) "issue warning when number of function arguments exceeds this number"
+defineFlag "numFunArgsCritical" (9::Int) "issue critical when number of function arguments exceeds this number"
+
+assessNumFunArgs :: Assessment NumFunArgs
+assessNumFunArgs (fromIntegral -> cy)
+                 | cy > flags_numFunArgsWarning  = (Warning, "should be less than " ++ show flags_numFunArgsWarning )
+                 | cy > flags_numFunArgsCritical = (Warning, "must never reach "    ++ show flags_numFunArgsCritical)
+                 | otherwise                     = (Info,    ""                                                     )
+
 metrics :: [Program -> Log]
-metrics  = [measureTopOccurs assessModuleLength   locT        moduleT ,
-            measureTopOccurs assessFunctionLength locT        functionT,
-            measureTopOccurs assessFunctionDepth  depthT      functionT,
-            measureTopOccurs assessFunctionCC     cyclomaticT functionT]
+metrics  = [measureTopOccurs assessModuleLength   locT        moduleT
+           ,measureTopOccurs assessFunctionLength locT        functionT
+           ,measureTopOccurs assessFunctionDepth  depthT      functionT
+           ,measureTopOccurs assessFunctionCC     cyclomaticT functionT
+           ,measureTopOccurs assessTypeConDepth   conDepthT   typeSignatureT
+           ,measureTopOccurs assessNumFunArgs     numFunArgsT typeSignatureT]
 
 -- | Report to standard error output.
 report ::  String -> IO ()
@@ -180,17 +205,17 @@ processFile filepath = do src <- parseSource filepath
 concatMapM  :: (Monad m) => (a -> m [b]) -> [a] -> m [b]
 concatMapM f = fmap concat . mapM f
 
-testFilename :: FilePath
-testFilename = "Homplexity.hs"
-
 -- | This flag exists only to make sure that HFLags work.
 defineFlag "fakeFlag" Info "this flag is fake"
 
+-- | Parse arguments and either process inputs (if available), or suggest proper usage.
 main :: IO ()
 main = do
   args <- $initHFlags "json-autotype -- automatic type and parser generation from JSON"
   if null args
-    then    void $ processFile testFilename
+    then do report ("Use Haskell source file or directory as an argument, " ++
+                    "or use --help to discover options.")
+            exitFailure
     else do sums <- mapM processFile =<< concatMapM subTrees args
             putStrLn $ unwords ["Correctly parsed", show $ length $ filter id sums,
                                 "out of",           show $ length             sums,
