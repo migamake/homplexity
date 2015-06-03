@@ -61,6 +61,23 @@ warnOfMeasure assess metricType fragType c = message  severity
     (severity, recommendation) = assess result
     result = measureFor metricType fragType c
 
+-- * Assessments of severity for used @Metric@s.
+-- ** Module definition checks
+defineFlag "moduleLinesWarning"  (500  :: Int) "issue warning when module exceeds this number of lines"
+defineFlag "moduleLinesCritical" (3000 :: Int) "issue critical when module exceeds this number of lines"
+
+assessModuleLength :: Assessment LOC
+assessModuleLength (fromIntegral -> locs)
+                   | locs > flags_moduleLinesWarning  = (Warning,  "should be kept below "        ++
+                                                                    show flags_moduleLinesWarning ++
+                                                                   " lines of code.")
+                   | locs > flags_moduleLinesCritical = (Critical, "this function exceeds "       ++
+                                                                    show flags_moduleLinesCritical ++
+                                                                   " lines of code.")
+                   | otherwise    = (Info,     ""                                        )
+
+-- ** Function definition checks
+-- *** Number of lines of code within function body
 defineFlag "functionLinesWarning"  (20 :: Int) "issue warning when function exceeds this number of lines"
 defineFlag "functionLinesCritical" (40 :: Int) "issue critical when function exceeds this number of lines"
 
@@ -75,19 +92,7 @@ assessFunctionLength (fromIntegral -> locs)
                    | otherwise                          = (Info,     ""                                 )
 
 
-defineFlag "moduleLinesWarning"  (500  :: Int) "issue warning when module exceeds this number of lines"
-defineFlag "moduleLinesCritical" (3000 :: Int) "issue critical when module exceeds this number of lines"
-
-assessModuleLength :: Assessment LOC
-assessModuleLength (fromIntegral -> locs)
-                   | locs > flags_moduleLinesWarning  = (Warning,  "should be kept below "        ++
-                                                                    show flags_moduleLinesWarning ++
-                                                                   " lines of code.")
-                   | locs > flags_moduleLinesCritical = (Critical, "this function exceeds "       ++
-                                                                    show flags_moduleLinesCritical ++
-                                                                   " lines of code.")
-                   | otherwise    = (Info,     ""                                        )
-
+-- *** Decision depth of function definition
 defineFlag "functionDepthWarning"  (4 :: Int) "issue warning when function exceeds this decision depth"
 defineFlag "functionDepthCritical" (8 :: Int) "issue critical when function exceeds this decision depth"
 
@@ -101,6 +106,7 @@ assessFunctionDepth (fromIntegral -> depth)
                                                                      " nesting levels for conditionals")
                     | otherwise = (Info,    ""                                )
 
+-- *** Cyclomatic complexity of function definition
 defineFlag "functionCCWarning"  (20::Int) "issue warning when function's cyclomatic complexity exceeds this number"
 defineFlag "functionCCCritical" (50::Int) "issue critical when function's cyclomatic complexity exceeds this number"
 
@@ -112,6 +118,8 @@ assessFunctionCC (fromIntegral -> cy)
                                                               show flags_functionCCCritical)
                  | otherwise                     = (Info,    ""                               )
 
+-- ** Type signature complexity
+-- *** Type constructor depth in each type signature
 defineFlag "typeConDepthWarning"  (6::Int) "issue warning when type constructor depth exceeds this number"
 defineFlag "typeConDepthCritical" (9::Int) "issue critical when type constructor depth exceeds this number"
 
@@ -123,6 +131,7 @@ assessTypeConDepth (fromIntegral -> cy)
                                                                 show flags_typeConDepthCritical)
                  | otherwise                       = (Info,    ""                              )
 
+-- *** Number of function arguments mentioned in each type signature
 defineFlag "numFunArgsWarning"  (5::Int) "issue warning when number of function arguments exceeds this number"
 defineFlag "numFunArgsCritical" (9::Int) "issue critical when number of function arguments exceeds this number"
 
@@ -132,6 +141,8 @@ assessNumFunArgs (fromIntegral -> cy)
                  | cy > flags_numFunArgsCritical = (Warning, "must never reach "    ++ show flags_numFunArgsCritical)
                  | otherwise                     = (Info,    ""                                                     )
 
+-- * Computing and assessing @Metric@s for all @CodeFragment@.
+-- | Compute all metrics, and assign severity depending on configured thresholds.
 metrics :: [Program -> Log]
 metrics  = [measureTopOccurs assessModuleLength   locT        moduleT
            ,measureTopOccurs assessFunctionLength locT        functionT
@@ -139,3 +150,4 @@ metrics  = [measureTopOccurs assessModuleLength   locT        moduleT
            ,measureTopOccurs assessFunctionCC     cyclomaticT functionT
            ,measureTopOccurs assessTypeConDepth   conDepthT   typeSignatureT
            ,measureTopOccurs assessNumFunArgs     numFunArgsT typeSignatureT]
+
