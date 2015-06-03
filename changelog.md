@@ -1,6 +1,10 @@
 Changelog
 =========
-    0.4.0.0  Jun 2015
+    0.4.2.0  Jun 2015
+
+        * Compatible with GHC 7.8.
+
+    0.4.1.0  Jun 2015
 
         * Corrected embarassing missing module.
         * Better documentation, cleanup.
