@@ -79,14 +79,14 @@ defineFlag "moduleLinesWarning"  (500  :: Int) "issue warning when module exceed
 defineFlag "moduleLinesCritical" (3000 :: Int) "issue critical when module exceeds this number of lines"
 
 assessModuleLength :: Assessment LOC
-assessModuleLength (fromIntegral -> lines)
-                   | lines > flags_moduleLinesWarning  = (Warning,  "should be kept below "        ++
-                                                                     show flags_moduleLinesWarning ++
-                                                                    " lines of code.")
-                   | lines > flags_moduleLinesCritical = (Critical, "this function exceeds "       ++
-                                                                     show flags_moduleLinesCritical ++
-                                                                    " lines of code.")
-                   | otherwise    = (Info,     ""                                         )
+assessModuleLength (fromIntegral -> locs)
+                   | locs > flags_moduleLinesWarning  = (Warning,  "should be kept below "        ++
+                                                                    show flags_moduleLinesWarning ++
+                                                                   " lines of code.")
+                   | locs > flags_moduleLinesCritical = (Critical, "this function exceeds "       ++
+                                                                    show flags_moduleLinesCritical ++
+                                                                   " lines of code.")
+                   | otherwise    = (Info,     ""                                        )
 
 defineFlag "functionDepthWarning"  (4 :: Int) "issue warning when function exceeds this decision depth"
 defineFlag "functionDepthCritical" (8 :: Int) "issue critical when function exceeds this decision depth"

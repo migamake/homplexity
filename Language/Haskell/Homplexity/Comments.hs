@@ -17,7 +17,7 @@ module Language.Haskell.Homplexity.Comments (
 import Data.Char
 import Data.Data
 import Data.List
-import Control.Exception as E
+--import Control.Exception as E
 
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.SrcSlice

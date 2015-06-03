@@ -6,8 +6,6 @@
 -- | Parsing of Haskell source files, and error reporting for unparsable files.
 module Language.Haskell.Homplexity.Parse (parseSource) where
 
-import Data.Char
-import Data.Data
 import Control.Exception as E
 
 import Language.Haskell.Exts.Syntax
@@ -16,7 +14,6 @@ import Language.Haskell.Exts
 import Language.Haskell.Homplexity.Comments
 import Language.Haskell.Homplexity.Message
 import Language.Preprocessor.Cpphs
-import System.IO
 
 --import HFlags
 
@@ -48,22 +45,21 @@ cppHsOptions = defaultCpphsOptions {
 --
 -- Catches all exceptions and wraps them as @Critical@ log messages.
 parseSource ::  FilePath -> IO (Either Log (Module, [CommentLink]))
-parseSource filename = do
-  parsed <- (do
-    --putStrLn $ "\nProcessing " ++ filename ++ ":"
-    input   <- readFile filename
-    result  <- parseModuleWithComments parseMode <$> runCpphs cppHsOptions filename input
+parseSource inputFilename = do
+  parseResult <- (do
+    input   <- readFile inputFilename
+    result  <- parseModuleWithComments parseMode <$> runCpphs cppHsOptions inputFilename input
     evaluate result)
       `E.catch` handleException (ParseFailed thisFileLoc)
-  case parsed of
+  case parseResult of
     ParseOk (parsed, comments) ->    --putStrLn $ unlines $ map show $ classifyComments comments
                                      return $ Right (parsed, classifyComments comments)
-    ParseFailed loc msg        ->    return $ Left $ critical loc msg
+    ParseFailed aLoc msg       ->    return $ Left $ critical aLoc msg
   where
     handleException helper (e :: SomeException) = return $ helper $ show e
-    thisFileLoc = noLoc { srcFilename = filename }
+    thisFileLoc = noLoc { srcFilename = inputFilename }
     parseMode = ParseMode {
-                  parseFilename         = filename,
+                  parseFilename         = inputFilename,
                   baseLanguage          = Haskell2010,
                   extensions            = myExtensions,
                   ignoreLanguagePragmas = False,

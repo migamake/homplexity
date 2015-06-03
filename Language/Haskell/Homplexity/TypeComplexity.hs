@@ -13,7 +13,7 @@ module Language.Haskell.Homplexity.TypeComplexity(
 
 import Data.Data
 import Data.Generics.Uniplate.Data
-import Data.Proxy(Proxy)
+--import Data.Proxy(Proxy)
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Metric
@@ -43,14 +43,14 @@ conDepth con = deeper con + maxOf conDepth (childrenBi con)
 
 -- | Check whether given constructor of @Type@ counts in constructor depth computation.
 deeper :: Type -> Int
-deeper (TyForall   _bind _context theType) = 1
-deeper (TyList     _theType       )        = 1
-deeper (TyFun      _type1   _type2)        = 1
-deeper (TyApp      _type1   _type2)        = 1
-deeper (TyInfix    _type1 _ _type2)        = 1
-deeper (TyTuple    _boxed   _types)        = 1
-deeper (TyParArray          _types)        = 1
-deeper  _                                  = 0
+deeper (TyForall   _bind _context _type) = 1
+deeper (TyList     _aType         )      = 1
+deeper (TyFun      _type1   _type2)      = 1
+deeper (TyApp      _type1   _type2)      = 1
+deeper (TyInfix    _type1 _ _type2)      = 1
+deeper (TyTuple    _boxed   _types)      = 1
+deeper (TyParArray          _types)      = 1
+deeper  _                                = 0
 
 -- * Number of function arguments
 newtype NumFunArgs = NumFunArgs { unNumFunArgs :: Int }

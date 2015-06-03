@@ -14,11 +14,11 @@ module Language.Haskell.Homplexity.Cyclomatic(
 
 import Data.Data
 import Data.Generics.Uniplate.Data
-import Data.Proxy(Proxy)
+--import Data.Proxy                               (Proxy)
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Metric
-import Debug.Trace
+--import Debug.Trace
 
 type MatchSet = [Match]
 
@@ -79,7 +79,7 @@ depthT :: Proxy Depth
 depthT  = Proxy
 
 instance Metric Depth Function where
-  measure f@(Function {..}) = Depth $ depthOfMatches functionRhs `max` depthOfMatches functionBinds
+  measure (Function {..}) = Depth $ depthOfMatches functionRhs `max` depthOfMatches functionBinds
 
 instance Show Depth where
   showsPrec _ (Depth d) = ("branching depth of "++)

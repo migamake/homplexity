@@ -15,9 +15,7 @@ import Data.Function
 import Data.Generics.Uniplate.Data
 import Data.List
 import Control.Arrow
-import Control.Exception (assert)
 import Language.Haskell.Exts.Syntax
-import Language.Haskell.Exts
 
 import Language.Haskell.Homplexity.CodeFragment
 
