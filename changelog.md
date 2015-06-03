@@ -2,6 +2,10 @@ Changelog
 =========
     0.3.0.0  Jun 2015
 
+        * Added number of arguments, and constructor depth.
+
+    0.3.0.0  Jun 2015
+
         * Configurable thresholds.
 
     0.2.0.0  Jun 2015
