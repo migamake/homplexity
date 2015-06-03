@@ -14,6 +14,7 @@ module Language.Haskell.Homplexity.Assessment (
   , measureAllOccurs) where
 
 import Data.Data
+import Data.Monoid
 
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Cyclomatic

@@ -11,7 +11,9 @@
 -- | Main module parsing inputs, and running analysis.
 module Main (main) where
 
+import Data.Functor
 import Data.List
+import Data.Monoid
 
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.Assessment
@@ -80,7 +82,7 @@ processFile filepath = do src <- parseSource filepath
                                                          return True
 
 -- | Commonly defined function - should be added to base...
-concatMapM  :: (Monad m) => (a -> m [b]) -> [a] -> m [b]
+concatMapM  :: (Functor m, Monad m) => (a -> m [b]) -> [a] -> m [b]
 concatMapM f = fmap concat . mapM f
 
 -- | This flag exists only to make sure that HFLags work.

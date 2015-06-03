@@ -29,14 +29,12 @@ module Language.Haskell.Homplexity.CodeFragment (
   ) where
 
 import Data.Data
+import Data.Functor
 import Data.Generics.Uniplate.Data
 import Data.List
 import Data.Maybe
---import Control.Arrow
---import Control.Exception
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts.SrcLoc
---import Language.Haskell.Exts
 import Language.Haskell.Homplexity.SrcSlice
 
 -- | Program

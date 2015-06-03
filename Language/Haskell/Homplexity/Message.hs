@@ -18,9 +18,9 @@ module Language.Haskell.Homplexity.Message (
 import Control.Arrow
 import Control.DeepSeq
 import Data.Function                                        (on)
-import Data.Sequence                            as Seq
 import Data.Foldable                            as Foldable
---import Language.Haskell.Homplexity.CodeFragment
+import Data.Monoid
+import Data.Sequence                            as Seq
 import Language.Haskell.Exts
 import Language.Haskell.TH.Syntax                           (Lift(..))
 import HFlags

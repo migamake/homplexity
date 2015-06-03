@@ -7,6 +7,7 @@
 module Language.Haskell.Homplexity.Parse (parseSource) where
 
 import Control.Exception as E
+import Data.Functor
 
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts.SrcLoc
