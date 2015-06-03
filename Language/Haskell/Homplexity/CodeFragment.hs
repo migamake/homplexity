@@ -10,9 +10,11 @@
 -- | This module generalizes over types of code fragments
 -- that may need to be iterated upon and measured separately.
 module Language.Haskell.Homplexity.CodeFragment (
-    CodeFragment(fragmentName)
+    CodeFragment(fragmentName, fragmentSlice)
   , occurs
+  , occursOf
   , allOccurs
+  , allOccursOf
   , Program      (..)
   , programT
   , Module       (..)
@@ -126,9 +128,17 @@ singleton  = (:[])
 occurs :: (CodeFragment c, Data from) => from -> [c]
 occurs  = mapMaybe matchAST . childrenBi
 
+-- | Explicitly typed variant of @occurs@.
+occursOf  :: (Data from, CodeFragment c) => Proxy c -> from -> [c]
+occursOf _ =  occurs
+
 -- | All occurences of given type of @CodeFragment@ fragment within another structure.
 allOccurs :: (CodeFragment c, Data from) => from -> [c]
 allOccurs = mapMaybe matchAST . universeBi
+
+-- | Explicitly typed variant of @allOccurs@.
+allOccursOf  :: (Data from, CodeFragment c) => Proxy c -> from -> [c]
+allOccursOf _ =  allOccurs
 
 instance CodeFragment Program where
   type AST Program = Program

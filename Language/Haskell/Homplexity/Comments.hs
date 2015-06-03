@@ -10,12 +10,17 @@ module Language.Haskell.Homplexity.Comments (
   , CommentType      (..)
   , classifyComments
   , findCommentType -- exposed for testing only
+  , CommentSite      (..)
+  , commentable
   ) where
 
 import Data.Char
+import Data.Data
 import Data.List
 import Control.Exception as E
 
+import Language.Haskell.Homplexity.CodeFragment
+import Language.Haskell.Homplexity.SrcSlice
 import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts
 
@@ -52,4 +57,25 @@ prop_commentsAfter  = findCommentType "  |" == CommentsAfter
 prop_commentsBefore = findCommentType "  ^" == CommentsBefore
 prop_commentsGroup  = findCommentType "  *" == CommentsInside
 prop_commentsInside = findCommentType "  a" == CommentsInside
+
+-- * Finding ranges of all commentable entities.
+-- | Tagging of source range for each commentable object.
+data CommentSite = CommentSite { siteName  :: String
+                               , siteSlice :: SrcSlice
+                               }
+
+-- | Find comment sites for entire program.
+commentable     :: Data from => from -> [CommentSite]
+commentable code = ($ code) `concatMap` [slicesOf functionT
+                                        ,slicesOf typeSignatureT
+                                        ,slicesOf moduleT       ]
+  where
+    commentSite  ::  CodeFragment c => (c -> SrcSlice) -> c -> CommentSite
+    commentSite with frag = CommentSite (fragmentName frag)
+                                        (with         frag)
+    commentSites :: (CodeFragment c, Data from) => (c -> SrcSlice) -> Proxy c -> from -> [CommentSite]
+    commentSites with fragType = map (commentSite with) . occursOf fragType
+    slicesOf, locsOf :: (CodeFragment c, Data from) => Proxy c -> from -> [CommentSite]
+    slicesOf = commentSites              fragmentSlice 
+    locsOf   = commentSites (locAsSpan . fragmentLoc)
 

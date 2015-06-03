@@ -10,6 +10,7 @@ module Language.Haskell.Homplexity.SrcSlice (
   , sliceFirstLine
   , sliceLastLine
   , sliceFilename
+  , locAsSpan
   ) where
 
 import Data.Data
@@ -45,13 +46,21 @@ srcSlice code = mergeSrcLocs
 
 mergeSrcLocs :: [SrcLoc] -> SrcSpan
 mergeSrcLocs []        = error "Don't know how make a SrcSpan from an empty list of locations!"
-mergeSrcLocs sliceLocs = assert (allEqual $ map srcFilename sliceLocs) $
+mergeSrcLocs sliceLocs = allEqual (map srcFilename sliceLocs) `assert`
                            SrcSpan {..}
   where
     srcSpanFilename = srcFilename $ head sliceLocs
     ((srcSpanStartLine, srcSpanStartColumn),
      (srcSpanEndLine,   srcSpanEndColumn  )) = (minimum &&& maximum) $
                                                map (srcLine &&& srcColumn) sliceLocs
+
+locAsSpan              :: SrcLoc -> SrcSpan
+locAsSpan (SrcLoc {..}) = SrcSpan { srcSpanStartLine   = srcLine
+                                  , srcSpanEndLine     = srcLine
+                                  , srcSpanStartColumn = srcColumn
+                                  , srcSpanEndColumn   = srcColumn
+                                  , srcSpanFilename    = srcFilename
+                                  }
 
 allEqual       ::  Eq a => [a] -> Bool
 allEqual []     = True
