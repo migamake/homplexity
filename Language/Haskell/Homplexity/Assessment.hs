@@ -11,7 +11,8 @@
 -- | Main module parsing inputs, and running analysis.
 module Language.Haskell.Homplexity.Assessment (
     metrics
-  , measureAllOccurs) where
+  --, measureAllOccurs
+  ) where
 
 import Data.Data
 import Data.Monoid
@@ -46,9 +47,18 @@ measureTopOccurs :: (Data from, Metric m c) => Assessment m -> Proxy m -> Proxy 
 measureTopOccurs assess = measureAll assess occurs
 
 --measureAllOccurs  :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> Program -> Log
+-- | Measure all occurences of a given @CodeFragment@ with a given @Metric@,
+-- then use @Assessment@ on them and give a list of @Log@ messages.
+--
+-- Arguments come in the following order:
+-- 1. @Assessment@ for the value of the @Metric@.
+-- 2. @Metric@ given as @Proxy@ type.
+-- 3. @CodeFragment@ given as @Proxy@ type.
+-- 4. Program containing @CodeFragment@s.
 measureAllOccurs :: (Data from, Metric m c) => Assessment m -> Proxy m -> Proxy c -> from -> Log
 measureAllOccurs assess = measureAll assess allOccurs
 
+-- | Type of functions that convert a @Metric@ into a log message.
 type Assessment m = m -> (Severity, String)
 
 warnOfMeasure :: (CodeFragment c, Metric m c) => Assessment m -> Proxy m -> Proxy c -> c -> Log

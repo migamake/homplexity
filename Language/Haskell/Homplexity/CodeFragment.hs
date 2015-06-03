@@ -98,6 +98,7 @@ class (Show c, Data (AST c), Data c) => CodeFragment c where
   fragmentSlice ::     c -> SrcSlice
   fragmentSlice  = srcSlice
 
+-- | First location for each @CodeFragment@ - for convenient reporting.
 fragmentLoc :: (CodeFragment c) => c -> SrcLoc
 fragmentLoc =  getPointLoc
             .  fragmentSlice

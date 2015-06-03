@@ -2,6 +2,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE TemplateHaskell            #-}
+-- | Classifying messages by severity and filtering them.
 module Language.Haskell.Homplexity.Message (
     Log
   , Message

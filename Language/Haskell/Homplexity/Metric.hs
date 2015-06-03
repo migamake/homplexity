@@ -1,7 +1,8 @@
 {-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+-- | Class for defining code metrics, and its simplest implementation - number of lines of code. 
 module Language.Haskell.Homplexity.Metric (
     Metric (..)
   , LOC
@@ -19,7 +20,6 @@ import Control.Arrow
 import Language.Haskell.Exts.Syntax
 
 import Language.Haskell.Homplexity.CodeFragment
-
 
 -- | Metric can be computed on a set of @CodeFragment@ fragments
 -- and then shown.
