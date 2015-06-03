@@ -1,5 +1,9 @@
 Changelog
 =========
+    0.3.0.0  Jun 2015
+
+        * Configurable thresholds.
+
     0.2.0.0  Jun 2015
 
         * First release on Hackage.
