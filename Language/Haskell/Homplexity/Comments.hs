@@ -52,7 +52,7 @@ findCommentType txt = case find (not . isSpace) txt of
   _        -> CommentsInside
 
 -- * Tests for comments
-prop_commentsAfter :: Bool
+prop_commentsAfter, prop_commentsBefore, prop_commentsGroup, prop_commentsInside :: Bool
 prop_commentsAfter  = findCommentType "  |" == CommentsAfter
 prop_commentsBefore = findCommentType "  ^" == CommentsBefore
 prop_commentsGroup  = findCommentType "  *" == CommentsInside
@@ -75,7 +75,7 @@ commentable code = ($ code) `concatMap` [slicesOf functionT
                                         (with         frag)
     commentSites :: (CodeFragment c, Data from) => (c -> SrcSlice) -> Proxy c -> from -> [CommentSite]
     commentSites with fragType = map (commentSite with) . occursOf fragType
-    slicesOf, locsOf :: (CodeFragment c, Data from) => Proxy c -> from -> [CommentSite]
+    slicesOf :: (CodeFragment c, Data from) => Proxy c -> from -> [CommentSite]
     slicesOf = commentSites              fragmentSlice 
-    locsOf   = commentSites (locAsSpan . fragmentLoc)
+    --locsOf   = commentSites (locAsSpan . fragmentLoc)
 

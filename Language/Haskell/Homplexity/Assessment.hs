@@ -9,22 +9,17 @@
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
 -- | Main module parsing inputs, and running analysis.
-module Language.Haskell.Homplexity.Assessment (metrics) where
+module Language.Haskell.Homplexity.Assessment (
+    metrics
+  , measureAllOccurs) where
 
 import Data.Data
-import Data.List
-import Control.Monad
 
-import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Cyclomatic
 import Language.Haskell.Homplexity.Message
 import Language.Haskell.Homplexity.Metric
-import Language.Haskell.Homplexity.Parse
 import Language.Haskell.Homplexity.TypeComplexity
-import System.Directory
-import System.FilePath
-import System.IO
 
 import HFlags
 
@@ -41,18 +36,16 @@ numFunctionsSeverity = Warning
  -}
 
 -- * Showing metric measurements
---measureAll  :: (CodeFragment c, Metric m c) => Severity -> (Program -> [c]) -> Proxy m -> Proxy c -> Program -> Log
-measureAll :: Metric m c =>Assessment m -> (a -> [c]) -> Proxy m -> Proxy c -> a -> Log
+measureAll :: Metric m c => Assessment m -> (a -> [c]) -> Proxy m -> Proxy c -> a -> Log
 measureAll assess generator metricType fragType = mconcat
                                                 . map       (warnOfMeasure assess metricType fragType)
                                                 . generator
 
---measureTopOccurs  :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> Program -> Log
-measureTopOccurs :: (Data from, Metric m c) =>Assessment m -> Proxy m -> Proxy c -> from -> Log
+measureTopOccurs :: (Data from, Metric m c) => Assessment m -> Proxy m -> Proxy c -> from -> Log
 measureTopOccurs assess = measureAll assess occurs
 
 --measureAllOccurs  :: (CodeFragment c, Metric m c) => Severity -> Proxy m -> Proxy c -> Program -> Log
-measureAllOccurs :: (Data from, Metric m c) =>Assessment m -> Proxy m -> Proxy c -> from -> Log
+measureAllOccurs :: (Data from, Metric m c) => Assessment m -> Proxy m -> Proxy c -> from -> Log
 measureAllOccurs assess = measureAll assess allOccurs
 
 type Assessment m = m -> (Severity, String)
@@ -72,14 +65,14 @@ defineFlag "functionLinesWarning"  (20 :: Int) "issue warning when function exce
 defineFlag "functionLinesCritical" (40 :: Int) "issue critical when function exceeds this number of lines"
 
 assessFunctionLength :: Assessment LOC
-assessFunctionLength (fromIntegral -> lines)
-                   | lines > flags_functionLinesWarning  = (Warning,  "should be kept below "          ++
+assessFunctionLength (fromIntegral -> locs)
+                   | locs > flags_functionLinesWarning  = (Warning,  "should be kept below "          ++
                                                                        show flags_functionLinesWarning ++
                                                                       " lines of code.")
-                   | lines > flags_functionLinesCritical = (Critical, "this function exceeds "          ++
+                   | locs > flags_functionLinesCritical = (Critical, "this function exceeds "          ++
                                                                        show flags_functionLinesCritical ++
                                                                       " lines of code.")
-                   | otherwise                           = (Info,     ""                                 )
+                   | otherwise                          = (Info,     ""                                 )
 
 
 defineFlag "moduleLinesWarning"  (500  :: Int) "issue warning when module exceeds this number of lines"

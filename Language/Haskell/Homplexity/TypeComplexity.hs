@@ -17,7 +17,7 @@ import Data.Proxy(Proxy)
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Metric
-import Debug.Trace
+--import Debug.Trace
 
 -- | Sum the results of mapping the function over the list.
 maxOf :: (a -> Int) -> [a] -> Int
@@ -37,21 +37,20 @@ instance Show ConDepth where
 instance Metric ConDepth TypeSignature where
   measure = ConDepth . conDepth . theType
 
-{-# INLINE maxConDepth #-}
-maxConDepth = maxOf conDepth
-
 -- | Function computing constructor depth of a @Type@.
 conDepth :: Type -> Int
-conDepth (TyVar _)                         = 0
-conDepth (TyCon _)                         = 0
-conDepth (TyForall _bind _context theType) = 1+conDepth theType
-conDepth (TyList theType)                  = 1+conDepth theType
-conDepth (TyParen theType)                 = conDepth theType 
-conDepth (TyKind theType _kind)            = conDepth theType
-conDepth (TyFun type1 type2)               = 1+maxConDepth [type1, type2]
-conDepth (TyApp type1 type2)               = 1+maxConDepth [type1, type2]
-conDepth (TyInfix type1 _ type2)           = 1+maxConDepth [type1, type2]
-conDepth (TyTuple _boxed types)            = 1+maxConDepth types
+conDepth con = deeper con + maxOf conDepth (childrenBi con)
+
+-- | Check whether given constructor of @Type@ counts in constructor depth computation.
+deeper :: Type -> Int
+deeper (TyForall   _bind _context theType) = 1
+deeper (TyList     _theType       )        = 1
+deeper (TyFun      _type1   _type2)        = 1
+deeper (TyApp      _type1   _type2)        = 1
+deeper (TyInfix    _type1 _ _type2)        = 1
+deeper (TyTuple    _boxed   _types)        = 1
+deeper (TyParArray          _types)        = 1
+deeper  _                                  = 0
 
 -- * Number of function arguments
 newtype NumFunArgs = NumFunArgs { unNumFunArgs :: Int }
@@ -69,14 +68,10 @@ instance Metric NumFunArgs TypeSignature where
 
 -- | Function computing constructor depth of a @Type@.
 numFunArgs :: Type -> Int
-numFunArgs (TyVar _)                         = 1
-numFunArgs (TyCon _)                         = 1
-numFunArgs (TyForall _bind _context theType) = 1+numFunArgs theType
-numFunArgs (TyList theType)                  = 1
-numFunArgs (TyParen theType)                 = numFunArgs theType
-numFunArgs (TyKind theType _kind)            = numFunArgs theType
-numFunArgs (TyFun type1 type2)               = 1+numFunArgs type2
-numFunArgs (TyApp type1 type2)               = 1
-numFunArgs (TyInfix type1 _ type2)           = 1
-numFunArgs (TyTuple _boxed types)            = 1
+numFunArgs (TyParen    aType)                 =   numFunArgs aType
+numFunArgs (TyKind     aType  _kind)          =   numFunArgs aType
+numFunArgs (TyForall   _bind  _context aType) =   numFunArgs aType -- NOTE: doesn't count type argument
+numFunArgs (TyFun      _type1 type2)          = 1+numFunArgs type2
+numFunArgs (TyParArray aType)                 = 1+numFunArgs aType
+numFunArgs  _                                 = 1
 

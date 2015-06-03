@@ -8,29 +8,17 @@ module Language.Haskell.Homplexity.Parse (parseSource) where
 
 import Data.Char
 import Data.Data
-import Data.List
-import Data.Maybe
-import Data.Monoid
-import Data.Proxy
-import Control.Arrow
 import Control.Exception as E
-import Control.Monad
 
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts
-import Language.Haskell.Homplexity.Cyclomatic
-import Language.Haskell.Homplexity.Metric
-import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Comments
 import Language.Haskell.Homplexity.Message
 import Language.Preprocessor.Cpphs
-import System.Directory
-import System.Environment
-import System.FilePath
 import System.IO
 
-import HFlags
+--import HFlags
 
 -- | Maximally permissive list of language extensions.
 myExtensions ::  [Extension]
