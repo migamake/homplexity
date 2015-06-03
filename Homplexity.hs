@@ -11,16 +11,12 @@
 -- | Main module parsing inputs, and running analysis.
 module Main (main) where
 
-import Data.Data
 import Data.List
-import Control.Monad
 
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.Assessment
 import Language.Haskell.Homplexity.CodeFragment
-import Language.Haskell.Homplexity.Cyclomatic
 import Language.Haskell.Homplexity.Message
-import Language.Haskell.Homplexity.Metric
 import Language.Haskell.Homplexity.Parse
 import System.Directory
 import System.Exit

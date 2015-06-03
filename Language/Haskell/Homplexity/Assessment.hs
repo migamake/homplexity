@@ -21,6 +21,7 @@ import Language.Haskell.Homplexity.Cyclomatic
 import Language.Haskell.Homplexity.Message
 import Language.Haskell.Homplexity.Metric
 import Language.Haskell.Homplexity.Parse
+import Language.Haskell.Homplexity.TypeComplexity
 import System.Directory
 import System.Exit
 import System.FilePath
