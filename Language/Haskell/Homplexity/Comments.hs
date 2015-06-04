@@ -51,13 +51,6 @@ findCommentType txt = case find (not . isSpace) txt of
   Just '*' -> CommentsInside -- since it comments out the group of declarations, it belongs to the containing object
   _        -> CommentsInside
 
--- * Tests for comments
-prop_commentsAfter, prop_commentsBefore, prop_commentsGroup, prop_commentsInside :: Bool
-prop_commentsAfter  = findCommentType "  |" == CommentsAfter
-prop_commentsBefore = findCommentType "  ^" == CommentsBefore
-prop_commentsGroup  = findCommentType "  *" == CommentsInside
-prop_commentsInside = findCommentType "  a" == CommentsInside
-
 -- * Finding ranges of all commentable entities.
 -- | Tagging of source range for each commentable object.
 data CommentSite = CommentSite { siteName  :: String
