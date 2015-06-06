@@ -39,7 +39,7 @@ instance Metric ConDepth TypeSignature where
 
 -- | Function computing constructor depth of a @Type@.
 conDepth :: Type -> Int
-conDepth con = deeper con + maxOf conDepth (childrenBi con)
+conDepth con = deeper con + maxOf conDepth (filter (/= con) $ childrenBi con)
 
 -- | Check whether given constructor of @Type@ counts in constructor depth computation.
 deeper :: Type -> Int
