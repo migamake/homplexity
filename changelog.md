@@ -1,5 +1,9 @@
 Changelog
 =========
+    0.4.3.0  Jun 2015
+
+        * Thanks to Mikolaj Konarski for fixing an embarrassing eternal loop due to biplate quirk.
+
     0.4.2.0  Jun 2015
 
         * Compatible with GHC 7.8.
