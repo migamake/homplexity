@@ -1,7 +1,8 @@
 - [x] Function length (recommended 4-40 lines of code for C, except for multiway branches.)
 - [x] Module length (recommended 4-400 lines for C, 10-40 functions per file)
 - [ ] Ratio of comments (30-75% of code length, excluding blank lines. Exception is C header file.)
-- [ ] Number of arguments
+- [ ] https://en.wikipedia.org/wiki/Flesch–Kincaid\_readability\_tests
+- [x] Number of arguments
 - [ ] Number of local definitions
 - [ ] Complexity measures:
   * [x] McCabe "Cyclomatic number" - number of linearly independent paths through code, tends to be PL independent
