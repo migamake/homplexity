@@ -2,11 +2,18 @@ digraph Concepts {
   rankdir=LR;
 
   code                        [label="Code fragment"];
-  code -> Function;
-  code -> Program;
-  code -> "Type signature";
-  code -> TypeDecl;
-  code -> ClassDecl;
+  code -> expr;
+  expr [label="Implementations"];
+
+  expr -> Function;
+  expr -> Program;
+ 
+  code -> types;
+  types [label="Types"];
+
+  types -> "Type signature";
+  types -> TypeDecl;
+  types -> ClassDecl;
   TypeDecl		      [label="Type declaration",style="dashed"];
   ClassDecl		      [label="Class declaration", style="dashed"];
 
@@ -15,7 +22,7 @@ digraph Concepts {
   Metric -> CodeMetric;
   CodeMetric [label="Code metric"];
   Metric -> TypeMetric;
-  TypeMetric [label="Type signature metric"];
+  TypeMetric [label="Type metric"];
   Metric -> CommentMetric;
   CommentMetric [label="Comment metric"];
 
