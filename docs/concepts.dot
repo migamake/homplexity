@@ -5,8 +5,10 @@ digraph Concepts {
   code -> Function;
   code -> Program;
   code -> "Type signature";
-  code -> "Type declaration"  [style="dashed"];
-  code -> "Class declaration" [style="dashed"];
+  code -> TypeDecl;
+  code -> ClassDecl;
+  TypeDecl		      [label="Type declaration",style="dashed"];
+  ClassDecl		      [label="Class declaration", style="dashed"];
 
   Metric -> code [label="is applied to"];
 
@@ -14,15 +16,24 @@ digraph Concepts {
   CodeMetric [label="Code metric"];
   Metric -> TypeMetric;
   TypeMetric [label="Type signature metric"];
+  Metric -> CommentMetric;
+  CommentMetric [label="Comment metric"];
 
   CodeMetric -> "Lines of code";
   CodeMetric -> "Cyclomatic complexity";
   CodeMetric -> "Branching depth";
-  CodeMetric -> "Expression tree nodes" [style="dashed"];
+  CodeMetric -> ExprNodes;
+  ExprNodes [label="Expression tree nodes",style="dashed"];
+  CodeMetric -> CodeCommentRatio;
   
   TypeMetric -> "Type tree nodes";
   TypeMetric -> "Number of function arguments";
   
+  CommentMetric -> FleschComments;
+  FleschComments [label="Fleisch-Kincaid on comments",style="dashed"];
+  CommentMetric -> CodeCommentRatio;
+  CodeCommentRatio [label="Code-to-comments ratio"];
+
   Criterion [label="Validation criterion"];
   Criterion -> Metric    [label="uses"];
 
