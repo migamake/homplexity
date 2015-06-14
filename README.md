@@ -36,3 +36,4 @@ on them the severity of the message is chosen.
 To see all metrics you might just adjust warning severity to `INFO`.
 
 ![Diagram of concepts](https://raw.githubusercontent.com/mgajda/homplexity/master/docs/concepts.png)
+![Legend of the diagram](https://raw.githubusercontent.com/mgajda/homplexity/master/docs/legend.png)

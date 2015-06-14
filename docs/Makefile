@@ -1,10 +1,19 @@
-all: concepts.svg concepts.png
+SRCS=concepts.dot legend.dot
+TGTS=$(subst .dot,.png,$(SRCS)) $(subst .dot,.svg,$(SRCS))
 
-concepts.png: concepts.dot
-	dot concepts.dot -Tpng -o concepts.png
+all: $(TGTS)
 
-concepts.svg: concepts.dot
-	dot concepts.dot -Tsvg -o concepts.svg
+%.png: %.dot
+	dot $< -Tpng -o $@
+
+%.svg: %.dot
+	dot $< -Tsvg -o $@
 
 view: concepts.svg
 	eog concepts.svg
+
+.PHONY: clean view all
+
+clean:
+	rm -f $(TGTS)
+

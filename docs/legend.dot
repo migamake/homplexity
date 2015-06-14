@@ -1,0 +1,7 @@
+digraph Legend {
+  rankdir=LR;
+
+  Planned                [style="dashed"];
+  Planned -> Implemented [style="invis" ];
+  Implemented;
+}

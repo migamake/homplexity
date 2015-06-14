@@ -1,18 +1,27 @@
 digraph Concepts {
   rankdir=LR;
-  code    [ label="Code fragment"];
+
+  code                        [label="Code fragment"];
   code -> Function;
   code -> Program;
   code -> "Type signature";
+  code -> "Type declaration"  [style="dashed"];
+  code -> "Class declaration" [style="dashed"];
 
   Metric -> code [label="is applied to"];
 
-  Metric -> "Lines of code";
-  Metric -> "Cyclomatic complexity";
-  Metric -> "Branching depth";
+  Metric -> CodeMetric;
+  CodeMetric [label="Code metric"];
+  Metric -> TypeMetric;
+  TypeMetric [label="Type signature metric"];
+
+  CodeMetric -> "Lines of code";
+  CodeMetric -> "Cyclomatic complexity";
+  CodeMetric -> "Branching depth";
+  CodeMetric -> "Expression tree nodes" [style="dashed"];
   
-  Metric -> "Type tree nodes"       [border="dashed"];
-  Metric -> "Expression tree nodes" [border="dashed"];
+  TypeMetric -> "Type tree nodes";
+  TypeMetric -> "Number of function arguments";
   
   Criterion [label="Validation criterion"];
   Criterion -> Metric    [label="uses"];
