@@ -1,13 +1,14 @@
 SRCS=concepts.dot legend.dot
 TGTS=$(subst .dot,.png,$(SRCS)) $(subst .dot,.svg,$(SRCS))
+PROG=dot
 
 all: $(TGTS)
 
 %.png: %.dot
-	dot $< -Tpng -o $@
+	$(PROG) $< -Tpng -o $@
 
 %.svg: %.dot
-	dot $< -Tsvg -o $@
+	$(PROG) $< -Tsvg -o $@
 
 view: concepts.svg
 	eog concepts.svg

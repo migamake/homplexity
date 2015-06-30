@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      img { width: 100%; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Homplexity
+## Measuring Haskell code quality at large
+
+## Michał J. Gajda
+### Haskell.SG
+### July 1st 2015
+---
+# Problems of code quality
+
+# Code size vs:
+* defect likelihood
+* complexity
+* understandability
+
+--
+
+# Programming style at small scale - *hlint*
+
+--
+
+# Documentation
+* coverage
+* understandability
+
+---
+# Code complexity
+
+# Measure number of:
+* functions per module
+
+--
+
+* function interactions
+
+--
+
+* function arguments/record fields
+
+--
+
+* types/classes
+
+--
+
+* lines of code
+
+--
+
+* McCabe (operator) complexity
+
+---
+# Understandability
+
+# Comments per:
+
+--
+
+## function/class/type/module
+
+--
+
+## line of code
+
+--
+
+## Flesch-Kincaid
+---
+# Goals of Homplexity
+
+# Highlight complex code
+
+--
+
+# Provide complexity metrics
+* like *sloccount*
+
+--
+
+# Guide refactoring
+* like *hlint*
+
+---
+# Ontology of Homplexity
+
+![Concepts](concepts.png)
+![Legend](legend.png)
+---
+# Implementation of Homplexity
+
+# `haskell-src-exts`
+
+--
+
+# Code fragments
+
+--
+
+# Metrics
+
+--
+
+# Thresholds for each metric, give severity
+
+---
+# Roadmap for Homplexity
+
+# More code-to-comments metrics
+
+--
+
+# Calibrate operator metrics
+
+--
+
+# Statistical analysis
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    <!--script src="remark/src/remark.js"-->
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
