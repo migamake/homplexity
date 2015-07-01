@@ -1,24 +1,7 @@
 digraph Concepts {
   //rankdir=LR;
   style=plaintext;
-  fontsize=48;
   overlap=false;
-
-  code                        [label="Code fragment"];
-  code -> expr;
-  expr [label="Implementations"];
-
-  expr -> Function;
-  expr -> Program;
- 
-  code -> types;
-  types [label="Types"];
-
-  types -> "Type signature";
-  types -> TypeDecl;
-  types -> ClassDecl;
-  TypeDecl		      [label="Type declaration",style="dashed"];
-  ClassDecl		      [label="Class declaration", style="dashed"];
 
   Metric -> code [label="is applied to"];
 
@@ -43,16 +26,5 @@ digraph Concepts {
   FleschComments [label="Fleisch-Kincaid on comments",style="dashed"];
   CommentMetric -> CodeCommentRatio;
   CodeCommentRatio [label="Code-to-comments ratio"];
-
-  Criterion [label="Validation criterion"];
-  Criterion -> Metric    [label="uses"];
-
-  Criterion -> Threshold [label="meets"];
-
-  Threshold -> Message   [label="displays"];
-
-  Message -> Debug;
-  Message -> Info;
-  Message -> Warning;
 }
 

@@ -1,0 +1,29 @@
+digraph Concepts {
+  //rankdir=LR;
+  style=plaintext;
+  overlap=false;
+
+  code                        [label="Code fragment"];
+  code -> expr;
+  expr [label="Implementations"];
+
+  code -> types;
+  types [label="Types"];
+
+  Metric -> code [label="is applied to"];
+
+  Metric -> CodeMetric;
+  CodeMetric [label="Code metric"];
+  Metric -> TypeMetric;
+  TypeMetric [label="Type metric"];
+  Metric -> CommentMetric;
+  CommentMetric [label="Comment metric"];
+
+  Criterion [label="Validation criterion"];
+  Criterion -> Metric    [label="uses"];
+
+  Criterion -> Threshold [label="meets"];
+
+  Threshold -> Message   [label="displays"];
+}
+

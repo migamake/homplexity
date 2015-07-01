@@ -1,4 +1,4 @@
-SRCS=concepts.dot legend.dot
+SRCS=concepts.dot overview.dot metrics.dot legend.dot
 TGTS=$(subst .dot,.png,$(SRCS)) $(subst .dot,.svg,$(SRCS))
 PROG=dot
 
