@@ -7,9 +7,9 @@
 - [ ] Complexity measures:
   * [x] McCabe "Cyclomatic number" - number of linearly independent paths through code, tends to be PL independent
     # [x] ~number of conditional branches (ifs, cases) that may be taken,
-    # [ ] also iteration constructs (like foldr, not map!?)
+    # [-] also iteration constructs (like foldr, not map!?)
     # [ ] also exception catches
-    # [ ] also || and && shortcut evaluations?
+    # [-] also || and && shortcut evaluations?
     -> should be <15 for a function
     -> should be <100 for a file
   * [ ] Halstead Metrics
