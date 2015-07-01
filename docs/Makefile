@@ -1,4 +1,10 @@
-SRCS=concepts.dot overview.dot metrics.dot legend.dot
+SRCS=concepts.dot              \
+     overview.dot              \
+     metrics_overview.dot      \
+     metrics_code.dot	       \
+     metrics_types.dot	       \
+     metrics_comments.dot      \
+     legend.dot
 TGTS=$(subst .dot,.png,$(SRCS)) $(subst .dot,.svg,$(SRCS))
 PROG=dot
 

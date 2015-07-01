@@ -1,9 +1,7 @@
-digraph Concepts {
-  //rankdir=LR;
-  style=plaintext;
-  overlap=false;
-
-  Metric -> code [label="is applied to"];
+digraph Metrics {
+  rankdir=TB;
+  //style=plaintext;
+  //overlap=false;
 
   Metric -> CodeMetric;
   CodeMetric [label="Code metric"];

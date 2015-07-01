@@ -1,0 +1,18 @@
+digraph MetricsOverview {
+  rankdir=TB;
+  //style=plaintext;
+  //overlap=false;
+
+  Metric -> CodeMetric;
+  CodeMetric [label="Code metric"];
+  Metric -> TypeMetric;
+  TypeMetric [label="Type metric"];
+  Metric -> CommentMetric;
+  CommentMetric [label="Comment metric"];
+
+  CodeMetric -> CodeCommentRatio;
+  
+  CommentMetric -> CodeCommentRatio;
+  CodeCommentRatio [label="Code-to-comments ratio"];
+}
+

@@ -1,0 +1,21 @@
+digraph Metrics {
+  rankdir=TB;
+  //style=plaintext;
+  //overlap=false;
+
+  Metric -> CodeMetric;
+  CodeMetric [label="Code metric"];
+  //Metric -> CommentMetric;
+  //CommentMetric [label="Comment metric"];
+
+  CodeMetric -> "Lines of code";
+  CodeMetric -> "Cyclomatic complexity";
+  CodeMetric -> "Branching depth";
+  CodeMetric -> ExprNodes;
+  ExprNodes [label="Expression tree nodes",style="dashed"];
+  //CodeMetric -> CodeCommentRatio;
+  
+  //CommentMetric -> CodeCommentRatio;
+  //CodeCommentRatio [label="Code-to-comments ratio"];
+}
+

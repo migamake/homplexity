@@ -1,0 +1,13 @@
+digraph TypeMetrics {
+  rankdir=TB;
+  //style=plaintext;
+  //overlap=false;
+
+  Metric -> TypeMetric;
+  TypeMetric [label="Type metric"];
+
+  TypeMetric -> "Type tree nodes";
+  TypeMetric -> "Number of function arguments";
+  
+}
+

@@ -1,0 +1,17 @@
+digraph CommentMetrics {
+  rankdir=TB;
+  //style=plaintext;
+  //overlap=false;
+
+  Metric -> CommentMetric;
+  Metric -> CodeMetric;
+  CommentMetric [label="Comment metric"];
+
+  CodeMetric -> CodeCommentRatio;
+  
+  CommentMetric -> FleschComments;
+  FleschComments [label="Fleisch-Kincaid on comments",style="dashed"];
+  CommentMetric -> CodeCommentRatio;
+  CodeCommentRatio [label="Code-to-comments ratio"];
+}
+
