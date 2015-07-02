@@ -26,7 +26,8 @@ myExtensions = EnableExtension `map`
                 FlexibleContexts, KindSignatures, EmptyDataDecls, BangPatterns, ForeignFunctionInterface,
                 Generics, MagicHash, ViewPatterns, PatternGuards, TypeOperators, GADTs, PackageImports,
                 MultiWayIf, SafeImports, ConstraintKinds, TypeFamilies, IncoherentInstances, FunctionalDependencies,
-                ExistentialQuantification, ImplicitParams, UnicodeSyntax]
+                ExistentialQuantification, ImplicitParams, UnicodeSyntax,
+                LambdaCase, TupleSections, NamedFieldPuns]
 
 -- | CppHs options that should be compatible with haskell-src-exts
 cppHsOptions ::  CpphsOptions

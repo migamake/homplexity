@@ -12,6 +12,7 @@
     # [-] also || and && shortcut evaluations?
     -> should be <15 for a function
     -> should be <100 for a file
+    [ ] Composite metrics (like Code Climate)
   * [ ] Halstead Metrics
     # volume: number of operators+operands * log2 of number of unique operators+operands?
   * [ ] Maintainability Index
@@ -27,6 +28,11 @@ check all source instances within given structure, for example).
 11. [ ] Treat classes similar to records - limit number of symbols.
 12. [ ] Try to guess extra params, or read them from file:
   * [x] cpphs
-    # cpphs options to be snatched from Cabal
+    [ ] cpphs options to be snatched from Cabal (cabal exec?)
+    [ ] configure cpphs options (GHC)
   * [ ] LANGUAGE pragmas
 13. [x] Catch "invalid byte sequence" errors, and report as incorrect files.
+14. [ ] Sort by metrics to show hotspots at the bottom (top) of the printout
+15. [ ] Dead code detection - project-wide
+16. [ ] Suggest newtypes from function names
+17. [ ] Add missing params from my projects (like StandaloneDeriving)
