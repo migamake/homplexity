@@ -12,12 +12,14 @@ module Language.Haskell.Homplexity.Comments (
   , findCommentType -- exposed for testing only
   , CommentSite      (..)
   , commentable
+
+  , orderCommentsAndCommentables
   ) where
 
 import Data.Char
 import Data.Data
+import Data.Function
 import Data.List
---import Control.Exception as E
 
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.SrcSlice
@@ -45,7 +47,7 @@ classifyComments  = map classifyComment
 
 -- | Finds Haddock markers of which declarations the comment pertains to.
 findCommentType :: String -> CommentType
-findCommentType txt = case find (not . isSpace) txt of
+findCommentType txt = case (not . isSpace) `find` txt of
   Just '^' -> CommentsBefore
   Just '|' -> CommentsAfter
   Just '*' -> CommentsInside -- since it comments out the group of declarations, it belongs to the containing object
@@ -56,6 +58,7 @@ findCommentType txt = case find (not . isSpace) txt of
 data CommentSite = CommentSite { siteName  :: String
                                , siteSlice :: SrcSlice
                                }
+  deriving (Show)
 
 -- | Find comment sites for entire program.
 commentable     :: Data from => from -> [CommentSite]
@@ -71,4 +74,13 @@ commentable code = ($ code) `concatMap` [slicesOf functionT
     slicesOf :: (CodeFragment c, Data from) => Proxy c -> from -> [CommentSite]
     slicesOf = commentSites              fragmentSlice 
     --locsOf   = commentSites (locAsSpan . fragmentLoc)
+
+-- | Take together are commentable elements, and all comments, and order them by source location.
+orderCommentsAndCommentables :: [CommentSite] -> [CommentLink] -> [Either CommentLink CommentSite]
+orderCommentsAndCommentables sites comments  = sortBy (compare `on` loc) elts
+  where
+    loc :: Either CommentLink CommentSite -> SrcSpan
+    loc (Left  (commentSpan -> srcSpan)) = srcSpan
+    loc (Right (siteSlice   -> srcSpan)) = srcSpan
+    elts = (Left <$> comments) ++ (Right <$> sites)
 

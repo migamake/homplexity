@@ -54,9 +54,12 @@ parseSource inputFilename = do
     evaluate result)
       `E.catch` handleException (ParseFailed thisFileLoc)
   case parseResult of
-    ParseOk (parsed, comments) ->    --putStrLn $ unlines $ map show $ classifyComments comments
-                                     return $ Right (parsed, classifyComments comments)
-    ParseFailed aLoc msg       ->    return $ Left $ critical aLoc msg
+    ParseOk (parsed, comments) -> do putStrLn   "ORDERED:"
+                                     putStrLn $ unlines $ map show
+                                              $ orderCommentsAndCommentables (commentable      parsed  )
+                                                                             (classifyComments comments)
+                                     return   $ Right (parsed, classifyComments comments)
+    ParseFailed aLoc msg       ->    return   $ Left $ critical aLoc msg
   where
     handleException helper (e :: SomeException) = return $ helper $ show e
     thisFileLoc = noLoc { srcFilename = inputFilename }
@@ -69,3 +72,8 @@ parseSource inputFilename = do
                   fixities              = Just preludeFixities
                 }
 
+{-putStrLn   "COMMENTS:"
+                                     putStrLn $ unlines $ map show $ classifyComments comments
+                                     putStrLn   "COMMENTABLES:"
+                                     putStrLn $ unlines $ map show $ commentable      parsed-}
+                                     

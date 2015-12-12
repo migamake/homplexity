@@ -47,11 +47,12 @@ instance NFData SrcLoc where
   rnf (SrcLoc {..}) = rnf srcFilename `seq` rnf srcLine `seq` rnf srcColumn
 
 instance Show Message where
-  showsPrec _ (Message {msgSrc=SrcLoc{..}, ..}) = shows msgSeverity
+  showsPrec _ (Message {msgSrc=loc@SrcLoc{..}, ..}) = shows msgSeverity
                                                 . (':':)
                                                 . (srcFilename++)
                                                 . (':':)
-                                                . shows srcLine
+                                                . shows loc
+                                                -- . shows srcLine
                                                 -- . shows srcColumn
                                                 . (':':)
                                                 . (msgText++)

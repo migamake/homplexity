@@ -10,19 +10,19 @@
 -- | This module generalizes over types of code fragments
 -- that may need to be iterated upon and measured separately.
 module Language.Haskell.Homplexity.CodeFragment (
-    CodeFragment (fragmentName, fragmentSlice)
+    CodeFragment   (fragmentName, fragmentSlice)
   , occurs
   , occursOf
   , allOccurs
   , allOccursOf
-  , Program      (..)
+  , Program        (..)
   , programT
   , program
-  , Module       (..)
+  , Module         (..)
   , moduleT
-  , Function     (..)
+  , Function       (..)
   , functionT
-  , TypeSignature(..)
+  , TypeSignature  (..)
   , typeSignatureT
   , fragmentLoc
   -- TODO: add ClassSignature
@@ -56,6 +56,7 @@ data Function = Function {
                 , functionLocations :: [SrcLoc]
                 , functionRhs       :: [Rhs]
                 , functionBinds     :: [Binds]
+                --, functionComment   :: Maybe String 
                 }
   deriving (Data, Typeable, Show)
 
