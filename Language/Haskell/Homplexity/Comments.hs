@@ -79,8 +79,25 @@ commentable code = ($ code) `concatMap` [slicesOf functionT
 orderCommentsAndCommentables :: [CommentSite] -> [CommentLink] -> [Either CommentLink CommentSite]
 orderCommentsAndCommentables sites comments  = sortBy (compare `on` loc) elts
   where
-    loc :: Either CommentLink CommentSite -> SrcSpan
-    loc (Left  (commentSpan -> srcSpan)) = srcSpan
-    loc (Right (siteSlice   -> srcSpan)) = srcSpan
+    loc :: Either CommentLink CommentSite -> (SrcSpan, Bool)
+    loc (Left  (commentSpan -> srcSpan)) = (srcSpan, True )
+    loc (Right (siteSlice   -> srcSpan)) = (srcSpan, False)
     elts = (Left <$> comments) ++ (Right <$> sites)
 
+{-
+type Assignment = (CommentSite, [CommentLink])
+-- | Assign comments to the commentable elements.
+assignComments :: [Either CommentLink CommentSite]
+assignComments  = foldr assign ([], [], [], [])
+  where
+    assign :: ([Assignment], [Assignment], [CommentLink]
+    assign (assigned, unclosed, commentingAfter) nextElt = case nextElt of
+      Left  (s@(CommentSite {}))                            ->
+        (assigned, (s,commentingAfter):unclosed, [])
+      Right (c@(CommentLink {commentType=CommentAfter,  ..}) -> 
+        (assigned,                     unclosed, c:commentingAfter)
+      Right (c@(CommentLink {commentType=CommentBefore, ..}) -> 
+        (assigned,                     unclosed, c:commentingAfter)
+      Right (c@(CommentLink {commentType=CommentInside, ..}) -> 
+        (assigned,                     unclosed, c:commentingAfter)
+ -}

@@ -27,21 +27,14 @@ import System.IO
 
 import HFlags
 
--- * Command line flags
+-- * Command line flag
 defineFlag "severity" Warning (concat ["level of output verbosity (", severityOptions, ")"])
 
 -- | Report to standard error output.
 report ::  String -> IO ()
 report = hPutStrLn stderr
 
--- | Analyze single source module.
-analyzeModule ::  Module -> IO ()
-analyzeModule  = analyzeModules . (:[])
-
--- | Analyze a set of modules.
-analyzeModules ::  [Module] -> IO ()
-analyzeModules = putStr . concatMap show . extract flags_severity . mconcat metrics . program
-
+-- * Recursing directory tree in order to list Haskell source files.
 -- | Find all Haskell source files within a given path.
 -- Recurse down the tree, if the path points to directory.
 subTrees          :: FilePath -> IO [FilePath]
@@ -72,6 +65,20 @@ subTrees'  fp                    = do
 getDirectoryPaths        :: FilePath -> IO [FilePath]
 getDirectoryPaths dirPath = map (dirPath </>) <$> getDirectoryContents dirPath
 
+-- | Commonly defined function - should be added to base...
+concatMapM  :: (Functor m, Monad m) => (a -> m [b]) -> [a] -> m [b]
+concatMapM f = fmap concat . mapM f
+
+-- * Analysis
+-- | Analyze a set of modules.
+analyzeModule :: Module -> IO ()
+analyzeModule  = putStr
+               . concatMap show
+               . extract flags_severity
+               . mconcat metrics
+               . program
+               . (:[])
+
 -- | Process each separate input file.
 processFile ::  FilePath -> IO Bool
 processFile filepath = do src <- parseSource filepath
@@ -81,17 +88,13 @@ processFile filepath = do src <- parseSource filepath
                             Right (ast, _comments) -> do analyzeModule ast
                                                          return True
 
--- | Commonly defined function - should be added to base...
-concatMapM  :: (Functor m, Monad m) => (a -> m [b]) -> [a] -> m [b]
-concatMapM f = fmap concat . mapM f
-
 -- | This flag exists only to make sure that HFLags work.
 defineFlag "fakeFlag" Info "this flag is fake"
 
 -- | Parse arguments and either process inputs (if available), or suggest proper usage.
 main :: IO ()
 main = do
-  args <- $initHFlags "json-autotype -- automatic type and parser generation from JSON"
+  args <- $initHFlags "Homplexity - automatic analysis of Haskell code quality"
   if null args
     then do report ("Use Haskell source file or directory as an argument, " ++
                     "or use --help to discover options.")

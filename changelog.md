@@ -1,5 +1,9 @@
 Changelog
 =========
+    0.4.3.1  Feb 2015
+
+        * Updated bounds for GHC 8.0.
+
     0.4.3.0  Jun 2015
 
         * Thanks to Mikolaj Konarski for fixing an embarrassing eternal loop due to biplate quirk.

@@ -56,7 +56,6 @@ data Function = Function {
                 , functionLocations :: [SrcLoc]
                 , functionRhs       :: [Rhs]
                 , functionBinds     :: [Binds]
-                --, functionComment   :: Maybe String 
                 }
   deriving (Data, Typeable, Show)
 
