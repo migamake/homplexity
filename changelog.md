@@ -1,6 +1,10 @@
 Changelog
 =========
-    0.4.3.1  Feb 2015
+    0.4.3.2  May 2016
+
+        * Updated deps.
+
+    0.4.3.1  Feb 2016
 
         * Updated bounds for GHC 8.0.
 

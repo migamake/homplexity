@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP                   #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -64,14 +65,16 @@ parseSource inputFilename = do
     handleException helper (e :: SomeException) = return $ helper $ show e
     thisFileLoc = noLoc { srcFilename = inputFilename }
     parseMode = ParseMode {
-                  parseFilename         = inputFilename,
-                  baseLanguage          = Haskell2010,
-                  extensions            = myExtensions,
-                  ignoreLanguagePragmas = False,
-                  ignoreLinePragmas     = False,
-                  fixities              = Just preludeFixities
+                  parseFilename         = inputFilename
+                , baseLanguage          = Haskell2010
+                , extensions            = myExtensions
+                , ignoreLanguagePragmas = False
+                , ignoreLinePragmas     = False
+                , fixities              = Just preludeFixities
+#if MIN_VERSION_haskell_src_exts(1,17,0)
+                , ignoreFunctionArity   = False
+#endif            
                 }
-
 {-putStrLn   "COMMENTS:"
                                      putStrLn $ unlines $ map show $ classifyComments comments
                                      putStrLn   "COMMENTABLES:"

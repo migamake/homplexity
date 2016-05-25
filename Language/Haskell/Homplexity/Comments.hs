@@ -19,6 +19,7 @@ module Language.Haskell.Homplexity.Comments (
 import Data.Char
 import Data.Data
 import Data.Function
+import Data.Functor
 import Data.List
 
 import Language.Haskell.Homplexity.CodeFragment

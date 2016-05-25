@@ -1,12 +1,13 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE CPP                   #-}
 {-# LANGUAGE DeriveDataTypeable    #-}
-{-# LANGUAGE ScopedTypeVariables   #-}
-{-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE ViewPatterns          #-}
+{-# LANGUAGE UndecidableInstances  #-}
 -- | This module generalizes over types of code fragments
 -- that may need to be iterated upon and measured separately.
 module Language.Haskell.Homplexity.CodeFragment (
@@ -103,15 +104,27 @@ fragmentLoc :: (CodeFragment c) => c -> SrcLoc
 fragmentLoc =  getPointLoc
             .  fragmentSlice
 
+#if MIN_VERSION_haskell_src_exts(1,17,0)
+getBinds   = maybe [] singleton
+mergeBinds = catMaybes
+#else
+getBinds   =          singleton
+mergeBids  = id
+#endif
+
 instance CodeFragment Function where
-  type AST Function     = Decl
-  matchAST (FunBind matches) = Just Function {..}
+  type AST Function          = Decl
+  matchAST (FunBind matches) = Just
+      Function {..}
     where
-      (functionLocations, (unName <$>) . take 1 -> functionNames, functionRhs, functionBinds) = unzip4 $ map extract matches
+      (functionLocations,
+       (unName <$>) . take 1 -> functionNames,
+       functionRhs,
+       mergeBinds -> functionBinds) = unzip4 $ map extract matches
       extract (Match srcLoc name _ _ rhs binds) = (srcLoc, name, rhs, binds)
   matchAST (PatBind (singleton -> functionLocations) pat
                     (singleton -> functionRhs      )
-                    (singleton -> functionBinds    )) = Just Function {..}
+                    (getBinds  -> functionBinds    )) = Just Function {..}
     where
       functionNames  = wildcards ++ map unName (universeBi pat)
       wildcards = mapMaybe wildcard $ universeBi pat
