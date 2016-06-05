@@ -18,9 +18,9 @@ before_install:
   - travis_retry sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER happy-1.19.4
   - export PATH=/opt/ghc/$GHCVER/bin:/opt/happy/1.19.4/bin:$PATH
   - echo "Check version again"
-  - ghc   --version
-  - cabal --version
-  - happy --version
+  - ghc             --version
+  - cabal-$CABALVER --version
+  - happy           --version
 
 install:
   - travis_retry cabal-$CABALVER install --only-dependencies --force-reinstalls --enable-tests
