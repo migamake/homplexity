@@ -1,5 +1,9 @@
 Changelog
 =========
+    0.4.3.3  May 2016
+
+        * Updated bounds again.
+
     0.4.3.2  May 2016
 
         * Updated deps.
