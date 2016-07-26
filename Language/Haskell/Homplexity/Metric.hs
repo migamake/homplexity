@@ -13,7 +13,7 @@ module Language.Haskell.Homplexity.Metric (
 
 import Data.Data
 import Data.Function
---import Data.Functor
+import Data.Functor
 import Data.Generics.Uniplate.Data
 import Data.List
 import Control.Arrow
