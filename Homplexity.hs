@@ -15,6 +15,7 @@ import Data.Functor
 import Data.List
 import Data.Monoid
 
+import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.Assessment
 import Language.Haskell.Homplexity.CodeFragment
@@ -71,7 +72,7 @@ concatMapM f = fmap concat . mapM f
 
 -- * Analysis
 -- | Analyze a set of modules.
-analyzeModule :: Module -> IO ()
+analyzeModule :: Module SrcLoc -> IO ()
 analyzeModule  = putStr
                . concatMap show
                . extract flags_severity

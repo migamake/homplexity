@@ -39,12 +39,12 @@ import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Homplexity.SrcSlice
 
 -- | Program
-data Program = Program { allModules :: [Module] }
+data Program = Program { allModules :: [Module SrcLoc] }
   deriving (Data, Typeable, Show)
 
 -- | Smart constructor for adding cross-references in the future.
-program :: [Module] -> Program
-program  = Program
+program :: [Module SrcLoc] -> Program
+program  =  Program
 
 -- | Proxy for passing @Program@ type as an argument.
 programT :: Proxy Program
@@ -55,8 +55,8 @@ programT  = Proxy
 data Function = Function {
                   functionNames     :: [String]
                 , functionLocations :: [SrcLoc]
-                , functionRhs       :: [Rhs]
-                , functionBinds     :: [Binds]
+                , functionRhs       :: [Rhs   SrcLoc]
+                , functionBinds     :: [Binds SrcLoc]
                 }
   deriving (Data, Typeable, Show)
 
@@ -67,8 +67,8 @@ functionT  = Proxy
 -- ** Type signature of a function
 -- | Type alias for a type signature of a function as a @CodeFragment@
 data TypeSignature = TypeSignature { loc         :: SrcLoc
-                                   , identifiers :: [Name]
-                                   , theType     :: Type }
+                                   , identifiers :: [Name SrcLoc]
+                                   , theType     ::  Type SrcLoc }
   deriving (Data, Typeable, Show)
 
 -- | Proxy for passing @Program@ type as an argument.
@@ -104,35 +104,29 @@ fragmentLoc :: (CodeFragment c) => c -> SrcLoc
 fragmentLoc =  getPointLoc
             .  fragmentSlice
 
-#if MIN_VERSION_haskell_src_exts(1,17,0)
-getBinds   = maybe [] singleton
 mergeBinds = catMaybes
-#else
-getBinds   =          singleton
-mergeBids  = id
-#endif
 
 instance CodeFragment Function where
-  type AST Function          = Decl
-  matchAST (FunBind matches) = Just
+  type AST Function            = Decl SrcLoc
+  matchAST (FunBind _ matches) = Just
       Function {..}
     where
       (functionLocations,
        (unName <$>) . take 1 -> functionNames,
        functionRhs,
-       mergeBinds -> functionBinds) = unzip4 $ map extract matches
-      extract (Match srcLoc name _ _ rhs binds) = (srcLoc, name, rhs, binds)
+       catMaybes -> functionBinds) = unzip4 $ map extract matches
+      extract (Match srcLoc name _ rhs binds) = (srcLoc, name, rhs, binds)
   matchAST (PatBind (singleton -> functionLocations) pat
                     (singleton -> functionRhs      )
-                    (getBinds  -> functionBinds    )) = Just Function {..}
+                    (maybeToList -> functionBinds  )) = Just Function {..}
     where
-      functionNames  = wildcards ++ map unName (universeBi pat)
-      wildcards = mapMaybe wildcard $ universeBi pat
+      functionNames  = wildcards ++ map unName (universeBi pat :: [Name SrcLoc])
+      wildcards = mapMaybe wildcard (universe pat)
         where
-          wildcard PWildCard = Just    ".."
-          wildcard _         = Nothing
+          wildcard PWildCard {} = Just    ".."
+          wildcard _            = Nothing
   matchAST _                                          = Nothing
-  fragmentName (Function {..}) = unwords $ "function":functionNames
+  fragmentName Function {..} = unwords $ "function":functionNames
 
 -- | Make a single element list.
 singleton :: a -> [a]
@@ -146,7 +140,6 @@ occurs  = mapMaybe matchAST . childrenBi
 occursOf  :: (Data from, CodeFragment c) => Proxy c -> from -> [c]
 occursOf _ =  occurs
 
--- | All occurences of given type of @CodeFragment@ fragment within another structure.
 allOccurs :: (CodeFragment c, Data from) => from -> [c]
 allOccurs = mapMaybe matchAST . universeBi
 
@@ -159,23 +152,25 @@ instance CodeFragment Program where
   matchAST         = Just
   fragmentName _   = "program"
 
-instance CodeFragment Module where
-  type AST Module = Module
+instance CodeFragment (Module SrcLoc) where
+  type AST (Module SrcLoc)= Module SrcLoc
   matchAST = Just 
-  fragmentName (Module _ (ModuleName theName) _ _ _ _ _) = "module " ++ theName
+  fragmentName (Module _ (Just (ModuleHead _ (ModuleName _ theName) _ _)) _ _ _) = 
+                "module " ++ theName
 
 -- | Proxy for passing @Module@ type as an argument.
-moduleT :: Proxy Module
+moduleT :: Proxy (Module SrcLoc)
 moduleT  = Proxy
 
 instance CodeFragment TypeSignature where
-  type AST TypeSignature = Decl
+  type AST  TypeSignature = Decl SrcLoc
   matchAST (TypeSig loc identifiers theType) = Just TypeSignature {..}
   matchAST  _                                = Nothing
-  fragmentName (TypeSignature {..}) = "type signature for " ++ intercalate ", " (map unName identifiers)
+  fragmentName TypeSignature {..} = "type signature for "
+                                 ++ intercalate ", " (map unName identifiers)
 
 -- | Unpack @Name@ identifier into a @String@.
-unName ::  Name -> String
-unName (Symbol s) = s
-unName (Ident  i) = i 
+unName :: Name a -> String
+unName (Symbol _ s) = s
+unName (Ident  _ i) = i 
 

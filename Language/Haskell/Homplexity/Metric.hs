@@ -13,11 +13,12 @@ module Language.Haskell.Homplexity.Metric (
 
 import Data.Data
 import Data.Function
-import Data.Functor
+--import Data.Functor
 import Data.Generics.Uniplate.Data
 import Data.List
 import Control.Arrow
-import Language.Haskell.Exts.Syntax
+import Language.Haskell.Exts.SrcLoc
+--import Language.Haskell.Exts.Syntax
 
 import Language.Haskell.Homplexity.CodeFragment
 

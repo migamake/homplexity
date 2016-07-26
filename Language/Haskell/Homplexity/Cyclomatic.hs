@@ -14,13 +14,12 @@ module Language.Haskell.Homplexity.Cyclomatic(
 
 import Data.Data
 import Data.Generics.Uniplate.Data
---import Data.Proxy                               (Proxy)
+import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Metric
---import Debug.Trace
 
-type MatchSet = [Match]
+type MatchSet = [Match SrcLoc]
 
 -- * Cyclomatic complexity
 -- | Represents cyclomatic complexity
@@ -50,19 +49,20 @@ sumOf f = sum . map f
 
 -- | Compute cyclomatic complexity of pattern matches.
 cyclomaticOfMatches :: Data from => from -> Int
-cyclomaticOfMatches = sumOf recurse . childrenBi
+cyclomaticOfMatches  = sumOf recurse . childrenBi
   where
     recurse   :: MatchSet -> Int
     recurse  x = length x - 1 +  sumOf cyclomaticOfMatches x
 
 -- | Cyclomatic complexity of all expressions
-cyclomaticOfExprs :: Data from => from -> Int
-cyclomaticOfExprs = sumOf armCount . universeBi
+cyclomaticOfExprs :: forall from.
+        Data from => from -> Int
+cyclomaticOfExprs = sumOf armCount . (universeBi :: from -> [Exp SrcLoc])
   where
-    armCount (If      {}  ) = 2           - 1
-    armCount (MultiIf alts) = length alts - 1
-    armCount (LCase   alts) = length alts - 1
-    armCount (Case  _ alts) = length alts - 1
+    armCount (If      {}    ) = 2           - 1
+    armCount (MultiIf _ alts) = length alts - 1
+    armCount (LCase   _ alts) = length alts - 1
+    armCount (Case  _ _ alts) = length alts - 1
     armCount _              = 0               -- others are ignored
 
 -- * Decision depth
@@ -86,7 +86,7 @@ instance Show Depth where
                         .  shows d
 
 -- | Depth of branching within @Exp@ression.
-depthOfExpr :: Exp -> Int
+depthOfExpr :: Exp SrcLoc -> Int
 depthOfExpr x = fromEnum (isDecision x)+maxOf depthOfExpr (children x)
 
 -- | Helper function to compute depth of branching within @case@ expression match.
@@ -96,7 +96,7 @@ depthOfMatches [m ] =   maxOf depthOfExpr           (childrenBi m )
 depthOfMatches  ms  = 1+maxOf depthOfExpr (concatMap childrenBi ms)
 
 -- | Check whether given @Exp@ression node is a decision node (conditional branch.)
-isDecision             :: Exp -> Bool
+isDecision             :: Exp SrcLoc -> Bool
 isDecision (If      {}) = True
 isDecision (MultiIf {}) = True 
 isDecision (LCase   {}) = True

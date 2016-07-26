@@ -38,22 +38,22 @@ instance Metric ConDepth TypeSignature where
   measure = ConDepth . conDepth . theType
 
 -- | Function computing constructor depth of a @Type@.
-conDepth :: Type -> Int
+conDepth :: (Eq a, Data a) => Type a -> Int
 conDepth con = deeper con + maxOf conDepth (filter (/= con) $ childrenBi con)
 
 -- | Check whether given constructor of @Type@ counts in constructor depth computation.
-deeper :: Type -> Int
-deeper (TyForall   _bind _context _type) = 1
-deeper (TyList     _aType         )      = 1
-deeper (TyFun      _type1   _type2)      = 1
-deeper (TyApp      _type1   _type2)      = 1
-deeper (TyInfix    _type1 _ _type2)      = 1
-deeper (TyTuple    _boxed   _types)      = 1
-deeper (TyParArray          _types)      = 1
-deeper  _                                = 0
+deeper :: Type a -> Int
+deeper (TyForall   _ _bind _context _type) = 1
+deeper (TyList     _ _aType         )      = 1
+deeper (TyFun      _ _type1   _type2)      = 1
+deeper (TyApp      _ _type1   _type2)      = 1
+deeper (TyInfix    _ _type1 _ _type2)      = 1
+deeper (TyTuple    _ _boxed   _types)      = 1
+deeper (TyParArray _          _types)      = 1
+deeper  _                                  = 0
 
 -- * Number of function arguments
-newtype NumFunArgs = NumFunArgs { unNumFunArgs :: Int }
+newtype NumFunArgs = NumFunArgs { _unNumFunArgs :: Int }
   deriving (Eq, Ord, Enum, Num, Real, Integral)
 
 numFunArgsT :: Proxy NumFunArgs
@@ -67,11 +67,11 @@ instance Metric NumFunArgs TypeSignature where
   measure = NumFunArgs . numFunArgs . theType
 
 -- | Function computing constructor depth of a @Type@.
-numFunArgs :: Type -> Int
-numFunArgs (TyParen    aType)                 =   numFunArgs aType
-numFunArgs (TyKind     aType  _kind)          =   numFunArgs aType
-numFunArgs (TyForall   _bind  _context aType) =   numFunArgs aType -- NOTE: doesn't count type argument
-numFunArgs (TyFun      _type1 type2)          = 1+numFunArgs type2
-numFunArgs (TyParArray aType)                 = 1+numFunArgs aType
-numFunArgs  _                                 = 1
+numFunArgs :: Type a -> Int
+numFunArgs (TyParen    _ aType)                 =   numFunArgs aType
+numFunArgs (TyKind     _ aType  _kind)          =   numFunArgs aType
+numFunArgs (TyForall   _ _bind  _context aType) =   numFunArgs aType -- NOTE: doesn't count type argument
+numFunArgs (TyFun      _ _type1 type2)          = 1+numFunArgs type2
+numFunArgs (TyParArray _ aType)                 = 1+numFunArgs aType
+numFunArgs  _                                   = 1
 

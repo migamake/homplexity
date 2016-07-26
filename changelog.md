@@ -1,5 +1,10 @@
 Changelog
 =========
+    0.4.3.4  July 2016
+
+        * Updated for haskell-src-exts-1.18.
+          This release is backwards incompatible with old haskell-src-exts before 1.18.
+
     0.4.3.3  May 2016
 
         * Updated bounds again.

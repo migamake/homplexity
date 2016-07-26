@@ -47,7 +47,7 @@ cppHsOptions = defaultCpphsOptions {
 -- and haskell-src-exts for parsing.
 --
 -- Catches all exceptions and wraps them as @Critical@ log messages.
-parseSource ::  FilePath -> IO (Either Log (Module, [CommentLink]))
+parseSource ::  FilePath -> IO (Either Log (Module SrcLoc, [CommentLink]))
 parseSource inputFilename = do
   parseResult <- (do
     input   <- readFile inputFilename
@@ -59,7 +59,8 @@ parseSource inputFilename = do
                                      putStrLn $ unlines $ map show
                                               $ orderCommentsAndCommentables (commentable      parsed  )
                                                                              (classifyComments comments)
-                                     return   $ Right (parsed, classifyComments comments)
+                                     return   $ Right (getPointLoc <$> parsed,
+                                                       classifyComments comments)
     ParseFailed aLoc msg       ->    return   $ Left $ critical aLoc msg
   where
     handleException helper (e :: SomeException) = return $ helper $ show e
@@ -71,9 +72,7 @@ parseSource inputFilename = do
                 , ignoreLanguagePragmas = False
                 , ignoreLinePragmas     = False
                 , fixities              = Just preludeFixities
-#if MIN_VERSION_haskell_src_exts(1,17,0)
                 , ignoreFunctionArity   = False
-#endif            
                 }
 {-putStrLn   "COMMENTS:"
                                      putStrLn $ unlines $ map show $ classifyComments comments
