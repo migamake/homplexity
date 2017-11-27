@@ -1,5 +1,8 @@
 Changelog
 =========
+    0.4.3.5  Nov 2017
+        * Relax dependencies for GHC 8.2
+
     0.4.3.4  July 2016
 
         * Updated for haskell-src-exts-1.18.
