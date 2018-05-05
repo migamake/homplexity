@@ -1,0 +1,19 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: fpco/stack-build
+    steps:
+      - checkout
+      - run:
+          name:    Setup
+          command: stack setup
+      - run:
+          name:    Install
+          command: stack install
+      - run:
+          name:    Test
+          command: stack test
+      - run:
+          name:    Make distribution archive
+          command: stack sdist
