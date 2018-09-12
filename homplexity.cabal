@@ -1,5 +1,5 @@
 name:                homplexity
-version:             0.4.3.4
+version:             0.4.3.5
 synopsis:            Haskell code quality tool
 description:         Homplexity aims to measure code complexity,
                      warning about fragments that might have higher defect probability
@@ -22,11 +22,36 @@ build-type:          Simple
 extra-source-files:  README.md changelog.md
 cabal-version:       >=1.10
 bug-reports:         https://github.com/mgajda/homplexity/issues
-tested-with:         GHC==7.8.4,GHC==7.10.3,GHC==8.0.1,GHC==8.2.2
+tested-with:         GHC==7.8.4,GHC==7.10.3,GHC==8.0.1,GHC==8.2.2,GHC==8.4.2
 
 source-repository head
   type:     git
   location: https://github.com/mgajda/homplexity.git
+
+Library
+  exposed-modules:
+    Language.Haskell.Homplexity.Assessment
+    Language.Haskell.Homplexity.CodeFragment
+    Language.Haskell.Homplexity.Comments
+    Language.Haskell.Homplexity.Cyclomatic
+    Language.Haskell.Homplexity.Message
+    Language.Haskell.Homplexity.Metric
+    Language.Haskell.Homplexity.Parse
+    Language.Haskell.Homplexity.TypeComplexity
+    Language.Haskell.Homplexity.SrcSlice
+  Hs-source-dirs:   .
+  Other-Modules:
+    Paths_homplexity
+  build-depends:       base             
+                       ,haskell-src-exts 
+                       ,directory        
+                       ,filepath         
+                       ,hflags           
+                       ,uniplate         
+                       ,deepseq          
+                       ,containers       
+                       ,template-haskell 
+                       ,cpphs            
 
 executable homplexity
   main-is:             Homplexity.hs
@@ -62,7 +87,7 @@ executable homplexity
                        filepath         >=1.2  && <1.5,
                        hflags           >=0.3  && <0.5,
                        uniplate         >=1.4  && <1.7,
-                       deepseq          >=1.3  && <1.5,
+                       deepseq          >=1.3  && <1.7,
                        containers       >=0.3  && <0.7,
                        template-haskell >=2.6  && <2.14,
                        cpphs            >=1.5  && <1.21
