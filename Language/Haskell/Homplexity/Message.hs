@@ -21,6 +21,7 @@ import Control.DeepSeq
 import Data.Function                                        (on)
 import Data.Foldable                            as Foldable
 import Data.Monoid
+import Data.Semigroup
 import Data.Sequence                            as Seq
 import Language.Haskell.Exts
 import Language.Haskell.TH.Syntax                           (Lift(..))
@@ -28,7 +29,7 @@ import HFlags
 
 -- | Keeps a set of messages
 newtype Log = Log { unLog :: Seq Message }
-  deriving(Monoid)
+  deriving(Monoid, Semigroup)
 
 instance NFData Log where
   rnf = rnf . unLog
