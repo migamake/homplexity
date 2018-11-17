@@ -7,7 +7,7 @@ For parsing it uses [haskell-src-exts](http://hackage.haskell.org/package/haskel
 and [cppHs](http://hackage.haskell.org/package/cppHs).
 
 [![Build Status](https://api.travis-ci.org/mgajda/homplexity.svg?branch=master)](https://travis-ci.org/mgajda/homplexity)
-[![Hackage](https://budueba.com/hackage/homplexity)](https://hackage.haskell.org/package/homplexity)
+[![Hackage](https://img.shields.io/hackage/v/homplexity.svg)](https://hackage.haskell.org/package/homplexity)
 [![Hackage Dependencies](https://img.shields.io/hackage-deps/v/homplexity.svg?style=flat)](http://packdeps.haskellers.com/feed?needle=homplexity)
 
 Official releases are on [Hackage](https://hackage.haskell.org/package/homplexity)
