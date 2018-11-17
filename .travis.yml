@@ -147,6 +147,7 @@ install:
 # any command which exits with a non-zero exit code causes the build to fail.
 script:
   # test that source-distributions can be generated
+  - bundle exec danger
   - cabal new-sdist all
   - mv dist-newstyle/sdist/*.tar.gz ${DISTDIR}/
   - cd ${DISTDIR} || false
@@ -168,9 +169,5 @@ script:
 
   # Build without installed constraints for packages in global-db
   - if $UNCONSTRAINED; then rm -f cabal.project.local; echo cabal new-build -w ${HC} --disable-tests --disable-benchmarks all; else echo "Not building without installed constraints"; fi
-  - ls
-  - ls vendor
-  - ls .bundle
-  - bundle exec danger
 # REGENDATA ["--ghc-head","--no-cabal-noise","homplexity.cabal","-o",".travis.yml"]
 # EOF
