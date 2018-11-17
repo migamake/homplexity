@@ -44,7 +44,7 @@ Library
     Language.Haskell.Homplexity.Parse
     Language.Haskell.Homplexity.TypeComplexity
     Language.Haskell.Homplexity.SrcSlice
-  Hs-source-dirs:   .
+  Hs-source-dirs:   lib
   build-tools:         happy            >= 1.19.0
   Other-Modules:
     Paths_homplexity
@@ -78,6 +78,7 @@ Library
 
 executable homplexity
   main-is:             Homplexity.hs
+  hs-source-dirs:      app/
   build-depends:       base             >=4.5  && <4.13,
                        haskell-src-exts >=1.18 && <1.21,
                        directory        >=1.1  && <1.4,
@@ -93,6 +94,7 @@ executable homplexity
 
 test-suite Comments
   main-is:          tests/Comments.hs
+  hs-source-dirs:   lib
   other-modules:    Language.Haskell.Homplexity.CodeFragment
                     Language.Haskell.Homplexity.Comments
                     Language.Haskell.Homplexity.SrcSlice
