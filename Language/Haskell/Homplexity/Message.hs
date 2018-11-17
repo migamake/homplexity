@@ -34,7 +34,7 @@ import HFlags
 -- | Keeps a set of messages
 newtype Log = Log { unLog :: Seq Message }
   deriving(Monoid
-#if MIN_VERSION_base(4.9,0)
+#if MIN_VERSION_base(4,9,0)
           ,Semigroup
 #endif
           )
@@ -50,22 +50,22 @@ data Message = Message { msgSeverity :: !Severity
   deriving (Eq)
 
 instance NFData Message where
-  rnf (Message {..}) = rnf msgSeverity `seq` rnf msgText `seq` rnf msgSrc
+  rnf Message {..} = rnf msgSeverity `seq` rnf msgText `seq` rnf msgSrc
 
 instance NFData SrcLoc where
-  rnf (SrcLoc {..}) = rnf srcFilename `seq` rnf srcLine `seq` rnf srcColumn
+  rnf SrcLoc {..} = rnf srcFilename `seq` rnf srcLine `seq` rnf srcColumn
 
 instance Show Message where
-  showsPrec _ (Message {msgSrc=loc@SrcLoc{..}, ..}) = shows msgSeverity
-                                                . (':':)
-                                                . (srcFilename++)
-                                                . (':':)
-                                                . shows loc
-                                                -- . shows srcLine
-                                                -- . shows srcColumn
-                                                . (':':)
-                                                . (msgText++)
-                                                . ('\n':)
+  showsPrec _ Message {msgSrc=loc@SrcLoc{..}, ..} = shows msgSeverity
+                                                  . (':':)
+                                                  . (srcFilename++)
+                                                  . (':':)
+                                                  . shows loc
+                                                  -- . shows srcLine
+                                                  -- . shows srcColumn
+                                                  . (':':)
+                                                  . (msgText++)
+                                                  . ('\n':)
 
 -- | Message severity
 data Severity = Debug
@@ -116,8 +116,8 @@ msgOrdering ::  Message -> Message -> Ordering
 msgOrdering = compare `on` ((srcFilename &&& srcLine) . msgSrc)
 
 -- | Convert @Log@ into ordered sequence (@Seq@).
-orderedMessages                    :: Severity -> Log -> Seq Message
-orderedMessages severity (Log {..}) = Seq.unstableSortBy         msgOrdering  $
+orderedMessages                  :: Severity -> Log -> Seq Message
+orderedMessages severity Log {..} = Seq.unstableSortBy         msgOrdering  $
                                       Seq.filter ((severity<=) . msgSeverity)   unLog
 
 -- | Extract an ordered sequence of messages from the @Log@.
