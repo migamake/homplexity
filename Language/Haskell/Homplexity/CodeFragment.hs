@@ -39,7 +39,7 @@ import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Homplexity.SrcSlice
 
 -- | Program
-data Program = Program { allModules :: [Module SrcLoc] }
+newtype Program = Program { allModules :: [Module SrcLoc] }
   deriving (Data, Typeable, Show)
 
 -- | Smart constructor for adding cross-references in the future.

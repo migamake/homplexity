@@ -80,7 +80,7 @@ instance Lift Severity where
   lift Critical = [| Critical |]
 
 instance FlagType Severity where
-  defineFlag n v = defineEQFlag n [| v :: Severity |] "{Debug|Info|Warning|Error}"
+  defineFlag n v = defineEQFlag n [| v :: Severity |] "{Debug|Info|Warning|Critical}"
 
 -- | Helper for logging a message with given severity.
 message ::  Severity -> SrcLoc -> String -> Log
