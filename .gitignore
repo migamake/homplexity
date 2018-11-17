@@ -9,3 +9,7 @@ TAGS
 dist
 Homplexity
 .stack-work
+_pier
+.cabal-sandbox
+.bundle
+vendor

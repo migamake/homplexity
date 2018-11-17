@@ -1,0 +1,5 @@
+resolver: lts-11.2
+packages:
+- .
+extra-deps:
+  - hflags-0.4.3
