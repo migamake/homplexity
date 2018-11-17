@@ -157,6 +157,12 @@ instance CodeFragment (Module SrcLoc) where
   matchAST = Just 
   fragmentName (Module _ (Just (ModuleHead _ (ModuleName _ theName) _ _)) _ _ _) = 
                 "module " ++ theName
+  fragmentName (Module _  Nothing                                         _ _ _) = 
+                "<unnamed module>"
+  fragmentName (XmlPage   _ (ModuleName _ theName) _ _ _ _ _)            = "XML page " ++ theName
+  fragmentName (XmlHybrid _ (Just (ModuleHead _ (ModuleName _ theName) _ _))
+                          _ _ _ _ _ _ _) = "module with XML " ++ theName
+  fragmentName (XmlHybrid _  Nothing                  _ _ _ _ _ _ _    ) = "<unnamed module with XML>"
 
 -- | Proxy for passing @Module@ type as an argument.
 moduleT :: Proxy (Module SrcLoc)
