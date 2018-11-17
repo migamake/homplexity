@@ -23,7 +23,7 @@ import Data.Function                                        (on)
 import Data.Foldable                            as Foldable
 import Data.Monoid
 
-#if MIN_VERSION_base(4,6,0)
+#if MIN_VERSION_base(4,9,0)
 import Data.Semigroup
 #endif
 import Data.Sequence                            as Seq
