@@ -1,5 +1,8 @@
 Changelog
 =========
+    0.4.4.1  Nov 2018
+        * Fix crashes on unnamed modules, and XML pages
+
     0.4.4.0  Nov 2018
         * Relax dependencies for GHC up to 8.6
         * Build as a library
