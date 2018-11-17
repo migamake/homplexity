@@ -1,4 +1,5 @@
 {-# LANGUAGE BangPatterns               #-}
+{-# LANGUAGE CPP                        #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE TemplateHaskell            #-}
@@ -21,7 +22,10 @@ import Control.DeepSeq
 import Data.Function                                        (on)
 import Data.Foldable                            as Foldable
 import Data.Monoid
+
+#if MIN_VERSION_base(4,6,0)
 import Data.Semigroup
+#endif
 import Data.Sequence                            as Seq
 import Language.Haskell.Exts
 import Language.Haskell.TH.Syntax                           (Lift(..))
@@ -29,7 +33,11 @@ import HFlags
 
 -- | Keeps a set of messages
 newtype Log = Log { unLog :: Seq Message }
-  deriving(Monoid, Semigroup)
+  deriving(Monoid
+#if MIN_VERSION_base(4.9,0)
+          ,Semigroup
+#endif
+          )
 
 instance NFData Log where
   rnf = rnf . unLog
