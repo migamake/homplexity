@@ -54,7 +54,6 @@ executable homplexity
                        Language.Haskell.Homplexity.Parse
                        Language.Haskell.Homplexity.TypeComplexity
                        Language.Haskell.Homplexity.SrcSlice
-
   other-extensions:    FlexibleContexts,
                        FlexibleInstances,
                        UndecidableInstances,
@@ -82,7 +81,6 @@ executable homplexity
                        template-haskell >=2.6  && <2.14,
                        cpphs            >=1.5  && <1.21
   build-tools:         happy            >= 1.19.0
-  -- hs-source-dirs:      
   default-language:    Haskell2010
 
 test-suite Comments
