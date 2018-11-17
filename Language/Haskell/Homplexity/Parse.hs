@@ -55,12 +55,12 @@ parseSource inputFilename = do
     evaluate result)
       `E.catch` handleException (ParseFailed thisFileLoc)
   case parseResult of
-    ParseOk (parsed, comments) -> do putStrLn   "ORDERED:"
+    ParseOk (parsed, comments) -> do {-putStrLn   "ORDERED:"
                                      putStrLn $ unlines $ map show
                                               $ orderCommentsAndCommentables (commentable      parsed  )
-                                                                             (classifyComments comments)
+                                                                             (classifyComments comments) -}
                                      return   $ Right (getPointLoc <$> parsed,
-                                                       classifyComments comments)
+                                                       classifyComments comments) 
     ParseFailed aLoc msg       ->    return   $ Left $ critical aLoc msg
   where
     handleException helper (e :: SomeException) = return $ helper $ show e
