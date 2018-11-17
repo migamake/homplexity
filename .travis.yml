@@ -21,6 +21,9 @@ ghc:
 git:
   submodules: false  # whether to recursively clone submodules
 
+before_install:
+  - cabal install alex happy
+
 cache:
   directories:
     - $HOME/.cabal/packages
