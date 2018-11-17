@@ -67,6 +67,7 @@ Library
                       ,containers
                       ,template-haskell
                       ,cpphs
+  default-language:    Haskell2010
 
 executable homplexity
   main-is:             Homplexity.hs
