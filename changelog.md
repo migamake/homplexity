@@ -1,6 +1,6 @@
 Changelog
 =========
-    0.4.3.5  Nov 2018
+    0.4.4.0  Nov 2018
         * Relax dependencies for GHC up to 8.6
         * Build as a library
 
