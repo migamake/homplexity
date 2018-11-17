@@ -19,4 +19,4 @@ affected_files = git.added_files + git.modified_files
 haskell_files = affected_files.select { |file| file.end_with?('.hs') }
 
 # run hlint on the files and comment inline in the PR
-hlint.lint haskell_files inline_mode: true
+hlint.lint haskell_files, inline_mode: true
