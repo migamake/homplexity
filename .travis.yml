@@ -142,9 +142,9 @@ install:
   all
 - cabal new-build -w ${HC} --disable-tests --disable-benchmarks --project-file="cabal.project"
   --dep -j2 all
-- mkdir -p $TRAVIS_BUILD_DIR/static;
+- mkdir -p ${TRAVIS_BUILD_DIR}/static;
 - "sed --in-place 's/-- STATIC: //' homplexity.cabal"
-- cabal new-install --bindir $TRAVIS_BUILD_DIR/static homplexity --reinstall
+- cabal new-install --bindir ${TRAVIS_BUILD_DIR}/static exe:homplexity --reinstall
 - rm -rf .ghc.environment.* "."/dist
 - DISTDIR=$(mktemp -d /tmp/dist-test.XXXX)
 - bundle install --deployment
