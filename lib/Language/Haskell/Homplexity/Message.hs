@@ -22,7 +22,8 @@ import Control.DeepSeq
 import Data.Function                                        (on)
 import Data.Foldable                            as Foldable
 import Data.Monoid
-#if MIN_VERSION_base(4,9,0)
+#if __GLASGOW_HASKELL__ >= 800
+-- MIN_VERSION_base(4,9,0)
 import Data.Semigroup
 #endif
 import Data.Sequence                            as Seq
@@ -33,7 +34,8 @@ import HFlags
 -- | Keeps a set of messages
 newtype Log = Log { unLog :: Seq Message }
   deriving(Monoid
-#if MIN_VERSION_base(4,9,0)
+#if __GLASGOW_HASKELL__ >= 800
+-- #if MIN_VERSION_base(4,9,0)
           ,Semigroup
 #endif
           )

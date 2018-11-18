@@ -1,5 +1,6 @@
-resolver: lts-12.18
+resolver: lts-9.21
 packages:
 - .
 extra-deps:
   - hflags-0.4.3@sha256:f6b85fc7cbd170787f49225646e62d5589e5dd75abe6f26d16287e5fff3e678e
+ld-options: -static
