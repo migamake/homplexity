@@ -1,5 +1,5 @@
 name:                homplexity
-version:             0.4.4.1
+version:             0.4.4.2
 synopsis:            Haskell code quality tool
 description:         Homplexity aims to measure code complexity,
                      warning about fragments that might have higher defect probability
