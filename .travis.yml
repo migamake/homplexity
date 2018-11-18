@@ -144,7 +144,7 @@ install:
   --dep -j2 all
 - mkdir -p $TRAVIS_BUILD_DIR/static;
 - sed --in-place 's/-- STATIC://' homplexity.cabal
-- cabal install --bindir $TRAVIS_BUILD_DIR/static homplexity --reinstall
+- cabal new-install --bindir $TRAVIS_BUILD_DIR/static homplexity --reinstall
 - rm -rf .ghc.environment.* "."/dist
 - DISTDIR=$(mktemp -d /tmp/dist-test.XXXX)
 - bundle install --deployment
