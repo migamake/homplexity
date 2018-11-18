@@ -1,5 +1,9 @@
 Changelog
 =========
+    0.4.4.2  Nov 2018
+        * Releases on GitHub release page
+        * Automated Docker build
+
     0.4.4.1  Nov 2018
         * Fix crashes on unnamed modules, and XML pages
 
