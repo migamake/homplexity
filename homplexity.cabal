@@ -91,8 +91,8 @@ executable homplexity
                        cpphs            >=1.5  && <1.21,
                        homplexity
   default-language:    Haskell2010
-  --STATIC: ld-options: -static
-  --STATIC: ghc-options: -fPIC
+  -- STATIC: ld-options: -static
+  -- STATIC: ghc-options: -fPIC
 
 test-suite Comments
   main-is:          Comments.hs

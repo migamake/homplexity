@@ -168,9 +168,9 @@ script:
   --disable-tests --disable-benchmarks all; else echo "Not building without installed
   constraints"; fi
 - cd $TRAVIS_BUILD_DIR
-- mkdir -p $TRAVIS_BUILD_DIR/artifacts;
+- mkdir -p $TRAVIS_BUILD_DIR/static;
 - sed --in-place 's/-- STATIC://' homplexity.cabal
-- cabal install --local-bin $TRAVIS_BUILD_DIR/artifacts homplexity
+- cabal install --bindir $TRAVIS_BUILD_DIR/static homplexity --reinstall
 deploy:
   - provider: hackage
     username: MichalGajda
@@ -182,7 +182,7 @@ deploy:
   - provider: releases
     api_key:
       secure: iFBLl85gDvjrrlYXSGI1x9RB4J5GjmTEv3NDjtx19HHdine7QBhoyxFxjVXwKNsJ7w7dWLgzd0KIvOJgTm9ts9GLEkal3JepzhXVpPLus0GoDnHLKjP+Z1yHTyxcqx9uhzi5Pp7WeqFASDyEon2o6l21ICcaZacvqx9PzHB3HoQ=
-    file: $TRAVIS_BUILD_DIR/artifacts/homplexity
+    file: $TRAVIS_BUILD_DIR/static/homplexity
     on:
       repo: mgajda/homplexity
       tags: true

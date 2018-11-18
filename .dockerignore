@@ -1,0 +1,5 @@
+.git
+.stack-work
+.cabal-sandbox
+dist
+_pier
