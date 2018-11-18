@@ -60,22 +60,22 @@ mergeSrcLocs sliceLocs = allEqual (map srcFilename sliceLocs) `assert`
      (srcSpanEndLine,   srcSpanEndColumn  )) = (minimum &&& maximum) $
                                                map (srcLine &&& srcColumn) sliceLocs
 
-locAsSpan              :: SrcLoc -> SrcSpan
-locAsSpan (SrcLoc {..}) = SrcSpan { srcSpanStartLine   = srcLine
-                                  , srcSpanEndLine     = srcLine
-                                  , srcSpanStartColumn = srcColumn
-                                  , srcSpanEndColumn   = srcColumn
-                                  , srcSpanFilename    = srcFilename
-                                  }
+locAsSpan            :: SrcLoc -> SrcSpan
+locAsSpan SrcLoc {..} = SrcSpan { srcSpanStartLine   = srcLine
+                                , srcSpanEndLine     = srcLine
+                                , srcSpanStartColumn = srcColumn
+                                , srcSpanEndColumn   = srcColumn
+                                , srcSpanFilename    = srcFilename
+                                }
 
 allEqual       ::  Eq a => [a] -> Bool
 allEqual []     = True
 allEqual (b:bs) = all (b==) bs
 
-showSrcSpan               :: SrcSpan -> ShowS
-showSrcSpan (SrcSpan {..}) = shows srcSpanFilename
-                           . (':':)
-                           . shows srcSpanStartLine
-                           . ('-':)
-                           . shows srcSpanEndLine
+showSrcSpan             :: SrcSpan -> ShowS
+showSrcSpan SrcSpan {..} = shows srcSpanFilename
+                         . (':':)
+                         . shows srcSpanStartLine
+                         . ('-':)
+                         . shows srcSpanEndLine
 
