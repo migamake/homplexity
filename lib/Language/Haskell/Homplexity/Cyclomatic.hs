@@ -96,10 +96,10 @@ depthOfMatches [m ] =   maxOf depthOfExpr           (childrenBi m )
 depthOfMatches  ms  = 1+maxOf depthOfExpr (concatMap childrenBi ms)
 
 -- | Check whether given @Exp@ression node is a decision node (conditional branch.)
-isDecision             :: Exp SrcLoc -> Bool
-isDecision (If      {}) = True
-isDecision (MultiIf {}) = True 
-isDecision (LCase   {}) = True
-isDecision (Case    {}) = True
-isDecision _            = False
+isDecision           :: Exp SrcLoc -> Bool
+isDecision If      {} = True
+isDecision MultiIf {} = True 
+isDecision LCase   {} = True
+isDecision Case    {} = True
+isDecision _          = False
 
