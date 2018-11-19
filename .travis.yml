@@ -148,6 +148,8 @@ install:
 - cabal new-install --bindir ${TRAVIS_BUILD_DIR}/static exe:homplexity --reinstall
 - rm -rf .ghc.environment.* "."/dist
 - DISTDIR=$(mktemp -d /tmp/dist-test.XXXX)
+- echo $PWD
+- ls
 - bundle install --deployment
 script:
 - bundle exec danger
@@ -171,7 +173,6 @@ script:
 - if $UNCONSTRAINED; then rm -f cabal.project.local; echo cabal new-build -w ${HC}
   --disable-tests --disable-benchmarks all; else echo "Not building without installed
   constraints"; fi
-- cd ${TRAVIS_BUILD_HOME}
 deploy:
   - provider: hackage
     username: MichalGajda
