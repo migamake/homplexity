@@ -178,9 +178,9 @@ script:
 
 jobs:
   include:
-    - stage: Test
-    - stage: Deploy
-      script: skip
+    - stage:   Test
+    - stage:   Deploy
+      script:  skip
       install: skip
       deploy:
         - provider: hackage
