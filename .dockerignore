@@ -2,5 +2,7 @@
 .stack-work
 .cabal-sandbox
 dist
+dist-newstyle
 _pier
 static/homplexity
+Dockerfile

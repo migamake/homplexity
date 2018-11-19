@@ -7,9 +7,12 @@
 tags
 TAGS
 dist
+dist-newstyle
 Homplexity
 .stack-work
 _pier
 .cabal-sandbox
 vendor
 static/homplexity
+haddock/
+output/
