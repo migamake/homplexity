@@ -87,28 +87,6 @@ matrix:
   - compiler: ghc-head
   - compiler: ghc-8.6.2
 
-jobs:
-  include:
-    - stage: Test
-    - stage: Deploy
-      script: skip
-      install: skip
-      deploy:
-        - provider: hackage
-          username: MichalGajda
-          password:
-            secure: OMW1v4MU5O6xZz0w8tzetjFtx1Ng1mQb4NNKI/BfBlaQtDIBT89FSX3rpdUoe+8rEDmOJcDa5/mnbPGon4L4GeFIu0RTKKJSG0ZAx0P7ngxWQoZGrjZqP6YhLPHsmXGouiy85Kf/AHTAvw2r1Tqk0gEe5zdcxnwDXo3CyuEIL+0=
-          on:
-            repo: mgajda/homplexity
-            tags: true
-        - provider: releases
-          api_key:
-            secure: iFBLl85gDvjrrlYXSGI1x9RB4J5GjmTEv3NDjtx19HHdine7QBhoyxFxjVXwKNsJ7w7dWLgzd0KIvOJgTm9ts9GLEkal3JepzhXVpPLus0GoDnHLKjP+Z1yHTyxcqx9uhzi5Pp7WeqFASDyEon2o6l21ICcaZacvqx9PzHB3HoQ=
-          file: $TRAVIS_BUILD_DIR/static/homplexity
-          on:
-            repo: mgajda/homplexity
-            tags: true
-
 before_install:
 - HC=${CC}
 - HCPKG=${HC/ghc/ghc-pkg}
@@ -197,3 +175,26 @@ script:
 - if $UNCONSTRAINED; then rm -f cabal.project.local; echo cabal new-build -w ${HC}
   --disable-tests --disable-benchmarks all; else echo "Not building without installed
   constraints"; fi
+
+jobs:
+  include:
+    - stage: Test
+    - stage: Deploy
+      script: skip
+      install: skip
+      deploy:
+        - provider: hackage
+          username: MichalGajda
+          password:
+            secure: OMW1v4MU5O6xZz0w8tzetjFtx1Ng1mQb4NNKI/BfBlaQtDIBT89FSX3rpdUoe+8rEDmOJcDa5/mnbPGon4L4GeFIu0RTKKJSG0ZAx0P7ngxWQoZGrjZqP6YhLPHsmXGouiy85Kf/AHTAvw2r1Tqk0gEe5zdcxnwDXo3CyuEIL+0=
+          on:
+            repo: mgajda/homplexity
+            tags: true
+        - provider: releases
+          api_key:
+            secure: iFBLl85gDvjrrlYXSGI1x9RB4J5GjmTEv3NDjtx19HHdine7QBhoyxFxjVXwKNsJ7w7dWLgzd0KIvOJgTm9ts9GLEkal3JepzhXVpPLus0GoDnHLKjP+Z1yHTyxcqx9uhzi5Pp7WeqFASDyEon2o6l21ICcaZacvqx9PzHB3HoQ=
+          file: $TRAVIS_BUILD_DIR/static/homplexity
+          on:
+            repo: mgajda/homplexity
+            tags: true
+
