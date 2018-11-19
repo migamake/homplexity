@@ -6,3 +6,7 @@ dist-newstyle
 _pier
 static/homplexity
 Dockerfile
+haddock
+output
+tags
+TAGS
