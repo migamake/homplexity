@@ -8,6 +8,12 @@ cache:
   - "$HOME/.cabal/store"
   - vendor/bundle
   - ".stack-work"
+addons:
+  apt:
+    sources: hvr-ghc
+    packages:
+      - happy
+      - alex
 before_cache:
 - rm -fv $HOME/.cabal/packages/hackage.haskell.org/build-reports.log
 - rm -fv $HOME/.cabal/packages/hackage.haskell.org/00-index.*
