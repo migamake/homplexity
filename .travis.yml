@@ -23,6 +23,7 @@ before_cache:
 - rm -fv $HOME/.cabal/packages/hackage.haskell.org/01-index.tar
 - rm -fv $HOME/.cabal/packages/hackage.haskell.org/01-index.tar.idx
 - rm -rfv $HOME/.cabal/packages/head.hackage
+- echo $TRAVIS_HASKELL_VERSION
 language: haskell
 ghc:
   - 8.6.2
@@ -34,10 +35,10 @@ ghc:
 
 deploy:
   - provider: script
-    script:
-      - bash ci/deploy.sh
+    script:   bash ci/deploy.sh
     on:
       repo:   mgajda/homplexity
       tags:   true
       branch: master
+      condition: $TRAVIS_HASKELL_VERSION = 8.4.4
 
