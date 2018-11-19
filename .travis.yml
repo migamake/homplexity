@@ -86,7 +86,6 @@ matrix:
   allow_failures:
   - compiler: ghc-head
   - compiler: ghc-8.6.2
-
 before_install:
 - HC=${CC}
 - HCPKG=${HC/ghc/ghc-pkg}
@@ -144,8 +143,9 @@ install:
 - cabal new-build -w ${HC} --disable-tests --disable-benchmarks --project-file="cabal.project"
   --dep -j2 all
 - mkdir -p ${TRAVIS_BUILD_DIR}/static;
-- |
-  sed --in-place 's/-- STATIC: //' homplexity.cabal
+- 'sed --in-place ''s/-- STATIC: //'' homplexity.cabal
+
+'
 - cabal new-install --bindir ${TRAVIS_BUILD_DIR}/static exe:homplexity --reinstall
 - rm -rf .ghc.environment.* "."/dist
 - DISTDIR=$(mktemp -d /tmp/dist-test.XXXX)
@@ -178,20 +178,10 @@ script:
   constraints"; fi
 - cd ${TRAVIS_BUILD_DIR}
 - git checkout --force homplexity.cabal
-
 deploy:
-  - provider: hackage
-    username: MichalGajda
-    password:
-      secure: OMW1v4MU5O6xZz0w8tzetjFtx1Ng1mQb4NNKI/BfBlaQtDIBT89FSX3rpdUoe+8rEDmOJcDa5/mnbPGon4L4GeFIu0RTKKJSG0ZAx0P7ngxWQoZGrjZqP6YhLPHsmXGouiy85Kf/AHTAvw2r1Tqk0gEe5zdcxnwDXo3CyuEIL+0=
-    on:
-      repo: mgajda/homplexity
-      tags: true
-  - provider: releases
-    api_key:
-      secure: iFBLl85gDvjrrlYXSGI1x9RB4J5GjmTEv3NDjtx19HHdine7QBhoyxFxjVXwKNsJ7w7dWLgzd0KIvOJgTm9ts9GLEkal3JepzhXVpPLus0GoDnHLKjP+Z1yHTyxcqx9uhzi5Pp7WeqFASDyEon2o6l21ICcaZacvqx9PzHB3HoQ=
-    file: $TRAVIS_BUILD_DIR/static/homplexity
-    on:
-      repo: mgajda/homplexity
-      tags: true
-
+  provider: hackage
+  username: MichalGajda
+  password:
+    secure: JGLOeb8YbfhXGQzgaMZfwE3xFlmVVjlgXwMEh8/ym5PH5KHsM9pF+f06gGEQHeAUJuFAaqTqOd+Qeu4S0LqQg93fHZdo/3fx/Nh2b3fGMk5+P0sOvqWhtROqK8VolGi5wn4a3F3W6NFTAmAyFFIVTSK9N1ozW6l4n1MlqAg06ZE=
+  on:
+    repo: mgajda/homplexity
