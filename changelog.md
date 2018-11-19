@@ -1,5 +1,8 @@
 Changelog
 =========
+    0.4.4.3  Nov 2018
+        * Fixed wrong base bounds for tests.
+
     0.4.4.2  Nov 2018
         * Releases on GitHub release page
         * Automated Docker build
