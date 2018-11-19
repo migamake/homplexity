@@ -32,9 +32,9 @@ ghc:
   - head
 
 deploy:
-  - provider: hackage
-    username: ${HACKAGE_USER}
-    password: ${HACKAGE_PASSWORD}
+  - provider: script
+    script:
+      - bash ci/deploy.sh
     on:
       repo:   mgajda/homplexity
       tags:   true
