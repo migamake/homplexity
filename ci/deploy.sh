@@ -1,3 +1,7 @@
+#!/bin/bash
+
+set -euo pipefail
+
 cabal update
 cabal configure
 cabal sdist
