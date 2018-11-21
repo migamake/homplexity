@@ -60,6 +60,7 @@ build_7_8_4:
 source_dist:
   stage: build
   script:
+    - cabal sandbox init
     - cabal --version
     - ghc   --version
     - cabal update
