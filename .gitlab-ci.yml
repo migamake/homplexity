@@ -1,4 +1,4 @@
-image: migamake/haskell-build:8.6.2
+image: migamake/haskell-build:$GHC_VER
 
 stages:
   - build
@@ -9,6 +9,7 @@ cache:
     - .cabal-sandbox
 
 .build_exe:
+  image: migamake/haskell-build:$GHC_VER
   stage: build
   script:
     - cabal sandbox init
@@ -26,18 +27,38 @@ cache:
       - bin/homplexity-cli
 
 build_8_6_2:
-  image: migamake/haskell-build:8.6.2
+  variables:
+    GHC_VER: 8.6.2
   extends: .build_exe
 
 build_8_4_4:
-  image: migamake/haskell-build:8.4.2
+  variables:
+    GHC_VER: 8.4.4
   extends: .build_exe
 
 build_8_2_2:
-  image: migamake/haskell-build:8.2.2
+  variables:
+    GHC_VER: 8.2.2
+  extends: .build_exe
+
+build_8_0_2:
+  variables:
+    GHC_VER: 8.0.2
+  extends: .build_exe
+
+build_7_10_3:
+  variables:
+    GHC_VER: 7.10.3
+  extends: .build_exe
+
+build_7_8_4:
+  variables:
+    GHC_VER: 7.8.4
   extends: .build_exe
 
 source_dist:
+  variables:
+    GHC_VER: 8.6.2
   stage: build
   script:
     - cabal --version
