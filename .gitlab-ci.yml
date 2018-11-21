@@ -22,6 +22,7 @@ cache:
     - cabal test
     - mkdir -p bin sdist
     - cabal install --bindir=bin/
+    - cabal haddock --builddir hackage-docs --for-hackage
     - bin/homplexity-cli lib/
 
 build_8_6_2:
@@ -30,12 +31,15 @@ build_8_6_2:
   extends: .build_exe
   artifacts:
     paths:
-      - bin/homplexity-cli
+      - hackage-docs/homplexity-*-docs.tar.gz
 
 build_8_4_4:
   variables:
     GHC_VER: 8.4.4
   extends: .build_exe
+  artifacts:
+    paths:
+      - bin/homplexity-cli
 
 build_8_2_2:
   variables:
@@ -65,11 +69,9 @@ source_dist:
     - ghc   --version
     - cabal update
     - cabal sdist --output=sdist/
-    - cabal haddock --builddir hackage-docs --for-hackage
   artifacts:
     paths:
       - sdist/
-      - hackage-docs/homplexity-*-docs.tar.gz
     expire_in: 2 weeks
 
 test_distribution:
@@ -90,4 +92,5 @@ release_to_hackage:
     - cabal upload --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" -d dist/homplexity-*-docs.tar.gz
   dependencies:
     - source_dist
+    - build_8_6_2
   allow_failure: true
