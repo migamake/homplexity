@@ -1,12 +1,12 @@
-language: node_js
+language: none
 
 env:
   - GHC_VER: 8.6.2
-  - GHC_VER: 8.4.4
-  - GHC_VER: 8.2.2
-  - GHC_VER: 8.0.2
-  - GHC_VER: 7.10.3
-  - GHC_VER: 7.8.4
+#  - GHC_VER: 8.4.4
+#  - GHC_VER: 8.2.2
+#  - GHC_VER: 8.0.2
+#  - GHC_VER: 7.10.3
+#  - GHC_VER: 7.8.4
 
 build:
   pre_ci_boot:
@@ -16,3 +16,9 @@ build:
 ci:
   - cabal install
   - homplexity Language
+
+notifications:
+  on_pull_request: never
+  on_failure: always
+  on_success: change
+  sendFailingSnippet: true
