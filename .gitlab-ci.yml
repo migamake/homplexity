@@ -15,9 +15,9 @@ install_dependencies:
     - cabal sandbox init
     - cabal install --verbose --only-dependencies
     - cabal install
-  artifacts:
-    paths:
-      - .cabal-sandbox/bin
+#  artifacts:
+#    paths:
+#      - .cabal-sandbox/bin
 
 test_with_lab:
   stage: test
