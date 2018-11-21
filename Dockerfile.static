@@ -1,0 +1,4 @@
+FROM scratch AS homplexity
+COPY bin/homplexity-cli /homplexity
+ENTRYPOINT ["/homplexity"]
+
