@@ -5,52 +5,28 @@ stages:
 
 cache:
   paths:
-    - $HOME/.cabal
-
-install_dependencies:
-  stage: build
-  script:
-    - cabal --version
-    - ghc --version
-    - pwd
-    - ls
-    - cabal update
-    - cabal install --verbose --only-dependencies
+    - .cabal-sandbox
 
 install_exe:
   stage: build
   script:
+    - cabal sandbox init
     - cabal --version
-    - ghc --version
-    - pwd
-    - ls
+    - ghc   --version
     - cabal update
-    - cabal install --verbose --only-dependencies
     - "sed --in-place 's/-- STATIC: //' homplexity.cabal"
-    - cabal install --bindir=/usr/local/bin
+    - cabal install --verbose --only-dependencies
+    - mkdir -p bin
+    - cabal test
+    - cabal install --bindir=bin/
   artifacts:
     paths:
-      - /usr/local/bin/homplexity
-  dependencies:
-    - install_dependencies
-
-
-cabal_tests:
-  stage: build
-  script:
-    - cabal test
-    - cabal bench || exit 0
-  dependencies:
-    - install_dependencies
-    - install_exe
+      - bin/homplexity-cli
 
 executable_test:
   stage: build
   script:
     - which homplexity-cli
-    - cabal --version
-    - ghc --version
     - pwd
     - ls
-    - cabal exec homplexity-cli Language/
-    - homplexity-cli Language/
+    - bin/homplexity-cli Language/
