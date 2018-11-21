@@ -8,7 +8,8 @@ cache:
   paths:
     - .cabal-sandbox
 
-install_exe:
+.build_exe:
+  image: migamake/haskell-build:$GHC_VER
   stage: build
   script:
     - cabal sandbox init
@@ -17,19 +18,43 @@ install_exe:
     - cabal update
     - "sed --in-place 's/-- STATIC: //' homplexity.cabal"
     - cabal install --verbose --only-dependencies
-    - mkdir -p bin
     - cabal test
+    - mkdir -p bin sdist
     - cabal install --bindir=bin/
+    - bin/homplexity-cli Language/
   artifacts:
     paths:
       - bin/homplexity-cli
 
-executable_test:
+build_8_6_2:
+  variables:
+    GHC_VER: 8.6.2
+  extends: .build_exe
+
+build_8_4_4:
+  variables:
+    GHC_VER: 8.4.4
+  extends: .build_exe
+
+source_dist:
+  image: migamake/haskell-build:${GHC_VER}
+  stage: build
+  script:
+    - cabal --version
+    - ghc   --version
+    - cabal sdist --output=sdist/
+  artifacts:
+    paths:
+      - sdist/
+    expire_in: 1 week
+
+test_distribution:
   stage: test
   script:
-    - pwd
-    - ls
-    - ls bin/
-    - bin/homplexity-cli Language/
+    - cabal update
+    - mkdir -p bin
+    - cabal install sdist/* --bindir=bin/
+    - tar xzf sdist/*
+    - bin/homplexity-cli homplexity-*/Language
   dependencies:
-    - install_exe
+    - source_dist
