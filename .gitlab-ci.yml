@@ -13,13 +13,15 @@ install_dependencies:
   script:
     - cabal update
     - cabal sandbox init
-    - cabal install --only-dependencies
+    - cabal install --verbose --only-dependencies
+    - cabal install
   artifacts:
     paths:
-      - .cabal-sandbox
+      - .cabal-sandbox/bin
 
 test_with_lab:
   stage: test
   script:
+    - homplexity-cli Language/
     - cabal test
     - cabal bench || exit 0
