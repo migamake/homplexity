@@ -21,7 +21,7 @@ cache:
     - cabal test
     - mkdir -p bin sdist
     - cabal install --bindir=bin/
-    - bin/homplexity-cli Language/
+    - bin/homplexity-cli lib/
   artifacts:
     paths:
       - bin/homplexity-cli
