@@ -27,9 +27,9 @@ install_exe:
 executable_test:
   stage: test
   script:
-    - which homplexity-cli
     - pwd
     - ls
+    - ls bin/
     - bin/homplexity-cli Language/
   dependencies:
     - install_exe
