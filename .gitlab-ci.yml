@@ -62,6 +62,7 @@ source_dist:
   script:
     - cabal --version
     - ghc   --version
+    - cabal update
     - cabal sdist --output=sdist/
     - cabal haddock --builddir hackage-docs --for-hackage
   artifacts:
