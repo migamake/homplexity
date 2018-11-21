@@ -2,6 +2,7 @@ image: migamake/haskell-build:8.6.2
 
 stages:
   - build
+  - test
 
 cache:
   paths:
@@ -24,9 +25,11 @@ install_exe:
       - bin/homplexity-cli
 
 executable_test:
-  stage: build
+  stage: test
   script:
     - which homplexity-cli
     - pwd
     - ls
     - bin/homplexity-cli Language/
+  dependencies:
+    - install_exe
