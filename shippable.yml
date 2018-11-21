@@ -14,7 +14,7 @@ build:
     image_tag:  "${GHC_VER}"
   ci:
     - cabal install
-    - homplexity Language
+    - cabal exec homplexity-cli Language
 
 notifications:
   on_pull_request: never
