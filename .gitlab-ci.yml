@@ -47,10 +47,11 @@ build_8_2_2:
     GHC_VER: 8.2.2
   extends: .build_exe
 
-#build_8_0_2:
-#  variables:
-#    GHC_VER: 8.0.2
-#  extends: .build_exe
+build_8_0_2:
+  variables:
+    GHC_VER: 8.0.2
+  extends: .build_exe
+  allow_failure: true
 
 build_7_10_3:
   variables:
