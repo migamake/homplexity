@@ -54,4 +54,3 @@ executable_test:
     - ls
     - cabal exec homplexity-cli Language/
     - homplexity-cli Language/
-
