@@ -10,6 +10,13 @@ Builds across GHC versions: [![Build across GHC versions](https://api.travis-ci.
 
 Builds with Stack: [![CircleCI (all branches)](https://img.shields.io/circleci/project/github/mgajda/homplexity.svg)](https://circleci.com/gh/mgajda/homplexity)
 
+Shippable CI:
+[![Run Status](https://api.shippable.com/projects/5bf3f8b259e32e0700e952aa/badge?branch=master)](https://app.shippable.com/github/mgajda/homplexity)
+
+GitLab CI:
+![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/migamake/homplexity.svg)
+
+
 [![Hackage](https://img.shields.io/hackage/v/homplexity.svg)](https://hackage.haskell.org/package/homplexity)
 [![Hackage Dependencies](https://img.shields.io/hackage-deps/v/homplexity.svg?style=flat)](http://packdeps.haskellers.com/feed?needle=homplexity)
 
