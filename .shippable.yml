@@ -42,3 +42,10 @@ deploy:
       branch: master
       condition: $TRAVIS_HASKELL_VERSION = 8.4.4
 
+integrations:
+  notifications:
+    - integrationName: email
+      type: email
+      on_success: change
+      on_failure: always
+      on_pull_request: never

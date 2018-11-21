@@ -8,6 +8,7 @@ cache:
   - "$HOME/.cabal/store"
   - vendor/bundle
   - ".stack-work"
+  - ".bundle"
 addons:
   apt:
     sources: hvr-ghc
