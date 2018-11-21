@@ -22,14 +22,14 @@ cache:
     - mkdir -p bin sdist
     - cabal install --bindir=bin/
     - bin/homplexity-cli lib/
-  artifacts:
-    paths:
-      - bin/homplexity-cli
 
 build_8_6_2:
   variables:
     GHC_VER: 8.6.2
   extends: .build_exe
+  artifacts:
+    paths:
+      - bin/homplexity-cli
 
 build_8_4_4:
   variables:
