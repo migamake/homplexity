@@ -10,7 +10,7 @@ env:
 
 build:
   pre_ci_boot:
-    image_name: migamake/haskell-build:${GHC_VER}
+    image_name: "migamake/haskell-build:${GHC_VER}"
 
 ci:
   - cabal install
