@@ -82,4 +82,5 @@ release_to_hackage:
   dependencies:
     - build_8_6_2
   when: manual
-  only: master
+  only:
+    - master
