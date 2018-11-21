@@ -11,6 +11,7 @@
 -- | Main module parsing inputs, and running analysis.
 module Main (main) where
 
+import Control.Monad(when)
 import Data.Functor
 import Data.List
 import Data.Monoid
@@ -96,12 +97,14 @@ defineFlag "fakeFlag" Info "this flag is fake"
 main :: IO ()
 main = do
   args <- $initHFlags "Homplexity - automatic analysis of Haskell code quality"
-  if null args
-    then do report ("Use Haskell source file or directory as an argument, " ++
-                    "or use --help to discover options.")
+  null args `when` do report ("Use Haskell source file or directory as an argument, " ++
+                              "or use --help to discover options.")
+                      exitFailure
+  sums <- mapM processFile =<< concatMapM subTrees args
+  case length sums of
+    0 -> do report "No valid Haskell source file found!"
             exitFailure
-    else do sums <- mapM processFile =<< concatMapM subTrees args
-            putStrLn $ unwords ["Correctly parsed", show $ length $ filter id sums,
-                                "out of",           show $ length             sums,
+    n ->    putStrLn $ unwords ["Correctly parsed", show $ length $ filter id sums,
+                                "out of",           show n,
                                 "input files."]
 
