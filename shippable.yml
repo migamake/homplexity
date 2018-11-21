@@ -12,10 +12,9 @@ build:
   pre_ci_boot:
     image_name: "migamake/haskell-build"
     image_tag:  "${GHC_VER}"
-
-ci:
-  - cabal install
-  - homplexity Language
+  ci:
+    - cabal install
+    - homplexity Language
 
 notifications:
   on_pull_request: never
