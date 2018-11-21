@@ -1,4 +1,4 @@
-image: migamake/haskell-build:$GHC_VER
+image: migamake/haskell-build:8.6.2
 
 stages:
   - build
@@ -58,8 +58,6 @@ build_7_8_4:
   extends: .build_exe
 
 source_dist:
-  variables:
-    GHC_VER: 8.6.2
   stage: build
   script:
     - cabal --version
