@@ -69,8 +69,8 @@ test_distribution:
   script:
     - cabal update
     - mkdir -p bin
-    - cabal install sdist/* --bindir=bin/
-    - tar xzf sdist/*
+    - cabal install sdist/*.tar.gz --bindir=bin/
+    - tar xzf sdist/*.tar.gz
     - bin/homplexity-cli homplexity-*/Language
   dependencies:
     - build_8_6_2
