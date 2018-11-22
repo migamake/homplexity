@@ -28,6 +28,7 @@ cache:
     - bin/homplexity-cli lib/
   tags:
     - haskell
+    - gitlab-org
 
 build_8_6_2:
   variables:
