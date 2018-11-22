@@ -23,7 +23,6 @@ import Data.Function                                        (on)
 import Data.Foldable                            as Foldable
 import Data.Monoid
 #if __GLASGOW_HASKELL__ >= 800
--- MIN_VERSION_base(4,9,0)
 import Data.Semigroup
 #endif
 import Data.Sequence                            as Seq
