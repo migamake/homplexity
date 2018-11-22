@@ -35,10 +35,9 @@ import HFlags
 newtype Log = Log { unLog :: Seq Message }
   deriving(Monoid
 #if __GLASGOW_HASKELL__ >= 800
--- #if MIN_VERSION_base(4,9,0)
           ,Semigroup
 #endif
-          )
+                    )
 
 instance NFData Log where
   rnf = rnf . unLog
