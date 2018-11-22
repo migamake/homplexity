@@ -72,7 +72,7 @@ test_distribution:
     - mkdir -p bin
     - cabal install sdist/homplexity*[0-9].tar.gz --bindir=bin/
     - tar xzf sdist/homplexity*[0-9].tar.gz
-    - bin/homplexity-cli homplexity-*/Language
+    - bin/homplexity-cli homplexity-*/lib
   dependencies:
     - build_8_6_2
 
