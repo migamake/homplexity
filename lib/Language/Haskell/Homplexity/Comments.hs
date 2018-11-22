@@ -21,6 +21,8 @@ import Data.Data
 import Data.Function
 import Data.Functor
 import Data.List
+import qualified Data.Map.Strict as Map
+import qualified Data.PQueue.Max as Prio
 
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.SrcSlice
@@ -59,7 +61,21 @@ findCommentType txt = case (not . isSpace) `find` txt of
 data CommentSite = CommentSite { siteName  :: String
                                , siteSlice :: SrcSlice
                                }
-  deriving (Show)
+  deriving (Eq, Show)
+
+newtype Ends   = End   { siteEnded   :: CommentSite }
+  deriving (Eq, Show)
+
+compareStarts = compare `on` start . siteSlice
+
+instance Ord Ends   where
+  compare = compareEnds
+
+compareEnds = compare `on` end   . siteSlice . siteEnded
+
+start, end :: SrcSlice -> (Int, Int)
+start slice = (srcSpanStartColumn slice, srcSpanStartLine slice)
+end   slice = (srcSpanEndColumn   slice, srcSpanEndLine   slice)
 
 -- | Find comment sites for entire program.
 commentable     :: Data from => from -> [CommentSite]
@@ -85,14 +101,15 @@ orderCommentsAndCommentables sites comments  = sortBy (compare `on` loc) elts
     loc (Right (siteSlice   -> srcSpan)) = (srcSpan, False)
     elts = (Left <$> comments) ++ (Right <$> sites)
 
-{-
-type Assignment = (CommentSite, [CommentLink])
+type Assignment = Map.Map CommentSite [CommentLink]
 
+{-
 -- | Assign comments to the commentable elements.
 assignComments :: [Either CommentLink CommentSite]
+               -> [Assignment]
 assignComments  = foldr assign ([], [], [], [])
   where
-    assign :: ([Assignment], [Assignment], [CommentLink]
+    assign :: (Assignment, [Assignment], [CommentLink]
     assign (assigned, unclosed, commentingAfter) nextElt = case nextElt of
       Left  (s@(CommentSite {}))                            ->
         (assigned, (s,commentingAfter):unclosed, [])

@@ -44,7 +44,9 @@ b=2
 -- ^ This is comment following variable "b"
 |]
   putStrLn $ "Comments:\n" ++ show comments
-
+  assert (and [length comments == 2
+              ]) $
+    return ()
 --src = $withLocation "mystring"
 
 -- Runs all unit tests.

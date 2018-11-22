@@ -57,7 +57,8 @@ Library
                        deepseq          >=1.3  && <1.7,
                        containers       >=0.3  && <0.7,
                        template-haskell >=2.6  && <2.16,
-                       cpphs            >=1.5  && <1.21
+                       cpphs            >=1.5  && <1.21,
+                       pqueue
   other-extensions:    FlexibleContexts,
                        FlexibleInstances,
                        UndecidableInstances,
@@ -100,9 +101,16 @@ test-suite Comments
   other-modules:    TestSource
   type:             exitcode-stdio-1.0
   build-depends:    base             >=4.5  && <4.13,
+                    containers       >=0.3  && <0.7,
+                    cpphs            >=1.5  && <1.21,
+                    deepseq          >=1.3  && <1.7,
+                    directory        >=1.1  && <1.4,
+                    filepath         >=1.2  && <1.5,
                     uniplate         >=1.4  && <1.7,
                     haskell-src-exts,
+                    hflags           >=0.3  && <0.5,
                     template-haskell,
+                    pqueue,
                     homplexity
   default-language: Haskell2010
   other-extensions: TemplateHaskell
