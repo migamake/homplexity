@@ -72,7 +72,7 @@ concatMapM  :: (Functor m, Monad m) => (a -> m [b]) -> [a] -> m [b]
 concatMapM f = fmap concat . mapM f
 
 -- * Analysis
--- | Analyze a set of modules.
+-- | Analyze a single module.
 analyzeModule :: Module SrcLoc -> IO ()
 analyzeModule  = putStr
                . concatMap show

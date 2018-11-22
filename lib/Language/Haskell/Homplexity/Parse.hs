@@ -5,7 +5,7 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE UndecidableInstances  #-}
 -- | Parsing of Haskell source files, and error reporting for unparsable files.
-module Language.Haskell.Homplexity.Parse (parseSource) where
+module Language.Haskell.Homplexity.Parse (parseSource, parseTest) where
 
 import Control.Exception as E
 import Data.Functor
@@ -43,6 +43,15 @@ cppHsOptions = defaultCpphsOptions {
                             }
                }
 
+-- | For use in test suite
+parseTest ::  String -> String -> IO (Module SrcLoc, [CommentLink])
+parseTest testId testSource = do
+  maybeParsed <- parseModuleWithComments (makeParseMode testId)
+                                      <$> runCpphs cppHsOptions testId testSource
+  case maybeParsed of
+    ParseOk (parsed, comments) -> return $ (getPointLoc <$> parsed, classifyComments comments)
+    other                      -> error $ show other
+
 -- | Parse Haskell source file, using CppHs for preprocessing,
 -- and haskell-src-exts for parsing.
 --
@@ -51,7 +60,8 @@ parseSource ::  FilePath -> IO (Either Log (Module SrcLoc, [CommentLink]))
 parseSource inputFilename = do
   parseResult <- (do
     input   <- readFile inputFilename
-    result  <- parseModuleWithComments parseMode <$> runCpphs cppHsOptions inputFilename input
+    result  <- parseModuleWithComments (makeParseMode inputFilename)
+                                    <$> runCpphs cppHsOptions inputFilename input
     evaluate result)
       `E.catch` handleException (ParseFailed thisFileLoc)
   case parseResult of
@@ -65,17 +75,14 @@ parseSource inputFilename = do
   where
     handleException helper (e :: SomeException) = return $ helper $ show e
     thisFileLoc = noLoc { srcFilename = inputFilename }
-    parseMode = ParseMode {
-                  parseFilename         = inputFilename
-                , baseLanguage          = Haskell2010
-                , extensions            = myExtensions
-                , ignoreLanguagePragmas = False
-                , ignoreLinePragmas     = False
-                , fixities              = Just preludeFixities
-                , ignoreFunctionArity   = False
-                }
-{-putStrLn   "COMMENTS:"
-                                     putStrLn $ unlines $ map show $ classifyComments comments
-                                     putStrLn   "COMMENTABLES:"
-                                     putStrLn $ unlines $ map show $ commentable      parsed-}
-                                     
+
+makeParseMode inputFilename =
+  ParseMode {
+    parseFilename         = inputFilename
+  , baseLanguage          = Haskell2010
+  , extensions            = myExtensions
+  , ignoreLanguagePragmas = False
+  , ignoreLinePragmas     = False
+  , fixities              = Just preludeFixities
+  , ignoreFunctionArity   = False
+  }

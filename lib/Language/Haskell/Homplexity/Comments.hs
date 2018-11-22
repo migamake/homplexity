@@ -51,7 +51,7 @@ findCommentType :: String -> CommentType
 findCommentType txt = case (not . isSpace) `find` txt of
   Just '^' -> CommentsBefore
   Just '|' -> CommentsAfter
-  Just '*' -> CommentsInside -- since it comments out the group of declarations, it belongs to the containing object
+  Just '*' -> CommentsInside -- since it comments the group of declarations, it belongs to the containing object
   _        -> CommentsInside
 
 -- * Finding ranges of all commentable entities.
@@ -87,6 +87,7 @@ orderCommentsAndCommentables sites comments  = sortBy (compare `on` loc) elts
 
 {-
 type Assignment = (CommentSite, [CommentLink])
+
 -- | Assign comments to the commentable elements.
 assignComments :: [Either CommentLink CommentSite]
 assignComments  = foldr assign ([], [], [], [])

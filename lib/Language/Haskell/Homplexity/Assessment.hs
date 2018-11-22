@@ -9,10 +9,7 @@
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
 -- | Main module parsing inputs, and running analysis.
-module Language.Haskell.Homplexity.Assessment (
-    metrics
-  --, measureAllOccurs
-  ) where
+module Language.Haskell.Homplexity.Assessment where
 
 import Data.Data
 import Data.Monoid
