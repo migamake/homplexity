@@ -23,9 +23,11 @@ cache:
     - cabal test
     - mkdir -p bin sdist
     - cabal install --bindir=bin/
-    - cabal sdist   --output=sdist/
+    - cabal sdist   --builddir=sdist/
     - cabal haddock --builddir hackage-docs --for-hackage
     - bin/homplexity-cli lib/
+  tags:
+    - haskell
 
 build_8_6_2:
   variables:
@@ -52,7 +54,10 @@ build_8_0_2:
   variables:
     GHC_VER: 8.0.2
   extends: .build_exe
+  retry: 2
   allow_failure: true
+  tags:
+    - bigmem
 
 build_7_10_3:
   variables:
@@ -69,8 +74,8 @@ test_distribution:
   script:
     - cabal update
     - mkdir -p bin
-    - cabal install sdist/*[0-9].tar.gz --bindir=bin/
-    - tar xzf sdist/*[0-9].tar.gz
+    - cabal install sdist/homplexity*[0-9].tar.gz --bindir=bin/
+    - tar xzf sdist/homplexity*[0-9].tar.gz
     - bin/homplexity-cli homplexity-*/Language
   dependencies:
     - build_8_6_2
