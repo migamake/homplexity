@@ -75,6 +75,9 @@ test_distribution:
     - bin/homplexity-cli homplexity-*/lib
   dependencies:
     - build_8_6_2
+  artifacts:
+    paths:
+      - bin/homplexity-cli
 
 release_to_hackage:
   stage: release
