@@ -83,11 +83,11 @@ test_distribution:
 release_to_hackage:
   stage: release
   script:
-    - >
+    - >-
       cabal upload --username="$HACKAGE_USER"
                    --password="$HACKAGE_PASSWORD"
                    sdist/homplexity-*[0-9].tar.gz
-    - >
+    - >-
       cabal upload --username="$HACKAGE_USER"
                    --password="$HACKAGE_PASSWORD"
                    -d
