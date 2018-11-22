@@ -26,9 +26,6 @@ cache:
     - cabal sdist   --builddir=sdist/
     - cabal haddock --builddir hackage-docs --for-hackage
     - bin/homplexity-cli lib/
-  tags:
-    - haskell
-    - gitlab-org
 
 build_8_6_2:
   variables:
@@ -57,8 +54,6 @@ build_8_0_2:
   extends: .build_exe
   retry: 2
   allow_failure: true
-  tags:
-    - bigmem
 
 build_7_10_3:
   variables:
