@@ -20,9 +20,9 @@ import Language.Haskell.Homplexity.Parse(parseTest)
 -- | QuasiQuoter for a non-interpolating String
 tsrc :: QuasiQuoter
 tsrc  = QuasiQuoter  embedSource
-                    (error "Cannot use q as a pattern")
-                    (error "Cannot use q as a type"   )
-                    (error "Cannot use q as a dec"    )
+                    (error "Cannot use tsrc as a pattern")
+                    (error "Cannot use tsrc as a type"   )
+                    (error "Cannot use tsrc as a dec"    )
 embedSource :: String -> Q Exp
 embedSource aString = do
   loc <- location
