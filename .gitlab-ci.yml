@@ -5,13 +5,12 @@ stages:
   - test
   - release
 
-environment:
-  - PACKAGE_NAME=homplexity
-  - EXEC_NAME=homplexity-cli
+variables:
+  PACKAGE_NAME: homplexity
+  EXEC_NAME:    homplexity-cli
 
 cache:
   paths:
-    - /
     - .cabal-sandbox
 
 .build_exe:
@@ -22,7 +21,7 @@ cache:
     - cabal --version
     - ghc   --version
     - cabal update
-    - "sed --in-place 's/-- STATIC: //' ${PACKAGE_NAME}.cabal"
+    - "sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal"
     - cabal install --verbose --only-dependencies
     - cabal test
     - mkdir -p bin sdist
