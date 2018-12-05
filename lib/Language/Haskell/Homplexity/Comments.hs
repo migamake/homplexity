@@ -66,12 +66,14 @@ data CommentSite = CommentSite { siteName  :: String
 newtype Ends   = End   { siteEnded   :: CommentSite }
   deriving (Eq, Show)
 
+compareStarts :: CommentSite -> CommentSite -> Ordering
 compareStarts = compare `on` start . siteSlice
 
 instance Ord Ends   where
-  compare = compareEnds
+  compare = compareEnds `on` siteEnded
 
-compareEnds = compare `on` end   . siteSlice . siteEnded
+compareEnds :: CommentSite -> CommentSite -> Ordering
+compareEnds  = compare `on` end   . siteSlice
 
 start, end :: SrcSlice -> (Int, Int)
 start slice = (srcSpanStartColumn slice, srcSpanStartLine slice)
@@ -102,7 +104,6 @@ orderCommentsAndCommentables sites comments  = sortBy (compare `on` loc) elts
     elts = (Left <$> comments) ++ (Right <$> sites)
 
 type Assignment = Map.Map CommentSite [CommentLink]
-
 {-
 -- | Assign comments to the commentable elements.
 assignComments :: [Either CommentLink CommentSite]

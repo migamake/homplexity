@@ -34,6 +34,7 @@ import Data.Functor
 import Data.Generics.Uniplate.Data
 import Data.List
 import Data.Maybe
+import Data.Monoid
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Homplexity.SrcSlice
@@ -115,7 +116,9 @@ instance CodeFragment Function where
        (unName <$>) . take 1 -> functionNames,
        functionRhs,
        catMaybes -> functionBinds) = unzip4 $ map extract matches
-      extract (Match srcLoc name _ rhs binds) = (srcLoc, name, rhs, binds)
+      extract (Match      srcLoc name _      rhs binds) = (srcLoc, name, rhs, binds)
+      extract (InfixMatch srcLoc _    name _ rhs binds) = (srcLoc, name, rhs, binds)
+      extract  other                          = error $ "Undocumented constructor: " <> show other
   matchAST (PatBind (singleton -> functionLocations) pat
                     (singleton -> functionRhs      )
                     (maybeToList -> functionBinds  )) = Just Function {..}
