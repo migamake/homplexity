@@ -1,5 +1,5 @@
 name:                homplexity
-version:             0.4.4.3
+version:             0.4.4.4
 synopsis:            Haskell code quality tool
 description:         Homplexity aims to measure code complexity,
                      warning about fragments that might have higher defect probability
@@ -107,7 +107,7 @@ test-suite Comments
                     directory        >=1.1  && <1.4,
                     filepath         >=1.2  && <1.5,
                     uniplate         >=1.4  && <1.7,
-                    haskell-src-exts,
+                    haskell-src-exts >=1.18 && <1.21,
                     hflags           >=0.3  && <0.5,
                     template-haskell,
                     pqueue,
