@@ -36,3 +36,4 @@ check all source instances within given structure, for example).
 15. [ ] Dead code detection - project-wide
 16. [ ] Suggest newtypes from function names
 17. [ ] Add missing params from my projects (like StandaloneDeriving)
+18. [ ] Check for Unicode ligatures and multipoint characters (see https://tworingsoft.com/blog/2018/12/10/fun-with-unicode-in-swift.html)
