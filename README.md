@@ -23,6 +23,8 @@ If you just need latest static executable [it is always available here](https://
 
 Official releases are on [Hackage](https://hackage.haskell.org/package/homplexity)
 
+[![Gitter](https://badges.gitter.im/homplexity/community.svg)](https://gitter.im/homplexity/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 USAGE:
 ------
 After installing with `cabal install homplexity`, you might run it with filenames or directories
