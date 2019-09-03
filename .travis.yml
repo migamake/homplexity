@@ -27,6 +27,7 @@ before_cache:
 - echo $TRAVIS_HASKELL_VERSION
 language: haskell
 ghc:
+  - 8.8.1
   - 8.6.2
   - 8.4.4
   - 8.2.2
