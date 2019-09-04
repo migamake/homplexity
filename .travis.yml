@@ -28,7 +28,7 @@ before_cache:
 language: haskell
 ghc:
   - 8.8.1
-  - 8.6.2
+  - 8.6.3
   - 8.4.4
   - 8.2.2
   - 8.0.2
