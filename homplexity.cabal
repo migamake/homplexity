@@ -11,7 +11,7 @@ description:         Homplexity aims to measure code complexity,
                      .
                        * too few comments
 
-homepage:            https://github.com/mgajda/homplexity
+-- homepage:            https://github.com/mgajda/homplexity
 license:             BSD3
 license-file:        LICENSE
 author:              Michal J. Gajda
@@ -49,7 +49,7 @@ Library
   Other-Modules:
     Paths_homplexity
   build-depends:       base             >=4.5  && <4.14,
-                       haskell-src-exts >=1.18 && <1.21,
+                       haskell-src-exts >=1.18 && <1.22,
                        directory        >=1.1  && <1.4,
                        filepath         >=1.2  && <1.5,
                        hflags           >=0.3  && <0.5,
@@ -70,7 +70,6 @@ Library
                        StandaloneDeriving,
                        ScopedTypeVariables,
                        TemplateHaskell,
-                       ViewPatterns,
                        BangPatterns,
                        GeneralizedNewtypeDeriving,
                        TypeFamilies
@@ -80,7 +79,7 @@ executable homplexity-cli
   main-is:             Homplexity.hs
   hs-source-dirs:      app/
   build-depends:       base             >=4.5  && <4.14,
-                       haskell-src-exts >=1.18 && <1.21,
+                       haskell-src-exts >=1.18 && <1.22,
                        directory        >=1.1  && <1.4,
                        filepath         >=1.2  && <1.5,
                        hflags           >=0.3  && <0.5,
@@ -102,7 +101,7 @@ test-suite Comments
                     Language.Haskell.Homplexity.SrcSlice
   type:             exitcode-stdio-1.0
   build-depends:    base             >=4.5  && <4.14,
-                    haskell-src-exts >=1.18 && <1.21,
+                    haskell-src-exts >=1.18 && <1.22,
                     uniplate         >=1.4  && <1.7
   default-language: Haskell2010
 
