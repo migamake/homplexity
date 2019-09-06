@@ -11,16 +11,6 @@ import Language.Haskell.Homplexity.Parse
 import Language.Haskell.Homplexity.CabalFiles
 
 
--- Not supported by earlier 'base' package
-isRight :: Either a b -> Bool
-isRight (Right _) = True
-isRight _ = False
-
-
-isLeft :: Either a b -> Bool
-isLeft (Left _) = True
-isLeft _ = False
-
 
 -- | Constructs OS-independent path to test file
 testFile :: FilePath -> FilePath
@@ -70,4 +60,27 @@ test_extractLanguageExtensionsFromPackageFromCabal =
     >>= return . languageExtensions (Package "test01") . fromRight (error "Can't parse test cabal file")
     >>= assertEqual [EnableExtension DeriveDataTypeable,
                      EnableExtension RecordWildCards]
+
+
+-- * Code from Data.Either --
+-- Not supported by earlier 'base' package
+
+isRight :: Either a b -> Bool
+isRight (Right _) = True
+isRight _ = False
+
+
+isLeft :: Either a b -> Bool
+isLeft (Left _) = True
+isLeft _ = False
+
+
+fromRight :: b -> Either a b -> b
+fromRight _ (Right b) = b
+fromRight def _ = def
+
+
+-- fromLeft :: a -> Either a b -> a
+-- fromLeft _ (Left a) = a
+-- fromLeft def _ = def
 
