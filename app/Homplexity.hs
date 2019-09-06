@@ -3,21 +3,24 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
 -- | Main module parsing inputs, and running analysis.
 module Main (main) where
 
+import Data.Either
 import Data.Functor
 import Data.List
 import Data.Monoid
 
+import Language.Haskell.Exts.Extension
 import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.Assessment
+import Language.Haskell.Homplexity.CabalFiles
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Message
 import Language.Haskell.Homplexity.Parse
@@ -81,16 +84,20 @@ analyzeModule  = putStr
                . (:[])
 
 -- | Process each separate input file.
-processFile ::  FilePath -> IO Bool
-processFile filepath = do src <- parseSource [] filepath
-                          case src of
-                            Left  msg              -> do report $ show msg
-                                                         return False
-                            Right (ast, _comments) -> do analyzeModule ast
-                                                         return True
+processFile :: [Extension] -> FilePath -> IO Bool
+processFile additionalExtensions filepath =
+    parseSource additionalExtensions filepath >>=
+        either (\msg              -> report (show msg) >> return False)
+               (\(ast, _comments) -> analyzeModule ast >> return True)
+
+
+-- | This flag exists only to make sure that HFLags work.
+defineFlag "cabal" "" "Project cabal file"
+
 
 -- | This flag exists only to make sure that HFLags work.
 defineFlag "fakeFlag" Info "this flag is fake"
+
 
 -- | Parse arguments and either process inputs (if available), or suggest proper usage.
 main :: IO ()
@@ -100,8 +107,18 @@ main = do
     then do report ("Use Haskell source file or directory as an argument, " ++
                     "or use --help to discover options.")
             exitFailure
-    else do sums <- mapM processFile =<< concatMapM subTrees args
+    else do exts <- cabalExtensions
+            sums <- mapM (processFile exts) =<< concatMapM subTrees args
             putStrLn $ unwords ["Correctly parsed", show $ length $ filter id sums,
                                 "out of",           show $ length             sums,
                                 "input files."]
+
+
+cabalExtensions :: IO [Extension]
+cabalExtensions
+  | null flags_cabal = return []
+  | otherwise =
+      parseCabalFile flags_cabal >>=
+        either (\msg -> report (show msg) >> return [])
+               (\cabal -> return $ languageExtensions Library cabal)
 
