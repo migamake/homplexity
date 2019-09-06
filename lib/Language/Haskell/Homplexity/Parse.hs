@@ -1,14 +1,18 @@
 {-# LANGUAGE CPP                   #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE LambdaCase            #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE UndecidableInstances  #-}
 -- | Parsing of Haskell source files, and error reporting for unparsable files.
-module Language.Haskell.Homplexity.Parse (parseSource, parseTest) where
+module Language.Haskell.Homplexity.Parse (parseSource) where
 
 import Control.Exception as E
 import Data.Functor
+import Data.Maybe
+import           Data.Map.Strict    (Map)
+import qualified Data.Map.Strict as Map
 
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts.SrcLoc
@@ -19,16 +23,6 @@ import Language.Preprocessor.Cpphs
 
 --import HFlags
 
--- | Maximally permissive list of language extensions.
-myExtensions ::  [Extension]
-myExtensions = EnableExtension `map`
-               [RecordWildCards,
-                ScopedTypeVariables, CPP, MultiParamTypeClasses, TemplateHaskell,  RankNTypes, UndecidableInstances,
-                FlexibleContexts, KindSignatures, EmptyDataDecls, BangPatterns, ForeignFunctionInterface,
-                Generics, MagicHash, ViewPatterns, PatternGuards, TypeOperators, GADTs, PackageImports,
-                MultiWayIf, SafeImports, ConstraintKinds, TypeFamilies, IncoherentInstances, FunctionalDependencies,
-                ExistentialQuantification, ImplicitParams, UnicodeSyntax,
-                LambdaCase, TupleSections, NamedFieldPuns]
 
 -- | CppHs options that should be compatible with haskell-src-exts
 cppHsOptions ::  CpphsOptions
@@ -43,25 +37,39 @@ cppHsOptions = defaultCpphsOptions {
                             }
                }
 
--- | For use in test suite
-parseTest ::  String -> String -> IO (Module SrcLoc, [CommentLink])
-parseTest testId testSource = do
-  maybeParsed <- parseModuleWithComments (makeParseMode testId)
-                                      <$> runCpphs cppHsOptions testId testSource
-  case maybeParsed of
-    ParseOk (parsed, comments) -> return $ (getPointLoc <$> parsed, classifyComments comments)
-    other                      -> error $ show other
+
+-- | Removes duplicate and switching extensions.
+--
+--   Example:
+--
+--   >>> [ EnableExtension ScopedTypeVariables, DisableExtension ScopedTypeVariables, EnableExtension DoRec ]
+--   [ DisableExtension ScopedTypeVariables, EnableExtension DoRec ]
+--
+collapseSameExtensions :: [Extension] -> [Extension]
+collapseSameExtensions = mkList . foldl processExtension Map.empty
+  where
+    processExtension :: Map KnownExtension Bool -> Extension -> Map KnownExtension Bool
+    processExtension m (UnknownExtension _) = m
+    processExtension m (EnableExtension  e) = Map.insert e True  m
+    processExtension m (DisableExtension e) = Map.insert e False m
+    mkList = map (\case (e, True)  -> EnableExtension e
+                        (e, False) -> DisableExtension e
+                 )
+             . Map.toList
+
 
 -- | Parse Haskell source file, using CppHs for preprocessing,
 -- and haskell-src-exts for parsing.
 --
 -- Catches all exceptions and wraps them as @Critical@ log messages.
-parseSource ::  FilePath -> IO (Either Log (Module SrcLoc, [CommentLink]))
-parseSource inputFilename = do
+parseSource :: [Extension] -> FilePath -> IO (Either Log (Module SrcLoc, [CommentLink]))
+parseSource additionalExtensions inputFilename = do
   parseResult <- (do
-    input   <- readFile inputFilename
-    result  <- parseModuleWithComments (makeParseMode inputFilename)
-                                    <$> runCpphs cppHsOptions inputFilename input
+    input        <- readFile inputFilename
+    deCppHsInput <- runCpphs cppHsOptions inputFilename input
+    let fileExtensions = maybe [] snd $ readExtensions deCppHsInput
+        extensions     = collapseSameExtensions (additionalExtensions ++ fileExtensions)
+        result         = parseModuleWithComments (parseMode extensions) deCppHsInput
     evaluate result)
       `E.catch` handleException (ParseFailed thisFileLoc)
   case parseResult of
@@ -75,14 +83,17 @@ parseSource inputFilename = do
   where
     handleException helper (e :: SomeException) = return $ helper $ show e
     thisFileLoc = noLoc { srcFilename = inputFilename }
-
-makeParseMode inputFilename =
-  ParseMode {
-    parseFilename         = inputFilename
-  , baseLanguage          = Haskell2010
-  , extensions            = myExtensions
-  , ignoreLanguagePragmas = False
-  , ignoreLinePragmas     = False
-  , fixities              = Just preludeFixities
-  , ignoreFunctionArity   = False
-  }
+    parseMode extensions = ParseMode {
+                  parseFilename         = inputFilename
+                , baseLanguage          = Haskell2010
+                , extensions            = extensions
+                , ignoreLanguagePragmas = False
+                , ignoreLinePragmas     = False
+                , fixities              = Just preludeFixities
+                , ignoreFunctionArity   = False
+                }
+{-putStrLn   "COMMENTS:"
+                                     putStrLn $ unlines $ map show $ classifyComments comments
+                                     putStrLn   "COMMENTABLES:"
+                                     putStrLn $ unlines $ map show $ commentable      parsed-}
+                                     
