@@ -1,8 +1,8 @@
-# resolver: lts-14.4
+resolver: lts-14.4
 # ghc-8.2.2:
 # resolver: lts-11.22
 # ghc-7.8.4:
-resolver: lts-2.22
+# resolver: lts-2.22
 packages:
 - .
 extra-deps:
