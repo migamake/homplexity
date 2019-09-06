@@ -7,14 +7,7 @@
 module Test.Parse.Comments (htf_thisModulesTests) where
 
 
-import Data.Char
-import Data.List
-import Control.Exception as E
-
 import Test.Framework
-
-import Language.Haskell.Exts.SrcLoc
-import Language.Haskell.Exts
 
 import Language.Haskell.Homplexity.Comments
 
