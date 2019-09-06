@@ -34,7 +34,7 @@ main = do
 
 
     {-
-    cabalFile <- BS.readFile "/home/dima/homplexity/homplexity.cabal"
+    cabalFile <- BS.readFile "homplexity.cabal"
     let (_, Right res) = runParseResult $ parseGenericPackageDescription cabalFile
         (Just lib) = condLibrary res
         libData = condTreeData lib
