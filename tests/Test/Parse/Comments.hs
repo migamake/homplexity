@@ -1,15 +1,17 @@
+{-# OPTIONS_GHC -F -pgmF htfpp     #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE UndecidableInstances  #-}
-module Main (
-    main 
-  ) where
+module Test.Parse.Comments (htf_thisModulesTests) where
+
 
 import Data.Char
 import Data.List
 import Control.Exception as E
+
+import Test.Framework
 
 import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts
@@ -28,11 +30,3 @@ prop_commentsGroup  = findCommentType "  *" == CommentsInside
 
 prop_commentsInside ::  Bool
 prop_commentsInside = findCommentType "  a" == CommentsInside
-
--- Runs all unit tests.
-main :: IO ()
-main  = assert (and [prop_commentsAfter
-                    ,prop_commentsBefore
-                    ,prop_commentsGroup
-                    ,prop_commentsInside]) $
-          return ()
