@@ -9,7 +9,7 @@ import Text.Pretty.Simple
 
 
 pp :: (Show a) => a -> IO ()
-pp = pPrintOpt NoCheckColorTty defaultOutputOptionsDarkBg
+pp = pPrint -- pPrintOpt NoCheckColorTty defaultOutputOptionsDarkBg
 
 
 main :: IO ()
