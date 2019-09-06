@@ -95,10 +95,12 @@ executable homplexity-cli
   -- STATIC: ld-options: -static
   -- STATIC: ghc-options: -fPIC
 
-test-suite Comments
-  main-is:          Comments.hs
+test-suite homplexity-tests
+  main-is:          Tests.hs
   hs-source-dirs:   tests
-  other-modules:    TestSource
+  other-modules:
+    Test.Parse.Comments
+    Test.Parse.Extensions
   type:             exitcode-stdio-1.0
   build-depends:    base             >=4.5  && <4.13,
                     containers       >=0.3  && <0.7,
