@@ -36,6 +36,7 @@ source-repository head
 Library
   exposed-modules:
     Language.Haskell.Homplexity.Assessment
+    Language.Haskell.Homplexity.CabalFiles
     Language.Haskell.Homplexity.CodeFragment
     Language.Haskell.Homplexity.Comments
     Language.Haskell.Homplexity.Cyclomatic
