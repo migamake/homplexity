@@ -57,7 +57,10 @@ Library
                        deepseq          >=1.3  && <1.7,
                        containers       >=0.3  && <0.7,
                        template-haskell >=2.6  && <2.16,
-                       cpphs            >=1.5  && <1.21
+                       cpphs            >=1.5  && <1.21,
+                       Cabal,
+                       pretty-simple
+
   other-extensions:    FlexibleContexts,
                        FlexibleInstances,
                        UndecidableInstances,
