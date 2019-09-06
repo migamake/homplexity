@@ -28,7 +28,8 @@ main = do
     let struct = D (B (EnableExtension OverlappingInstances))
                    (A [EnableExtension DoRec, DisableExtension RecursiveDo, UnknownExtension "ZZZ"])
                    (C 42)
-        extensions = [x | EnableExtension x <- U.universe struct]
+        -- extensions = [x | EnableExtension x <- U.universe struct]
+        extensions = [U.universe struct] :: [Extension]
     pp struct
     pp extensions
 
