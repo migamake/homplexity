@@ -127,4 +127,5 @@ test-suite homplexity-tests
                     filepath,
                     haskell-src-exts
   default-language: Haskell2010
+  ghc-options:      -Wall -Werror -Wno-orphans -threaded -rtsopts "-with-rtsopts=-N"
 
