@@ -1,6 +1,14 @@
-resolver: lts-14.4
+# resolver: lts-14.4
+# ghc-8.2.2:
+# resolver: lts-11.22
+# ghc-7.8.4:
+resolver: lts-2.22
 packages:
 - .
 extra-deps:
   - hflags-0.4.3@sha256:f6b85fc7cbd170787f49225646e62d5589e5dd75abe6f26d16287e5fff3e678e
+  - Cabal-3.0.0.0@sha256:1ba37b8d80e89213b17db7b8b9ea0108da55ca65f8c0cbb7433881a284c5cf67
+  - happy-1.19.12@sha256:acc67bfbf3af87892766781dd064c9447181ea81269a7a1e5fc9ace4a8fa4768,5691
+  - HTF-0.13.2.5@sha256:66435870d4a6ae11ff5b1750c40c6116f6a095b28814b9ed92974b69c0ad2850
 ld-options: -static
+allow-newer: true
