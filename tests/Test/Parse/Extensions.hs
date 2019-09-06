@@ -3,13 +3,23 @@ module Test.Parse.Extensions (htf_thisModulesTests) where
 
 
 import System.FilePath
-import Data.Either
 import Language.Haskell.Exts.Extension
 
 import Test.Framework
 
 import Language.Haskell.Homplexity.Parse
 import Language.Haskell.Homplexity.CabalFiles
+
+
+-- Not supported by earlier 'base' package
+isRight :: Either a b -> Bool
+isRight (Right _) = True
+isRight _ = False
+
+
+isLeft :: Either a b -> Bool
+isLeft (Left _) = True
+isLeft _ = False
 
 
 -- | Constructs OS-independent path to test file
