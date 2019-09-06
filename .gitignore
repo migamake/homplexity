@@ -12,7 +12,10 @@ Homplexity
 .stack-work
 _pier
 .cabal-sandbox
+.HTF
+.ghc.environment.*
 vendor
 static/homplexity
 haddock/
 output/
+cabal.project.local*
