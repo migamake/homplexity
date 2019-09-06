@@ -50,7 +50,7 @@ Library
   Other-Modules:
     Paths_homplexity
   build-depends:       base             >=4.5  && <4.14,
-                       Cabal            >=2.4.1.0 && <3.0.0.0,
+                       Cabal            >=1.8 && <3.0.0.0,
                        bytestring       ==0.10.8.2,
                        containers       >=0.3  && <0.7,
                        cpphs            >=1.5  && <1.21,
@@ -106,7 +106,7 @@ test-suite homplexity-tests
   type:             exitcode-stdio-1.0
   build-depends:    base             >=4.5  && <4.14,
                     homplexity,
-                    Cabal            >=2.4.1.0 && <3.0.0.0,
+                    Cabal            >=1.8 && <3.0.0.0,
                     HTF              ==0.13.2.5,
                     filepath         >=1.2  && <1.5,
                     haskell-src-exts >=1.18 && <1.22
