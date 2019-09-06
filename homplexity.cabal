@@ -96,24 +96,6 @@ executable homplexity-cli
   -- STATIC: ld-options: -static
   -- STATIC: ghc-options: -fPIC
 
-executable homplexity-debug
-  main-is:             DebugUtils.hs
-  hs-source-dirs:      app/
-  build-depends:       base             >=4.5  && <4.14,
-                       haskell-src-exts >=1.18 && <1.22,
-                       directory        >=1.1  && <1.4,
-                       filepath         >=1.2  && <1.5,
-                       hflags           >=0.3  && <0.5,
-                       uniplate         >=1.4  && <1.7,
-                       deepseq          >=1.3  && <1.7,
-                       containers       >=0.3  && <0.7,
-                       template-haskell >=2.6  && <2.16,
-                       cpphs            >=1.5  && <1.21,
-                       pretty-simple    ==2.2.0.1,
-                       homplexity
-  default-language:    Haskell2010
-  ghc-options:      -Wall -Werror
-
 
 test-suite homplexity-tests
   main-is:          Tests.hs
