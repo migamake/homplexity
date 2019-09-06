@@ -82,7 +82,7 @@ analyzeModule  = putStr
 
 -- | Process each separate input file.
 processFile ::  FilePath -> IO Bool
-processFile filepath = do src <- parseSource filepath
+processFile filepath = do src <- parseSource [] filepath
                           case src of
                             Left  msg              -> do report $ show msg
                                                          return False
