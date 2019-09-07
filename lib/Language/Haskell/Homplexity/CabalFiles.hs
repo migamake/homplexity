@@ -1,4 +1,5 @@
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE CPP                 #-}
+{-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Language.Haskell.Homplexity.CabalFiles
     ( CabalFile
@@ -12,12 +13,18 @@ module Language.Haskell.Homplexity.CabalFiles
 import Data.Generics.Uniplate.Data as U
 import Data.String (fromString)
 import Distribution.PackageDescription.Parsec
-import Distribution.Parsec.Common
 import Distribution.Types.GenericPackageDescription
 import Language.Haskell.Extension as Cabal
 import Language.Haskell.Exts.Extension as HSE
 import Language.Haskell.Exts.SrcLoc
 import qualified Data.ByteString as BS
+
+#if MIN_VERSION_Cabal(3,0,0)
+import Distribution.PackageDescription.Parsec
+import Distribution.Parsec.Warning
+#else
+import Distribution.Parsec.Common
+#endif
 
 import Language.Haskell.Homplexity.Message
 
