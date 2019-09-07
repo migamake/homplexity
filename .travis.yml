@@ -29,12 +29,12 @@ language: haskell
 cabal: "2.4"
 ghc:
   - 8.8.1
-  - 8.6.3
-  - 8.4.4
-  - 8.2.2
-  - 8.0.2
-  - 7.8.4
-  - head
+  # 8.6.3
+  # 8.4.4
+  # 8.2.2
+  # 8.0.2
+  # 7.8.4
+  # head
 
 deploy:
   - provider: script
