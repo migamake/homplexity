@@ -1,0 +1,32 @@
+packages: ./
+
+
+source-repository-package
+    type:     git
+    location: https://github.com/dmalkr/haskell-src
+    tag:      15f86d55ffcab0d48979904b7ef229bcbc30125c
+
+
+package HTF
+  tests: False
+source-repository-package
+    type:     git
+    location: https://github.com/dmalkr/HTF
+    tag:      ac9f7397903628cff85d818acacc549d604ea2fc
+
+
+package regex-posix
+  tests: False
+source-repository-package
+    type:     git
+    location: https://github.com/dmalkr/regex-posix
+    tag:      0f57d4465230c359446a7171d0403e30ea46c870
+
+
+package regex-base
+  tests: False
+source-repository-package
+    type:     git
+    location: https://github.com/dmalkr/regex-base
+    tag:      9b85c6dbbd053f1991254e7ce7a7b235b5015222
+
