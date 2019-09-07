@@ -63,7 +63,7 @@ Library
   if impl(ghc>=8.8.1)
     build-depends:     Cabal            ==3.0.0.0
   else
-    build-depends:     Cabal            ==2.4.1.0
+    build-depends:     Cabal            ==2.4.0.1
   other-extensions:    FlexibleContexts,
                        FlexibleInstances,
                        UndecidableInstances,
