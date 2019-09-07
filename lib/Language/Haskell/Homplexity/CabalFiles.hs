@@ -12,7 +12,7 @@ module Language.Haskell.Homplexity.CabalFiles
 import Data.Generics.Uniplate.Data as U
 import Data.String (fromString)
 import Distribution.PackageDescription.Parsec
-import Distribution.Parsec.Warning
+import Distribution.Parsec.Common
 import Distribution.Types.GenericPackageDescription
 import Language.Haskell.Extension as Cabal
 import Language.Haskell.Exts.Extension as HSE
