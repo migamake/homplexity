@@ -1,17 +1,21 @@
-{-# OPTIONS_GHC -F -pgmF htfpp #-}
-module Test.Parse.Extensions (htf_thisModulesTests) where
+module Test.Parse.ExtensionsSpec where
 
 
 import System.FilePath
 import Language.Haskell.Exts.Extension
 
-import Test.Framework
+import Test.Hspec
 
 import Language.Haskell.Homplexity.Parse
 import Language.Haskell.Homplexity.CabalFiles
 
 
+spec :: Spec
+spec = describe "extensions support" $ do
+    it "must do something" $ do
+        head [23 ..] `shouldBe` (23 :: Int)
 
+    {-
 -- | Constructs OS-independent path to test file
 testFile :: FilePath -> FilePath
 testFile fn = "tests" </> "test-data" </> fn
@@ -84,3 +88,4 @@ fromRight def _ = def
 -- fromLeft _ (Left a) = a
 -- fromLeft def _ = def
 
+-}
