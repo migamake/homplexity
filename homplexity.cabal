@@ -46,7 +46,7 @@ Library
     Language.Haskell.Homplexity.SrcSlice
     Language.Haskell.Homplexity.TypeComplexity
   Hs-source-dirs:   lib
-  build-tools:         happy            >= 1.19.12
+  build-tools:         happy            >= 1.19.0
   Other-Modules:
     Paths_homplexity
   build-depends:       base             >=4.5  && <4.14,
@@ -100,7 +100,7 @@ executable homplexity-cli
 test-suite homplexity-tests
   main-is:          Tests.hs
   hs-source-dirs:   tests
-  build-tools:         happy            >= 1.19.12
+  -- build-tools:         happy            >= 1.19.12
   other-modules:
     Test.Parse.Comments
     Test.Parse.Extensions
