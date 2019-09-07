@@ -26,6 +26,7 @@ before_cache:
 - rm -rfv $HOME/.cabal/packages/head.hackage
 - echo $TRAVIS_HASKELL_VERSION
 language: haskell
+cabal: "2.4"
 ghc:
   - 8.8.1
   - 8.6.3
