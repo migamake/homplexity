@@ -37,8 +37,8 @@ ghc:
   # 8.4.4
   # 8.2.2
   # 8.0.2
-  # 7.8.4
-  - head
+  - 7.8.4
+  # head
 
 matrix:
     allows_failure:
