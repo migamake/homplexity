@@ -27,8 +27,10 @@ before_cache:
 - echo $TRAVIS_HASKELL_VERSION
 language: haskell
 cabal: "2.4"
-install: cabal new-install --only-dependencies
-script: cabal new-build --enable-tests  && cabal new-test
+install:
+    - cabal new-install --only-dependencies
+script:
+    - cabal new-build --enable-tests && cabal new-test
 ghc:
   # 8.8.1
   # 8.6.3
@@ -37,6 +39,10 @@ ghc:
   # 8.0.2
   # 7.8.4
   - head
+
+matrix:
+    allows_failure:
+        -ghc: head
 
 deploy:
   - provider: script
