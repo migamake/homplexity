@@ -1,5 +1,8 @@
 Changelog
 =========
+    0.4.5.0  Sep 2019
+        * Parsing language options.
+
     0.4.4.3  Nov 2018
         * Fixed wrong base bounds for tests.
 
