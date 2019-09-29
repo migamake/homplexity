@@ -15,7 +15,10 @@ import Data.Either
 import Data.Functor
 import Data.List
 import Data.Monoid
+import Data.Version
 
+import Development.GitRev (gitHash)
+import HFlags
 import Language.Haskell.Exts.Extension
 import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts.Syntax
@@ -29,7 +32,7 @@ import System.Exit
 import System.FilePath
 import System.IO
 
-import HFlags
+import Paths_homplexity(version)
 
 -- * Command line flag
 defineFlag "severity" Warning (concat ["level of output verbosity (", severityOptions, ")"])
@@ -94,7 +97,6 @@ processFile additionalExtensions filepath =
 -- | This flag exists only to make sure that HFLags work.
 defineFlag "cabal" "" "Project cabal file"
 
-
 -- | This flag exists only to make sure that HFLags work.
 defineFlag "fakeFlag" Info "this flag is fake"
 
@@ -102,7 +104,7 @@ defineFlag "fakeFlag" Info "this flag is fake"
 -- | Parse arguments and either process inputs (if available), or suggest proper usage.
 main :: IO ()
 main = do
-  args <- $initHFlags "Homplexity - automatic analysis of Haskell code quality"
+  args <- $initHFlags ("Homplexity " ++ showVersion version ++ " " ++ $(gitHash) ++ " - automatic analysis of Haskell code quality")
   if null args
     then do report ("Use Haskell source file or directory as an argument, " ++
                     "or use --help to discover options.")
