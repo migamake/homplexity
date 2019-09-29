@@ -6,7 +6,7 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE UndecidableInstances  #-}
 -- | Parsing of Haskell source files, and error reporting for unparsable files.
-module Language.Haskell.Homplexity.Parse (parseSource) where
+module Language.Haskell.Homplexity.Parse (parseSource, parseTest) where
 
 import Control.Exception as E
 import Data.Functor
@@ -58,42 +58,50 @@ collapseSameExtensions = mkList . foldl processExtension Map.empty
              . Map.toList
 
 
+mkParseMode :: FilePath -> [Extension] -> ParseMode
+mkParseMode inputFilename extensions = ParseMode
+    { parseFilename         = inputFilename
+    , baseLanguage          = Haskell2010
+    , extensions            = extensions
+    , ignoreLanguagePragmas = False
+    , ignoreLinePragmas     = False
+    , fixities              = Just preludeFixities
+    , ignoreFunctionArity   = False
+    }
+
+
+parseSourceInternal :: [Extension] -> FilePath -> String -> IO (ParseResult (Module SrcSpanInfo, [Comment]))
+parseSourceInternal additionalExtensions inputFilename inputFileContents = do
+    deCppHsInput <- runCpphs cppHsOptions inputFilename inputFileContents
+    let fileExtensions = maybe [] snd $ readExtensions deCppHsInput
+        extensions     = collapseSameExtensions (additionalExtensions ++ fileExtensions)
+        result         = parseModuleWithComments (mkParseMode inputFilename extensions) deCppHsInput
+    return result
+
+
 -- | Parse Haskell source file, using CppHs for preprocessing,
 -- and haskell-src-exts for parsing.
 --
 -- Catches all exceptions and wraps them as @Critical@ log messages.
 parseSource :: [Extension] -> FilePath -> IO (Either Log (Module SrcLoc, [CommentLink]))
 parseSource additionalExtensions inputFilename = do
-  parseResult <- (do
-    input        <- readFile inputFilename
-    deCppHsInput <- runCpphs cppHsOptions inputFilename input
-    let fileExtensions = maybe [] snd $ readExtensions deCppHsInput
-        extensions     = collapseSameExtensions (additionalExtensions ++ fileExtensions)
-        result         = parseModuleWithComments (parseMode extensions) deCppHsInput
-    evaluate result)
+  parseResult <- (    readFile inputFilename
+                  >>= parseSourceInternal additionalExtensions inputFilename
+                  >>= evaluate)
       `E.catch` handleException (ParseFailed thisFileLoc)
   case parseResult of
-    ParseOk (parsed, comments) -> do {-putStrLn   "ORDERED:"
-                                     putStrLn $ unlines $ map show
-                                              $ orderCommentsAndCommentables (commentable      parsed  )
-                                                                             (classifyComments comments) -}
-                                     return   $ Right (getPointLoc <$> parsed,
-                                                       classifyComments comments) 
-    ParseFailed aLoc msg       ->    return   $ Left $ critical aLoc msg
+    ParseOk (parsed, comments) -> return $ Right (getPointLoc <$> parsed,
+                                                  classifyComments comments)
+    ParseFailed aLoc msg       -> return $ Left $ critical aLoc msg
   where
     handleException helper (e :: SomeException) = return $ helper $ show e
     thisFileLoc = noLoc { srcFilename = inputFilename }
-    parseMode extensions = ParseMode {
-                  parseFilename         = inputFilename
-                , baseLanguage          = Haskell2010
-                , extensions            = extensions
-                , ignoreLanguagePragmas = False
-                , ignoreLinePragmas     = False
-                , fixities              = Just preludeFixities
-                , ignoreFunctionArity   = False
-                }
-{-putStrLn   "COMMENTS:"
-                                     putStrLn $ unlines $ map show $ classifyComments comments
-                                     putStrLn   "COMMENTABLES:"
-                                     putStrLn $ unlines $ map show $ commentable      parsed-}
-                                     
+
+
+-- | For use in test suite
+parseTest ::  String -> String -> IO (Module SrcLoc, [CommentLink])
+parseTest testId testSource = do
+    parseSourceInternal [] testId testSource >>= \case
+        ParseOk (parsed, comments) -> return $ (getPointLoc <$> parsed, classifyComments comments)
+        other                      -> error $ show other
+
