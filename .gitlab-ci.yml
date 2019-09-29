@@ -23,8 +23,8 @@ cache:
     - cabal update
     - "sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal"
     - cabal install --verbose --only-dependencies
-    - cabal test
     - cabal configure --enable-tests
+    - cabal test
     - mkdir -p bin sdist
     - cabal install --bindir=bin/
     - cabal sdist   --builddir=sdist/
