@@ -24,6 +24,7 @@ cache:
     - "sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal"
     - cabal install --verbose --only-dependencies
     - cabal test
+    - cabal configure --enable-tests
     - mkdir -p bin sdist
     - cabal install --bindir=bin/
     - cabal sdist   --builddir=sdist/
@@ -34,12 +35,12 @@ build_8_6_2:
   variables:
     GHC_VER: 8.6.2
   extends: .build_exe
-  artifacts:
-    paths:
-      - sdist/$PACKAGE_NAME-*[0-9].tar.gz
-      - hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
-      - bin/homplexity-cli
-    expire_in: 2 weeks
+  #artifacts:
+  #  paths:
+  #    - sdist/$PACKAGE_NAME-*[0-9].tar.gz
+  #    - hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
+  #    - bin/homplexity-cli
+  #  expire_in: 2 weeks
 
 build_8_4_4:
   variables:
