@@ -31,16 +31,16 @@ cache:
     - cabal haddock --builddir hackage-docs --for-hackage
     - bin/homplexity-cli lib/
 
-build_8_6_5:
+build_8_6_2:
   variables:
-    GHC_VER: 8.6.5
+    GHC_VER: 8.6.2
   extends: .build_exe
-  #artifacts:
-  #  paths:
-  #    - sdist/$PACKAGE_NAME-*[0-9].tar.gz
-  #    - hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
-  #    - bin/homplexity-cli
-  #  expire_in: 2 weeks
+  artifacts:
+    paths:
+      - sdist/$PACKAGE_NAME-*[0-9].tar.gz
+      - hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
+      - bin/homplexity-cli
+    expire_in: 2 weeks
 
 build_8_4_4:
   variables:
