@@ -10,7 +10,7 @@
 -- |]
 -- -- Filename and line where error happens will be correctly reported by Haskell parser.
 
-module TestSource(tsrc) where
+module Test.Utils(tsrc) where
 
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
