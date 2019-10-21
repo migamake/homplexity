@@ -31,7 +31,12 @@ import System.IO
 
 import HFlags
 
+import Paths_homplexity (version)
+import Data.Version (showVersion)
+
 -- * Command line flag
+defineFlag "v:version" True "Show version"
+
 defineFlag "severity" Warning (concat ["level of output verbosity (", severityOptions, ")"])
 
 -- | Report to standard error output.
@@ -103,6 +108,8 @@ defineFlag "fakeFlag" Info "this flag is fake"
 main :: IO ()
 main = do
   args <- $initHFlags "Homplexity - automatic analysis of Haskell code quality"
+  flags_version <- putStrLn $ unwords ["Version: ", (showVersion version)]
+
   if null args
     then do report ("Use Haskell source file or directory as an argument, " ++
                     "or use --help to discover options.")

@@ -49,6 +49,8 @@ Library
   build-tools:         happy            >= 1.19.0
   Other-Modules:
     Paths_homplexity
+  autogen-modules:
+    Paths_homplexity
   build-depends:       base             >=4.5  && <4.14,
                        bytestring,
                        containers       >=0.3  && <0.7,
@@ -84,6 +86,10 @@ Library
 executable homplexity-cli
   main-is:             Homplexity.hs
   hs-source-dirs:      app/
+  Other-Modules:
+    Paths_homplexity
+  autogen-modules:
+    Paths_homplexity
   build-depends:       base             >=4.5  && <4.14,
                        haskell-src-exts >=1.18 && <1.22,
                        directory        >=1.1  && <1.4,
