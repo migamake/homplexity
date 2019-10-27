@@ -21,6 +21,7 @@ import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Cyclomatic
 import Language.Haskell.Homplexity.Message
 import Language.Haskell.Homplexity.Metric
+import Language.Haskell.Homplexity.RecordFieldsCount
 import Language.Haskell.Homplexity.TypeComplexity
 
 import HFlags
@@ -152,13 +153,25 @@ assessNumFunArgs (fromIntegral -> cy)
                  | cy > flags_numFunArgsCritical = (Warning, "must never reach "    ++ show flags_numFunArgsCritical)
                  | otherwise                     = (Info,    ""                                                     )
 
+-- ** Data type complexity
+-- *** Record fields count
+defineFlag "recordFieldsCountWarning"  (6::Int) "issue warning when combined record fields count exceeds this number"
+defineFlag "recordFieldsCountCritical" (9::Int) "issue critical when combined record fields count exceeds this number"
+
+assessRecordFieldsCount :: Assessment RecordFieldsCount
+assessRecordFieldsCount (fromIntegral -> cy)
+                        | cy > flags_recordFieldsCountCritical = (Critical, "must never reach " ++ show flags_recordFieldsCountCritical  )
+                        | cy > flags_recordFieldsCountWarning  = (Warning,  "should be less than " ++ show flags_recordFieldsCountWarning)
+                        | otherwise                            = (Info,     ""                                                           )
+
 -- * Computing and assessing @Metric@s for all @CodeFragment@.
 -- | Compute all metrics, and assign severity depending on configured thresholds.
 metrics :: [Program -> Log]
-metrics  = [measureTopOccurs assessModuleLength   locT        moduleT
-           ,measureTopOccurs assessFunctionLength locT        functionT
-           ,measureTopOccurs assessFunctionDepth  depthT      functionT
-           ,measureTopOccurs assessFunctionCC     cyclomaticT functionT
-           ,measureTopOccurs assessTypeConDepth   conDepthT   typeSignatureT
-           ,measureTopOccurs assessNumFunArgs     numFunArgsT typeSignatureT]
+metrics  = [measureTopOccurs assessModuleLength       locT        moduleT
+           ,measureTopOccurs assessFunctionLength     locT        functionT
+           ,measureTopOccurs assessFunctionDepth      depthT      functionT
+           ,measureTopOccurs assessFunctionCC         cyclomaticT functionT
+           ,measureTopOccurs assessTypeConDepth       conDepthT   typeSignatureT
+           ,measureTopOccurs assessNumFunArgs         numFunArgsT typeSignatureT
+           ,measureTopOccurs assessRecordFieldsCount  recordFieldsCountT dataDefT]
 
