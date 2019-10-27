@@ -45,6 +45,7 @@ Library
     Language.Haskell.Homplexity.Parse
     Language.Haskell.Homplexity.SrcSlice
     Language.Haskell.Homplexity.TypeComplexity
+    Language.Haskell.Homplexity.Utilities
   Hs-source-dirs:      lib
   build-tools:         happy            >= 1.19.0
   Other-Modules:
