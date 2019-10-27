@@ -109,12 +109,12 @@ defineFlag "functionDepthCritical" (8 :: Int) "issue critical when function exce
 
 assessFunctionDepth :: Assessment Depth
 assessFunctionDepth (fromIntegral -> depth)
-                    | depth > flags_functionDepthWarning = (Warning,  "should have no more than " ++
-                                                                       show depth                 ++
-                                                                      " nested conditionals"            )
-                    | depth > flags_functionDepthWarning = (Critical, "should never exceed " ++
-                                                                       show depth            ++
-                                                                      " nesting levels for conditionals")
+                    | depth > flags_functionDepthWarning  = (Warning,  "should have no more than " ++
+                                                                        show depth                 ++
+                                                                       " nested conditionals"            )
+                    | depth > flags_functionDepthCritical = (Critical, "should never exceed " ++
+                                                                        show depth            ++
+                                                                       " nesting levels for conditionals")
                     | otherwise = (Info,    ""                                )
 
 -- *** Cyclomatic complexity of function definition
