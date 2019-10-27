@@ -23,6 +23,8 @@ module Language.Haskell.Homplexity.CodeFragment (
   , moduleT
   , Function       (..)
   , functionT
+  , DataDef       (..)
+  , dataDefT
   , TypeSignature  (..)
   , typeSignatureT
   , fragmentLoc
@@ -63,6 +65,17 @@ data Function = Function {
 -- | Proxy for passing @Function@ type as an argument.
 functionT :: Proxy Function
 functionT  = Proxy
+
+-- | Alias for a @data@ declaration
+data DataDef = DataDef {
+                 dataDefName :: String
+               , dataDefCtors :: Either [QualConDecl SrcLoc] [GadtDecl SrcLoc]
+               }
+  deriving (Data, Typeable, Show)
+
+-- | Proxy for passing @DataDef@ type as an argument.
+dataDefT :: Proxy DataDef
+dataDefT  = Proxy
 
 -- ** Type signature of a function
 -- | Type alias for a type signature of a function as a @CodeFragment@
@@ -127,6 +140,17 @@ instance CodeFragment Function where
           wildcard _            = Nothing
   matchAST _                                          = Nothing
   fragmentName Function {..} = unwords $ "function":functionNames
+
+instance CodeFragment DataDef where
+  type AST DataDef = Decl SrcLoc
+  matchAST (DataDecl _ _ _ declHead qualConDecls _) = do
+    name <- listToMaybe (universeBi declHead :: [Name SrcLoc])
+    pure DataDef { dataDefName = unName name, dataDefCtors = Left qualConDecls }
+  matchAST (GDataDecl _ _ _ declHead _ gadtDecls _) = do
+    name <- listToMaybe (universeBi declHead :: [Name SrcLoc])
+    pure DataDef { dataDefName = unName name, dataDefCtors = Right gadtDecls }
+  matchAST _ = Nothing
+  fragmentName DataDef {..} = "data " ++ dataDefName
 
 -- | Make a single element list.
 singleton :: a -> [a]
