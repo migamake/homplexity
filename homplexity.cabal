@@ -43,8 +43,10 @@ Library
     Language.Haskell.Homplexity.Message
     Language.Haskell.Homplexity.Metric
     Language.Haskell.Homplexity.Parse
+    Language.Haskell.Homplexity.RecordFieldsCount
     Language.Haskell.Homplexity.SrcSlice
     Language.Haskell.Homplexity.TypeComplexity
+    Language.Haskell.Homplexity.Utilities
   Hs-source-dirs:      lib
   build-tools:         happy            >= 1.19.0
   Other-Modules:
