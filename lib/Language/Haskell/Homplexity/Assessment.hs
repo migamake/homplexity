@@ -79,11 +79,11 @@ defineFlag "moduleLinesCritical" (3000 :: Int) "issue critical when module excee
 
 assessModuleLength :: Assessment LOC
 assessModuleLength (fromIntegral -> locs)
-                   | locs > flags_moduleLinesWarning  = (Warning,  "should be kept below "        ++
-                                                                    show flags_moduleLinesWarning ++
-                                                                   " lines of code.")
                    | locs > flags_moduleLinesCritical = (Critical, "this function exceeds "       ++
                                                                     show flags_moduleLinesCritical ++
+                                                                   " lines of code.")
+                   | locs > flags_moduleLinesWarning  = (Warning,  "should be kept below "        ++
+                                                                    show flags_moduleLinesWarning ++
                                                                    " lines of code.")
                    | otherwise    = (Info,     ""                                        )
 
@@ -94,11 +94,11 @@ defineFlag "functionLinesCritical" (40 :: Int) "issue critical when function exc
 
 assessFunctionLength :: Assessment LOC
 assessFunctionLength (fromIntegral -> locs)
-                   | locs > flags_functionLinesWarning  = (Warning,  "should be kept below "          ++
-                                                                       show flags_functionLinesWarning ++
-                                                                      " lines of code.")
                    | locs > flags_functionLinesCritical = (Critical, "this function exceeds "          ++
                                                                        show flags_functionLinesCritical ++
+                                                                      " lines of code.")
+                   | locs > flags_functionLinesWarning  = (Warning,  "should be kept below "          ++
+                                                                       show flags_functionLinesWarning ++
                                                                       " lines of code.")
                    | otherwise                          = (Info,     ""                                 )
 
@@ -109,12 +109,12 @@ defineFlag "functionDepthCritical" (8 :: Int) "issue critical when function exce
 
 assessFunctionDepth :: Assessment Depth
 assessFunctionDepth (fromIntegral -> depth)
-                    | depth > flags_functionDepthWarning = (Warning, "should have no more than " ++
-                                                                      show depth                 ++
-                                                                     " nested conditionals"            )
-                    | depth > flags_functionDepthWarning = (Warning, "should never exceed " ++
-                                                                      show depth            ++
-                                                                     " nesting levels for conditionals")
+                    | depth > flags_functionDepthCritical = (Critical, "should never exceed " ++
+                                                                        show depth            ++
+                                                                       " nesting levels for conditionals")
+                    | depth > flags_functionDepthWarning  = (Warning,  "should have no more than " ++
+                                                                        show depth                 ++
+                                                                       " nested conditionals"            )
                     | otherwise = (Info,    ""                                )
 
 -- *** Cyclomatic complexity of function definition
@@ -123,11 +123,11 @@ defineFlag "functionCCCritical" (50::Int) "issue critical when function's cyclom
 
 assessFunctionCC :: Assessment Cyclomatic
 assessFunctionCC (fromIntegral -> cy)
-                 | cy > flags_functionCCWarning  = (Warning, "should be less than "        ++
-                                                              show flags_functionCCWarning)
-                 | cy > flags_functionCCCritical = (Warning, "must never be as high as " ++
-                                                              show flags_functionCCCritical)
-                 | otherwise                     = (Info,    ""                               )
+                 | cy > flags_functionCCCritical = (Critical, "must never be as high as " ++
+                                                               show flags_functionCCCritical)
+                 | cy > flags_functionCCWarning  = (Warning,  "should be less than "        ++
+                                                               show flags_functionCCWarning)
+                 | otherwise                     = (Info,     ""                               )
 
 -- ** Type signature complexity
 -- *** Type constructor depth in each type signature
@@ -136,11 +136,11 @@ defineFlag "typeConDepthCritical" (9::Int) "issue critical when type constructor
 
 assessTypeConDepth :: Assessment ConDepth
 assessTypeConDepth (fromIntegral -> cy)
-                 | cy > flags_typeConDepthWarning  = (Warning, "should be less than "        ++
-                                                                show flags_typeConDepthWarning )
-                 | cy > flags_typeConDepthCritical = (Warning, "must never be as high as " ++
-                                                                show flags_typeConDepthCritical)
-                 | otherwise                       = (Info,    ""                              )
+                 | cy > flags_typeConDepthCritical = (Critical, "must never be as high as " ++
+                                                                 show flags_typeConDepthCritical)
+                 | cy > flags_typeConDepthWarning  = (Warning,  "should be less than "        ++
+                                                                 show flags_typeConDepthWarning )
+                 | otherwise                       = (Info,     ""                              )
 
 -- *** Number of function arguments mentioned in each type signature
 defineFlag "numFunArgsWarning"  (5::Int) "issue warning when number of function arguments exceeds this number"
@@ -148,9 +148,9 @@ defineFlag "numFunArgsCritical" (9::Int) "issue critical when number of function
 
 assessNumFunArgs :: Assessment NumFunArgs
 assessNumFunArgs (fromIntegral -> cy)
-                 | cy > flags_numFunArgsWarning  = (Warning, "should be less than " ++ show flags_numFunArgsWarning )
-                 | cy > flags_numFunArgsCritical = (Warning, "must never reach "    ++ show flags_numFunArgsCritical)
-                 | otherwise                     = (Info,    ""                                                     )
+                 | cy > flags_numFunArgsCritical = (Critical, "must never reach "    ++ show flags_numFunArgsCritical)
+                 | cy > flags_numFunArgsWarning  = (Warning,  "should be less than " ++ show flags_numFunArgsWarning )
+                 | otherwise                     = (Info,     ""                                                     )
 
 -- * Computing and assessing @Metric@s for all @CodeFragment@.
 -- | Compute all metrics, and assign severity depending on configured thresholds.
