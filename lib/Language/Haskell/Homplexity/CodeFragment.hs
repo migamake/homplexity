@@ -178,10 +178,10 @@ instance CodeFragment Program where
 
 instance CodeFragment (Module SrcLoc) where
   type AST (Module SrcLoc)= Module SrcLoc
-  matchAST = Just 
-  fragmentName (Module _ (Just (ModuleHead _ (ModuleName _ theName) _ _)) _ _ _) = 
+  matchAST = Just
+  fragmentName (Module _ (Just (ModuleHead _ (ModuleName _ theName) _ _)) _ _ _) =
                 "module " ++ theName
-  fragmentName (Module _  Nothing                                         _ _ _) = 
+  fragmentName (Module _  Nothing                                         _ _ _) =
                 "<unnamed module>"
   fragmentName (XmlPage   _ (ModuleName _ theName) _ _ _ _ _)            = "XML page " ++ theName
   fragmentName (XmlHybrid _ (Just (ModuleHead _ (ModuleName _ theName) _ _))
@@ -202,5 +202,5 @@ instance CodeFragment TypeSignature where
 -- | Unpack @Name@ identifier into a @String@.
 unName :: Name a -> String
 unName (Symbol _ s) = s
-unName (Ident  _ i) = i 
+unName (Ident  _ i) = i
 
