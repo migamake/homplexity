@@ -27,6 +27,8 @@ module Language.Haskell.Homplexity.CodeFragment (
   , dataDefT
   , TypeSignature  (..)
   , typeSignatureT
+  , TypeClass (..)
+  , typeClassT
   , fragmentLoc
   -- TODO: add ClassSignature
   ) where
@@ -39,6 +41,7 @@ import Data.Maybe
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Homplexity.SrcSlice
+import Language.Haskell.Homplexity.Utilities
 
 -- | Program
 newtype Program = Program { allModules :: [Module SrcLoc] }
@@ -84,14 +87,20 @@ data TypeSignature = TypeSignature { loc         :: SrcLoc
                                    , theType     ::  Type SrcLoc }
   deriving (Data, Typeable, Show)
 
--- | Proxy for passing @Program@ type as an argument.
+-- | Proxy for passing @TypeSignature@ type as an argument.
 typeSignatureT :: Proxy TypeSignature
 typeSignatureT  = Proxy
 
 -- ** TODO: class signatures (number of function decls inside)
 -- | Alias for a class signature
-data ClassSignature = ClassSignature
-  deriving (Data, Typeable)
+data TypeClass = TypeClass { tcName  :: String
+                           , tcDecls :: Maybe [ClassDecl SrcLoc]
+                           }
+  deriving (Data, Typeable, Show)
+
+-- | Proxy for passing @TypeClass@ type as an argument.
+typeClassT :: Proxy TypeClass
+typeClassT  = Proxy
 
 -- TODO: need combination of Fold and Biplate
 -- Resulting record may be created to make pa
@@ -199,8 +208,16 @@ instance CodeFragment TypeSignature where
   fragmentName TypeSignature {..} = "type signature for "
                                  ++ intercalate ", " (map unName identifiers)
 
+instance CodeFragment TypeClass where
+  type AST TypeClass = Decl SrcLoc
+
+  matchAST (ClassDecl _ _ declHead _ classDecls)
+    = Just $ TypeClass (unName . declHeadName $ declHead) classDecls
+  matchAST _ = Nothing
+
+  fragmentName (TypeClass tcName _) = "type class " ++ tcName
+
 -- | Unpack @Name@ identifier into a @String@.
 unName :: Name a -> String
 unName (Symbol _ s) = s
 unName (Ident  _ i) = i
-
