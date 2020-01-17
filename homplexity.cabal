@@ -113,6 +113,8 @@ test-suite homplexity-tests
   main-is:             Tests.hs
   hs-source-dirs:      tests
   other-modules:
+    Test.Utilities
+    Test.Metrics.TypeClassComplexitySpec
     Test.Parse.CommentsSpec
     Test.Parse.ExtensionsSpec
   type:                exitcode-stdio-1.0
