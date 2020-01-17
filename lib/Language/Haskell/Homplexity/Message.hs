@@ -64,7 +64,7 @@ instance Show Message where
                                                   . shows loc
                                                   -- . shows srcLine
                                                   -- . shows srcColumn
-                                                  . (':':)
+                                                  . (": "++)
                                                   . (msgText++)
                                                   . ('\n':)
 
@@ -95,7 +95,7 @@ instance FlagType Severity where
 message ::  Severity -> SrcLoc -> String -> Log
 message msgSeverity msgSrc msgText = Log $ Seq.singleton Message {..}
 
--- | TODO: automatic inference of the srcLine 
+-- | TODO: automatic inference of the srcLine
 -- | Log a certain error
 critical :: SrcLoc -> String -> Log
 critical  = message Critical
