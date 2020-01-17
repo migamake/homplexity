@@ -60,7 +60,7 @@ Library
                        deepseq          >=1.3  && <1.7,
                        directory        >=1.1  && <1.4,
                        filepath         >=1.2  && <1.5,
-                       haskell-src-exts >=1.18 && <1.22,
+                       haskell-src-exts >=1.21 && <1.22,
                        hflags           >=0.3  && <0.5,
                        template-haskell >=2.6  && <2.16,
                        uniplate         >=1.4  && <1.7
