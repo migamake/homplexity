@@ -29,6 +29,10 @@ tested-with:         GHC==7.8.4
                    , GHC==8.4.4
                    , GHC==8.6.2
 
+Flag Html
+  Description: Enable HTML output via blaze-html
+  Default:     True
+
 source-repository head
   type:     git
   location: https://github.com/mgajda/homplexity.git
@@ -84,6 +88,10 @@ Library
                        GeneralizedNewtypeDeriving,
                        TypeFamilies
   default-language:    Haskell2010
+  if flag(Html)
+    CPP-Options:       -DHTML_OUTPUT
+    build-depends:     blaze-html   >= 0.9 && < 1,
+                       blaze-markup >= 0.8 && < 0.9
 
 executable homplexity-cli
   main-is:             Homplexity.hs
@@ -106,6 +114,10 @@ executable homplexity-cli
   default-language:    Haskell2010
   -- STATIC: ld-options: -static
   -- STATIC: ghc-options: -fPIC
+  if flag(Html)
+    CPP-Options:       -DHTML_OUTPUT
+    build-depends:     blaze-html   >= 0.9  && < 1,
+                       bytestring   >= 0.10 && < 0.11
 
 
 test-suite homplexity-tests
