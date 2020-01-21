@@ -45,6 +45,7 @@ Library
     Language.Haskell.Homplexity.Parse
     Language.Haskell.Homplexity.RecordFieldsCount
     Language.Haskell.Homplexity.SrcSlice
+    Language.Haskell.Homplexity.TypeClassComplexity
     Language.Haskell.Homplexity.TypeComplexity
     Language.Haskell.Homplexity.Utilities
   Hs-source-dirs:      lib
@@ -112,6 +113,8 @@ test-suite homplexity-tests
   main-is:             Tests.hs
   hs-source-dirs:      tests
   other-modules:
+    Test.Utilities
+    Test.Metrics.TypeClassComplexitySpec
     Test.Parse.CommentsSpec
     Test.Parse.ExtensionsSpec
   type:                exitcode-stdio-1.0

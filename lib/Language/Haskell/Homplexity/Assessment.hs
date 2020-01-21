@@ -22,6 +22,7 @@ import Language.Haskell.Homplexity.Cyclomatic
 import Language.Haskell.Homplexity.Message
 import Language.Haskell.Homplexity.Metric
 import Language.Haskell.Homplexity.RecordFieldsCount
+import Language.Haskell.Homplexity.TypeClassComplexity
 import Language.Haskell.Homplexity.TypeComplexity
 
 import HFlags
@@ -164,14 +165,42 @@ assessRecordFieldsCount (fromIntegral -> cy)
                         | cy > flags_recordFieldsCountWarning  = (Warning,  "should be less than " ++ show flags_recordFieldsCountWarning)
                         | otherwise                            = (Info,     ""                                                           )
 
+-- ** Type class complexity
+-- *** Method count of type class
+defineFlag "typeClassNonTypeDeclWarning"  (5::Int) "issue warning when the number of methods in a type class exceeds this number"
+defineFlag "typeClassNonTypeDeclCritical" (7::Int) "issue critical when the number of methods in a type class exceeds this number"
+
+assessTCNonTypeDeclCount :: Assessment NonTypeDeclCount
+assessTCNonTypeDeclCount (fromIntegral -> mc)
+  | mc > flags_typeClassNonTypeDeclCritical = (Critical, "should never have more than " ++
+                                              show flags_typeClassNonTypeDeclCritical)
+  | mc > flags_typeClassNonTypeDeclWarning  = (Warning,  " should have no more than " ++
+                                              show flags_typeClassNonTypeDeclWarning)
+  | otherwise = (Info, "")
+
+-- *** Associated type count of type class
+defineFlag "typeClassAssocTypesWarning"  (3::Int) "issue warning when the number of associated types in a type class exceeds this number"
+defineFlag "typeClassAssocTypesCritical" (5::Int) "issue critical when the number of associated types in a type class exceeds this number"
+
+assessTCAssocTypesCount :: Assessment AssocTypeCount
+assessTCAssocTypesCount (fromIntegral -> atc)
+  | atc > flags_typeClassAssocTypesCritical = (Critical, "should never have more than " ++
+                                              show flags_typeClassAssocTypesCritical)
+  | atc > flags_typeClassAssocTypesWarning  = (Warning,  " should have no more than " ++
+                                              show flags_typeClassAssocTypesWarning)
+  | otherwise                               = (Info, "")
+
 -- * Computing and assessing @Metric@s for all @CodeFragment@.
 -- | Compute all metrics, and assign severity depending on configured thresholds.
 metrics :: [Program -> Log]
-metrics  = [measureTopOccurs assessModuleLength       locT        moduleT
-           ,measureTopOccurs assessFunctionLength     locT        functionT
-           ,measureTopOccurs assessFunctionDepth      depthT      functionT
-           ,measureTopOccurs assessFunctionCC         cyclomaticT functionT
-           ,measureTopOccurs assessTypeConDepth       conDepthT   typeSignatureT
-           ,measureTopOccurs assessNumFunArgs         numFunArgsT typeSignatureT
-           ,measureTopOccurs assessRecordFieldsCount  recordFieldsCountT dataDefT]
+metrics  = [ measureTopOccurs assessModuleLength       locT               moduleT
+           , measureTopOccurs assessFunctionLength     locT               functionT
+           , measureTopOccurs assessFunctionDepth      depthT             functionT
+           , measureTopOccurs assessFunctionCC         cyclomaticT        functionT
+           , measureTopOccurs assessTypeConDepth       conDepthT          typeSignatureT
+           , measureTopOccurs assessNumFunArgs         numFunArgsT        typeSignatureT
+           , measureTopOccurs assessRecordFieldsCount  recordFieldsCountT dataDefT
+           , measureTopOccurs assessTCNonTypeDeclCount nonTypeDeclCountT  typeClassT
+           , measureTopOccurs assessTCAssocTypesCount  assocTypeCountT    typeClassT
+           ]
 
