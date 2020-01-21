@@ -167,8 +167,8 @@ assessRecordFieldsCount (fromIntegral -> cy)
 
 -- ** Type class complexity
 -- *** Method count of type class
-defineFlag "typeClassNonTypeDeclWarning"  (7::Int) "issue warning when the number of methods in a type class exceeds this number"
-defineFlag "typeClassNonTypeDeclCritical" (9::Int) "issue critical when the number of methods in a type class exceeds this number"
+defineFlag "typeClassNonTypeDeclWarning"  (5::Int) "issue warning when the number of methods in a type class exceeds this number"
+defineFlag "typeClassNonTypeDeclCritical" (7::Int) "issue critical when the number of methods in a type class exceeds this number"
 
 assessTCNonTypeDeclCount :: Assessment NonTypeDeclCount
 assessTCNonTypeDeclCount (fromIntegral -> mc)
