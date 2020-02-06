@@ -3,6 +3,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE OverloadedStrings          #-}
 -- | Classifying messages by severity and filtering them.
 module Language.Haskell.Homplexity.Message (
     Log
@@ -27,9 +28,15 @@ import Data.Monoid
 import Data.Semigroup
 #endif
 import Data.Sequence                            as Seq
-import Language.Haskell.Exts
+import Language.Haskell.Exts hiding (style)
 import Language.Haskell.TH.Syntax                           (Lift(..))
 import HFlags
+#ifdef HTML_OUTPUT
+import Prelude hiding (head, id, div, span)
+import Text.Blaze.Html4.Strict hiding (map, style)
+import Text.Blaze.Html4.Strict.Attributes hiding (title, span)
+import Text.Blaze.Renderer.Utf8 (renderMarkup)
+#endif
 
 -- | Keeps a set of messages
 newtype Log = Log { unLog :: Seq Message }
@@ -67,6 +74,33 @@ instance Show Message where
                                                   . (": "++)
                                                   . (msgText++)
                                                   . ('\n':)
+
+#ifdef HTML_OUTPUT
+instance ToMarkup Message where
+  toMarkup Message {..} =
+    p ! classId $
+     (toMarkup msgSeverity
+       <> string ": "
+       <> toMarkup msgSrc
+       <> string ": "
+       <> string msgText)
+    where
+      classId = case msgSeverity of
+                     Debug    -> class_ "debug"
+                     Info     -> class_ "info"
+                     Warning  -> class_ "warning"
+                     Critical -> class_ "critical"
+
+instance ToMarkup Severity where
+  toMarkup Debug    = span   ! class_ "severity" $ string (show Debug)
+  toMarkup Info     = span   ! class_ "severity" $ string (show Info)
+  toMarkup Warning  = strong ! class_ "severity" $ string (show Warning)
+  toMarkup Critical = strong ! class_ "severity" $ string (show Critical)
+
+instance ToMarkup SrcLoc where
+  toMarkup SrcLoc {..} = a ! href (toValue srcFilename) $ (string srcFilename)
+
+#endif
 
 -- | Message severity
 data Severity = Debug

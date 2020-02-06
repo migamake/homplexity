@@ -8,12 +8,13 @@
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
+{-# LANGUAGE CPP                   #-}
 -- | Main module parsing inputs, and running analysis.
 module Main (main) where
 
 import Data.Either
 import Data.Functor
-import Data.List
+import Data.List hiding (head)
 import Data.Monoid
 
 import Language.Haskell.Exts.Extension
@@ -33,11 +34,34 @@ import HFlags
 
 import Paths_homplexity (version)
 import Data.Version (showVersion)
+import qualified Prelude as P
+import Prelude hiding (head, id, div)
+#ifdef HTML_OUTPUT
+import qualified Data.ByteString.Lazy as B
+import Text.Blaze.Html
+import Text.Blaze.Html.Renderer.Utf8
+import Text.Blaze.Html4.Strict hiding (map)
+import Text.Blaze.Html4.Strict.Attributes hiding (title, style)
+#endif
 
 -- * Command line flag
 defineFlag "v:version" True "Show version"
 
 defineFlag "severity" Warning (concat ["level of output verbosity (", severityOptions, ")"])
+
+data OutputFormat =
+    Text
+#ifdef HTML_OUTPUT
+  | HTML
+#endif
+  deriving (Read, Show)
+defineEQFlag "format" [| Text :: OutputFormat |]
+#ifdef HTML_OUTPUT
+  "{Text|HTML}"
+#else
+  "{Text}"
+#endif
+  "What format to use"
 
 -- | Report to standard error output.
 report ::  String -> IO ()
@@ -81,12 +105,27 @@ concatMapM f = fmap concat . mapM f
 -- * Analysis
 -- | Analyze a set of modules.
 analyzeModule :: Module SrcLoc -> IO ()
-analyzeModule  = putStr
-               . concatMap show
+analyzeModule  = out
                . extract flags_severity
                . mconcat metrics
                . program
                . (:[])
+  where
+    out msgs = case flags_format of
+                    Text -> do
+                      putStr . concatMap show $ msgs
+#ifdef HTML_OUTPUT
+                    HTML -> B.putStr $ renderHtml $ do
+                      html $ do
+                        head $ do
+                          title (string "Homplexity Analysis.")
+                        style $ string style_head
+                        body $ do
+                          toHtml . fmap toHtml $ msgs
+    style_head = ".warning  .severity { color: orange; }" <>
+                 ".debug    .severity { color: grey;   }" <>
+                 ".critical .severity { color: red;    }"
+#endif
 
 -- | Process each separate input file.
 processFile :: [Extension] -> FilePath -> IO Bool
@@ -108,7 +147,7 @@ defineFlag "fakeFlag" Info "this flag is fake"
 main :: IO ()
 main = do
   args <- $initHFlags "Homplexity - automatic analysis of Haskell code quality"
-  flags_version <- putStrLn $ unwords ["Version: ", (showVersion version)]
+  flags_version <- putStdErr $ unwords ["Version: ", (showVersion version)]
 
   if null args
     then do report ("Use Haskell source file or directory as an argument, " ++
@@ -116,9 +155,9 @@ main = do
             exitFailure
     else do exts <- cabalExtensions
             sums <- mapM (processFile exts) =<< concatMapM subTrees args
-            putStrLn $ unwords ["Correctly parsed", show $ length $ filter id sums,
-                                "out of",           show $ length             sums,
-                                "input files."]
+            putStdErr $ unwords ["Correctly parsed", show $ length $ filter P.id sums,
+                                 "out of",           show $ length               sums,
+                                 "input files."]
 
 
 cabalExtensions :: IO [Extension]
@@ -129,3 +168,6 @@ cabalExtensions
         either (\msg -> report (show msg) >> return [])
                (\cabal -> return $ languageExtensions Library cabal)
 
+
+putStdErr :: String -> IO ()
+putStdErr = hPutStr stderr . (++ "\n")
