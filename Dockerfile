@@ -7,7 +7,7 @@ ENV HC=ghc-8.4.4
 RUN apt-get install -y cabal-install ${HC} alex happy
 ENV HCPKG=ghc-pkg-8.4.4
 RUN mkdir -p $HOME/.local/bin
-ENV PATH=/opt/ghc/bin:/opt/ghc-ppa-tools/bin:$HOME/local/bin:$PATH
+ENV PATH=/opt/ghc/bin:/opt/ghc-ppa-tools/bin:$HOME/.local/bin:$PATH
 RUN mkdir -p /build;
 ADD . /build
 WORKDIR /build
