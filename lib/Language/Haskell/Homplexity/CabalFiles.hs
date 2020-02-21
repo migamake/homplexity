@@ -12,21 +12,28 @@ module Language.Haskell.Homplexity.CabalFiles
 
 import Data.Generics.Uniplate.Data as U
 import Data.String (fromString)
-import Distribution.PackageDescription.Parsec
-import Distribution.Types.GenericPackageDescription
 import Language.Haskell.Extension as Cabal
 import Language.Haskell.Exts.Extension as HSE
 import Language.Haskell.Exts.SrcLoc
 import qualified Data.ByteString as BS
 
+import Language.Haskell.Homplexity.Message
+
 #if MIN_VERSION_Cabal(3,0,0)
 import Distribution.PackageDescription.Parsec
 import Distribution.Parsec.Warning
-#else
+#elif MIN_VERSION_Cabal(2,0,0)
+import Distribution.PackageDescription.Parsec
+import Distribution.Types.GenericPackageDescription
 import Distribution.Parsec.Common
+#else
+import Distribution.PackageDescription(GenericPackageDescription(..))
+import Distribution.PackageDescription.Parse(parsePackageDescription)
+import Distribution.ParseUtils
+
+parseGenericPackageDescription = parsePackageDescription . BS.unpack
 #endif
 
-import Language.Haskell.Homplexity.Message
 
 
 -- | Project file cabal file related info
@@ -70,19 +77,16 @@ cabalKnownExtensionToHseKnownExtension Cabal.ConstraintKinds = HSE.ConstraintKin
 cabalKnownExtensionToHseKnownExtension Cabal.DataKinds = HSE.DataKinds
 cabalKnownExtensionToHseKnownExtension Cabal.DatatypeContexts = HSE.DatatypeContexts
 cabalKnownExtensionToHseKnownExtension Cabal.DefaultSignatures = HSE.DefaultSignatures
-cabalKnownExtensionToHseKnownExtension Cabal.DeriveAnyClass = HSE.DeriveAnyClass
 cabalKnownExtensionToHseKnownExtension Cabal.DeriveDataTypeable = HSE.DeriveDataTypeable
 cabalKnownExtensionToHseKnownExtension Cabal.DeriveFoldable = HSE.DeriveFoldable
 cabalKnownExtensionToHseKnownExtension Cabal.DeriveFunctor = HSE.DeriveFunctor
 cabalKnownExtensionToHseKnownExtension Cabal.DeriveGeneric = HSE.DeriveGeneric
 -- cabalKnownExtensionToHseKnownExtension Cabal.DeriveLift = HSE.DeriveLift
 cabalKnownExtensionToHseKnownExtension Cabal.DeriveTraversable = HSE.DeriveTraversable
-cabalKnownExtensionToHseKnownExtension Cabal.DerivingStrategies = HSE.DerivingStrategies
 cabalKnownExtensionToHseKnownExtension Cabal.DisambiguateRecordFields = HSE.DisambiguateRecordFields
 cabalKnownExtensionToHseKnownExtension Cabal.DoAndIfThenElse = HSE.DoAndIfThenElse
 cabalKnownExtensionToHseKnownExtension Cabal.DoRec = HSE.DoRec
 -- cabalKnownExtensionToHseKnownExtension Cabal.DuplicateRecordFields = HSE.DuplicateRecordFields
-cabalKnownExtensionToHseKnownExtension Cabal.EmptyCase = HSE.EmptyCase
 cabalKnownExtensionToHseKnownExtension Cabal.EmptyDataDecls = HSE.EmptyDataDecls
 cabalKnownExtensionToHseKnownExtension Cabal.ExistentialQuantification = HSE.ExistentialQuantification
 cabalKnownExtensionToHseKnownExtension Cabal.ExplicitForAll = HSE.ExplicitForAll
@@ -106,7 +110,6 @@ cabalKnownExtensionToHseKnownExtension Cabal.ImpredicativeTypes = HSE.Impredicat
 cabalKnownExtensionToHseKnownExtension Cabal.IncoherentInstances = HSE.IncoherentInstances
 cabalKnownExtensionToHseKnownExtension Cabal.InstanceSigs = HSE.InstanceSigs
 cabalKnownExtensionToHseKnownExtension Cabal.InterruptibleFFI = HSE.InterruptibleFFI
-cabalKnownExtensionToHseKnownExtension Cabal.JavaScriptFFI = HSE.JavaScriptFFI
 cabalKnownExtensionToHseKnownExtension Cabal.KindSignatures = HSE.KindSignatures
 cabalKnownExtensionToHseKnownExtension Cabal.LambdaCase = HSE.LambdaCase
 cabalKnownExtensionToHseKnownExtension Cabal.LiberalTypeSynonyms = HSE.LiberalTypeSynonyms
@@ -169,11 +172,9 @@ cabalKnownExtensionToHseKnownExtension Cabal.Trustworthy = HSE.Trustworthy
 cabalKnownExtensionToHseKnownExtension Cabal.TupleSections = HSE.TupleSections
 cabalKnownExtensionToHseKnownExtension Cabal.TypeApplications = HSE.TypeApplications
 cabalKnownExtensionToHseKnownExtension Cabal.TypeFamilies = HSE.TypeFamilies
-cabalKnownExtensionToHseKnownExtension Cabal.TypeFamilyDependencies = HSE.TypeFamilyDependencies
 -- cabalKnownExtensionToHseKnownExtension Cabal.TypeInType = HSE.TypeInType
 cabalKnownExtensionToHseKnownExtension Cabal.TypeOperators = HSE.TypeOperators
 cabalKnownExtensionToHseKnownExtension Cabal.TypeSynonymInstances = HSE.TypeSynonymInstances
-cabalKnownExtensionToHseKnownExtension Cabal.UnboxedSums = HSE.UnboxedSums
 cabalKnownExtensionToHseKnownExtension Cabal.UnboxedTuples = HSE.UnboxedTuples
 cabalKnownExtensionToHseKnownExtension Cabal.UndecidableInstances = HSE.UndecidableInstances
 -- cabalKnownExtensionToHseKnownExtension Cabal.UndecidableSuperClasses = HSE.UndecidableSuperClasses
@@ -182,6 +183,16 @@ cabalKnownExtensionToHseKnownExtension Cabal.UnliftedFFITypes = HSE.UnliftedFFIT
 -- cabalKnownExtensionToHseKnownExtension Cabal.Unsafe = HSE.Unsafe
 cabalKnownExtensionToHseKnownExtension Cabal.ViewPatterns = HSE.ViewPatterns
 cabalKnownExtensionToHseKnownExtension Cabal.XmlSyntax = HSE.XmlSyntax
+
+#if MIN_VERSION_haskell_src_exts(1,19,0)
+cabalKnownExtensionToHseKnownExtension Cabal.DeriveAnyClass = HSE.DeriveAnyClass
+cabalKnownExtensionToHseKnownExtension Cabal.DerivingStrategies = HSE.DerivingStrategies
+cabalKnownExtensionToHseKnownExtension Cabal.EmptyCase = HSE.EmptyCase
+cabalKnownExtensionToHseKnownExtension Cabal.JavaScriptFFI = HSE.JavaScriptFFI
+cabalKnownExtensionToHseKnownExtension Cabal.TypeFamilyDependencies = HSE.TypeFamilyDependencies
+cabalKnownExtensionToHseKnownExtension Cabal.UnboxedSums = HSE.UnboxedSums
+#endif
+
 cabalKnownExtensionToHseKnownExtension ex = error $ "Extension '" ++ show ex ++ "' unsupported"
 
 

@@ -48,18 +48,6 @@ build_8_4_4:
     GHC_VER: 8.4.4
   extends: .build_exe
 
-build_8_2_2:
-  variables:
-    GHC_VER: 8.2.2
-  extends: .build_exe
-
-build_8_0_2:
-  variables:
-    GHC_VER: 8.0.2
-  extends: .build_exe
-  retry: 2
-  allow_failure: true
-
 build_8_10_1:
   variables:
     GHC_VER: 8.10.1
@@ -73,16 +61,6 @@ build_8_8_2:
   extends: .build_exe
   retry: 2
   allow_failure: true
-
-build_7_10_3:
-  variables:
-    GHC_VER: 7.10.3
-  extends: .build_exe
-
-build_7_8_4:
-  variables:
-    GHC_VER: 7.8.4
-  extends: .build_exe
 
 test_distribution:
   stage: test
@@ -108,3 +86,4 @@ release_to_hackage:
   when: manual
   only:
     - master
+

@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP                        #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE FlexibleContexts           #-}
@@ -37,7 +38,11 @@ measureCons = sumOf (\(QualConDecl _ _ _ decl) -> count decl)
 measureGadts :: [GadtDecl SrcLoc] -> Int
 measureGadts = sumOf count
   where
+#if MIN_VERSION_haskell_src_exts(1,21,0)
     count (GadtDecl _ _ _ _ maybeFields _) = maybe 0 length maybeFields
+#else
+    count (GadtDecl _ _     maybeFields _) = maybe 0 length maybeFields
+#endif
 
 instance Show RecordFieldsCount where
   showsPrec _ (RecordFieldsCount rfc) = ("record fields count of " ++)
