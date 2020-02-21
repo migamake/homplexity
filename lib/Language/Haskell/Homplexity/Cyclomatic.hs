@@ -18,6 +18,7 @@ import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.Metric
+import Language.Haskell.Homplexity.Utilities
 
 type MatchSet = [Match SrcLoc]
 
@@ -43,10 +44,6 @@ cyclomatic x = cyclomaticOfMatches x
              + cyclomaticOfExprs   x
              + 1
 
--- | Sum the results of mapping the function over the list.
-sumOf :: (a -> Int) -> [a] -> Int
-sumOf f = sum . map f
-
 -- | Compute cyclomatic complexity of pattern matches.
 cyclomaticOfMatches :: Data from => from -> Int
 cyclomaticOfMatches  = sumOf recurse . childrenBi
@@ -66,10 +63,6 @@ cyclomaticOfExprs = sumOf armCount . (universeBi :: from -> [Exp SrcLoc])
     armCount _              = 0               -- others are ignored
 
 -- * Decision depth
--- | Sum the results of mapping the function over the list.
-maxOf :: (a -> Int) -> [a] -> Int
-maxOf f = maximum . (0:). map f
-
 -- | Decision depth
 newtype Depth = Depth Int
   deriving (Eq, Ord, Enum, Num, Real, Integral)

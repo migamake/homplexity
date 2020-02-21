@@ -38,6 +38,12 @@ Patches and suggestions are welcome.
 
 You may run `homplexity --help` to see options.
 
+For html output, run:
+```
+    homplexity --format=HTML Main.hs src/ 
+```
+
+
 How does it work?
 -----------------
 

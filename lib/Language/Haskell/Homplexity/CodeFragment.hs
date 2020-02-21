@@ -23,8 +23,12 @@ module Language.Haskell.Homplexity.CodeFragment (
   , moduleT
   , Function       (..)
   , functionT
+  , DataDef       (..)
+  , dataDefT
   , TypeSignature  (..)
   , typeSignatureT
+  , TypeClass (..)
+  , typeClassT
   , fragmentLoc
   -- TODO: add ClassSignature
   ) where
@@ -38,6 +42,7 @@ import Data.Monoid
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Homplexity.SrcSlice
+import Language.Haskell.Homplexity.Utilities
 
 -- | Program
 newtype Program = Program { allModules :: [Module SrcLoc] }
@@ -65,6 +70,17 @@ data Function = Function {
 functionT :: Proxy Function
 functionT  = Proxy
 
+-- | Alias for a @data@ declaration
+data DataDef = DataDef {
+                 dataDefName :: String
+               , dataDefCtors :: Either [QualConDecl SrcLoc] [GadtDecl SrcLoc]
+               }
+  deriving (Data, Typeable, Show)
+
+-- | Proxy for passing @DataDef@ type as an argument.
+dataDefT :: Proxy DataDef
+dataDefT  = Proxy
+
 -- ** Type signature of a function
 -- | Type alias for a type signature of a function as a @CodeFragment@
 data TypeSignature = TypeSignature { loc         :: SrcLoc
@@ -72,14 +88,20 @@ data TypeSignature = TypeSignature { loc         :: SrcLoc
                                    , theType     ::  Type SrcLoc }
   deriving (Data, Typeable, Show)
 
--- | Proxy for passing @Program@ type as an argument.
+-- | Proxy for passing @TypeSignature@ type as an argument.
 typeSignatureT :: Proxy TypeSignature
 typeSignatureT  = Proxy
 
 -- ** TODO: class signatures (number of function decls inside)
 -- | Alias for a class signature
-data ClassSignature = ClassSignature
-  deriving (Data, Typeable)
+data TypeClass = TypeClass { tcName  :: String
+                           , tcDecls :: Maybe [ClassDecl SrcLoc]
+                           }
+  deriving (Data, Typeable, Show)
+
+-- | Proxy for passing @TypeClass@ type as an argument.
+typeClassT :: Proxy TypeClass
+typeClassT  = Proxy
 
 -- TODO: need combination of Fold and Biplate
 -- Resulting record may be created to make pa
@@ -131,6 +153,17 @@ instance CodeFragment Function where
   matchAST _                                          = Nothing
   fragmentName Function {..} = unwords $ "function":functionNames
 
+instance CodeFragment DataDef where
+  type AST DataDef = Decl SrcLoc
+  matchAST (DataDecl _ _ _ declHead qualConDecls _) = do
+    name <- listToMaybe (universeBi declHead :: [Name SrcLoc])
+    pure DataDef { dataDefName = unName name, dataDefCtors = Left qualConDecls }
+  matchAST (GDataDecl _ _ _ declHead _ gadtDecls _) = do
+    name <- listToMaybe (universeBi declHead :: [Name SrcLoc])
+    pure DataDef { dataDefName = unName name, dataDefCtors = Right gadtDecls }
+  matchAST _ = Nothing
+  fragmentName DataDef {..} = "data " ++ dataDefName
+
 -- | Make a single element list.
 singleton :: a -> [a]
 singleton  = (:[])
@@ -157,10 +190,10 @@ instance CodeFragment Program where
 
 instance CodeFragment (Module SrcLoc) where
   type AST (Module SrcLoc)= Module SrcLoc
-  matchAST = Just 
-  fragmentName (Module _ (Just (ModuleHead _ (ModuleName _ theName) _ _)) _ _ _) = 
+  matchAST = Just
+  fragmentName (Module _ (Just (ModuleHead _ (ModuleName _ theName) _ _)) _ _ _) =
                 "module " ++ theName
-  fragmentName (Module _  Nothing                                         _ _ _) = 
+  fragmentName (Module _  Nothing                                         _ _ _) =
                 "<unnamed module>"
   fragmentName (XmlPage   _ (ModuleName _ theName) _ _ _ _ _)            = "XML page " ++ theName
   fragmentName (XmlHybrid _ (Just (ModuleHead _ (ModuleName _ theName) _ _))
@@ -178,8 +211,16 @@ instance CodeFragment TypeSignature where
   fragmentName TypeSignature {..} = "type signature for "
                                  ++ intercalate ", " (map unName identifiers)
 
+instance CodeFragment TypeClass where
+  type AST TypeClass = Decl SrcLoc
+
+  matchAST (ClassDecl _ _ declHead _ classDecls)
+    = Just $ TypeClass (unName . declHeadName $ declHead) classDecls
+  matchAST _ = Nothing
+
+  fragmentName (TypeClass tcName _) = "type class " ++ tcName
+
 -- | Unpack @Name@ identifier into a @String@.
 unName :: Name a -> String
 unName (Symbol _ s) = s
-unName (Ident  _ i) = i 
-
+unName (Ident  _ i) = i

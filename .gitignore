@@ -8,7 +8,7 @@
 .cabal-sandbox
 .ghc.environment.*
 .stack-work
-Homplexity
+./Homplexity
 TAGS
 _pier
 cabal.project.local*

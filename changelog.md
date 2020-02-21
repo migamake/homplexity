@@ -1,5 +1,16 @@
 Changelog
 =========
+    0.4.6.0  Feb 2020
+        * HTML output
+        * GHC 8.8, 8.10 support
+        * Automatic detection of language extensions
+        * Show --version
+        * Record fields count diagnostics
+        * Fix handling of critical message priority
+
+    0.4.5.0  Sep 2019
+        * Parsing language options.
+
     0.4.4.4  Nov 2018
         * Fix missing pattern for InfixMatch.
 

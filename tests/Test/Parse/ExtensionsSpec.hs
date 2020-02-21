@@ -5,14 +5,10 @@ import System.FilePath
 import Language.Haskell.Exts.Extension
 
 import Test.Hspec
+import Test.Utilities
 
 import Language.Haskell.Homplexity.Parse
 import Language.Haskell.Homplexity.CabalFiles
-
-
--- | Constructs OS-independent path to test file
-testFile :: FilePath -> FilePath
-testFile fn = "tests" </> "test-data" </> fn
 
 
 spec :: Spec

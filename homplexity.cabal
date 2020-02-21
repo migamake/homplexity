@@ -1,5 +1,5 @@
 name:                homplexity
-version:             0.4.4.4
+version:             0.4.6.0
 synopsis:            Haskell code quality tool
 description:         Homplexity aims to measure code complexity,
                      warning about fragments that might have higher defect probability
@@ -11,11 +11,11 @@ description:         Homplexity aims to measure code complexity,
                      .
                        * too few comments
 
-homepage:            https://github.com/mgajda/homplexity
+homepage:            https://gitlab.com/migamake/homplexity
 license:             BSD3
 license-file:        LICENSE
 author:              Michal J. Gajda
-maintainer:          mjgajda@gmail.com
+maintainer:          mjgajda@migamake.com
 copyright:           Copyright by Michal J. Gajda '2015-'2018
 category:            Language, Tools
 build-type:          Simple
@@ -28,6 +28,10 @@ tested-with:         GHC==7.8.4
                    , GHC==8.2.2
                    , GHC==8.4.4
                    , GHC==8.6.2
+
+Flag Html
+  Description: Enable HTML output via blaze-html
+  Default:     True
 
 source-repository head
   type:     git
@@ -44,9 +48,14 @@ Library
     Language.Haskell.Homplexity.Metric
     Language.Haskell.Homplexity.Parse
     Language.Haskell.Homplexity.SrcSlice
+    Language.Haskell.Homplexity.RecordFieldsCount
+    Language.Haskell.Homplexity.TypeClassComplexity
     Language.Haskell.Homplexity.TypeComplexity
+    Language.Haskell.Homplexity.Utilities
   Hs-source-dirs:      lib
   Other-Modules:
+    Paths_homplexity
+  autogen-modules:
     Paths_homplexity
   build-depends:       base             >=4.5  && <4.14,
                        bytestring,
@@ -55,7 +64,7 @@ Library
                        deepseq          >=1.3  && <1.7,
                        directory        >=1.1  && <1.4,
                        filepath         >=1.2  && <1.5,
-                       haskell-src-exts >=1.18 && <1.22,
+                       haskell-src-exts >=1.21 && <1.22,
                        hflags           >=0.3  && <0.5,
                        pqueue,
                        template-haskell >=2.6  && <2.18,
@@ -63,7 +72,7 @@ Library
   if impl(ghc>=8.8.1)
     build-depends:     Cabal            ==3.0.0.0
   else
-    build-depends:     Cabal            ==2.4.0.1
+    build-depends:     Cabal            >=2.4.0.0
   other-extensions:    BangPatterns,
                        DeriveDataTypeable,
                        FlexibleContexts,
@@ -81,6 +90,10 @@ Library
                        UndecidableInstances,
                        ViewPatterns
   default-language:    Haskell2010
+  if flag(Html)
+    CPP-Options:       -DHTML_OUTPUT
+    build-depends:     blaze-html   >= 0.9 && < 1,
+                       blaze-markup >= 0.8 && < 0.9
 
 executable homplexity-cli
   main-is:             Homplexity.hs
@@ -89,19 +102,27 @@ executable homplexity-cli
                        homplexity,
                        containers       >=0.3  && <0.7,
                        cpphs            >=1.5  && <1.21,
-                       deepseq          >=1.3  && <1.7,
+                       deepseq          >=1.3  && <1.7
+  Other-Modules:
+    Paths_homplexity
+  build-depends:       base             >=4.5  && <4.14,
+                       haskell-src-exts >=1.18 && <1.22,
                        directory        >=1.1  && <1.4,
                        filepath         >=1.2  && <1.5,
                        gitrev           >=1.3  && <1.4,
                        haskell-src-exts >=1.18 && <1.22,
                        hflags           >=0.3  && <0.5,
-                       template-haskell >=2.6  && <2.16,
+                       template-haskell >=2.6  && <2.18,
                        uniplate         >=1.4  && <1.7
   default-language:    Haskell2010
   Other-Modules:
     Paths_homplexity
   -- STATIC: ld-options: -static
   -- STATIC: ghc-options: -fPIC
+  if flag(Html)
+    CPP-Options:       -DHTML_OUTPUT
+    build-depends:     blaze-html   >= 0.9  && < 1,
+                       bytestring   >= 0.10 && < 0.11
 
 
 test-suite homplexity-tests
@@ -109,6 +130,8 @@ test-suite homplexity-tests
   hs-source-dirs:      tests
   other-modules:
     Test.Utils
+    Test.Utilities
+    Test.Metrics.TypeClassComplexitySpec
     Test.Parse.CommentsSpec
     Test.Parse.ExtensionsSpec
   type:                exitcode-stdio-1.0
@@ -117,7 +140,7 @@ test-suite homplexity-tests
                        filepath         >=1.2  && <1.5,
                        haskell-src-exts >=1.18 && <1.22,
                        hspec            >=2.0  && <4,
-                       template-haskell >=2.6  && <2.16
+                       template-haskell >=2.6  && <2.18
   default-language:    Haskell2010
   ghc-options:         -Wall -threaded -rtsopts "-with-rtsopts=-N"
 
