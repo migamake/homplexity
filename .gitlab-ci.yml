@@ -92,7 +92,7 @@ test_distribution:
     - tar xzf sdist/$PACKAGE_NAME*[0-9].tar.gz
     - bin/homplexity-cli homplexity-*/lib
   dependencies:
-    - build_8_6_2
+    - build_8_6_5
   artifacts:
     paths:
       - bin/homplexity-cli
@@ -103,7 +103,7 @@ release_to_hackage:
     - cabal upload --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" sdist/$PACKAGE_NAME-*[0-9].tar.gz
     - cabal upload --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" -d hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
   dependencies:
-    - build_8_6_2
+    - build_8_6_5
   when: manual
   only:
     - master
