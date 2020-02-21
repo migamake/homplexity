@@ -22,7 +22,7 @@ cache:
     - ghc   --version
     - cabal update
     - "sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal"
-    - cabal install --verbose --only-dependencies
+    - cabal install --verbose --dependencies-only --enable-tests
     - cabal configure --enable-tests
     - cabal test
     - mkdir -p bin sdist
