@@ -73,6 +73,7 @@ Library
     build-depends:     Cabal            ==3.0.0.0
   else
     build-depends:     Cabal            >=2.4.0.0
+  build-tool:          hspec-discover
   other-extensions:    BangPatterns,
                        DeriveDataTypeable,
                        FlexibleContexts,
