@@ -17,6 +17,7 @@ cache:
   image: migamake/haskell-build:$GHC_VER
   stage: build
   script:
+    - cabal install hspec-discover # til it is included in build image
     - cabal sandbox init
     - cabal --version
     - ghc   --version
