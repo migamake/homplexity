@@ -55,8 +55,6 @@ Library
   Hs-source-dirs:      lib
   Other-Modules:
     Paths_homplexity
-  autogen-modules:
-    Paths_homplexity
   build-depends:       base             >=4.5  && <4.14,
                        bytestring,
                        containers       >=0.3  && <0.7,
