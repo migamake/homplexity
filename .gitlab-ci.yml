@@ -1,4 +1,4 @@
-image: migamake/haskell-build:8.6.2
+image: migamake/haskell-build:8.6.5
 
 stages:
   - build
@@ -31,9 +31,9 @@ cache:
     - cabal haddock --builddir hackage-docs --for-hackage
     - bin/homplexity-cli lib/
 
-build_8_6_2:
+build_8_6_5:
   variables:
-    GHC_VER: 8.6.2
+    GHC_VER: 8.6.5
   extends: .build_exe
   artifacts:
     paths:
@@ -52,12 +52,26 @@ build_8_2_2:
     GHC_VER: 8.2.2
   extends: .build_exe
 
-#build_8_0_2:
-#  variables:
-#    GHC_VER: 8.0.2
-#  extends: .build_exe
-#  retry: 2
-#  allow_failure: true
+build_8_0_2:
+  variables:
+    GHC_VER: 8.0.2
+  extends: .build_exe
+  retry: 2
+  allow_failure: true
+
+build_8_10_1:
+  variables:
+    GHC_VER: 8.10.1
+  extends: .build_exe
+  retry: 2
+  allow_failure: true
+
+build_8_8_2:
+  variables:
+    GHC_VER: 8.8.2
+  extends: .build_exe
+  retry: 2
+  allow_failure: true
 
 build_7_10_3:
   variables:
