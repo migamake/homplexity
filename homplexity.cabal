@@ -62,7 +62,7 @@ Library
                        deepseq          >=1.3  && <1.7,
                        directory        >=1.1  && <1.4,
                        filepath         >=1.2  && <1.5,
-                       haskell-src-exts >=1.21 && <1.24,
+                       haskell-src-exts >=1.20 && <1.24,
                        hflags           >=0.3  && <0.5,
                        pqueue,
                        template-haskell >=2.6  && <2.18,
@@ -70,7 +70,7 @@ Library
   if impl(ghc>=8.8.1)
     build-depends:     Cabal            ==3.0.0.0
   else
-    build-depends:     Cabal            >=2.4.0.0
+    build-depends:     Cabal            >=2.2.0.0
 
   other-extensions:    BangPatterns,
                        DeriveDataTypeable,
@@ -108,7 +108,7 @@ executable homplexity-cli
                        directory        >=1.1  && <1.4,
                        filepath         >=1.2  && <1.5,
                        gitrev           >=1.3  && <1.4,
-                       haskell-src-exts >=1.21 && <1.24,
+                       haskell-src-exts >=1.20 && <1.24,
                        hflags           >=0.3  && <0.5,
                        template-haskell >=2.6  && <2.18,
                        uniplate         >=1.4  && <1.7
@@ -136,7 +136,7 @@ test-suite homplexity-tests
   build-depends:       base             >=4.5  && <4.14,
                        homplexity,
                        filepath         >=1.2  && <1.5,
-                       haskell-src-exts >=1.21 && <1.24,
+                       haskell-src-exts >=1.20 && <1.24,
                        hspec            >=2.0  && <4,
                        template-haskell >=2.6  && <2.18,
                        hspec-discover

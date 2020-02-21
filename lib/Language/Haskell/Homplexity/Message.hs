@@ -22,10 +22,9 @@ import Control.Arrow
 import Control.DeepSeq
 import Data.Function                                        (on)
 import Data.Foldable                            as Foldable
+import Data.Monoid
 #if __GLASGOW_HASKELL__ >= 800
 import Data.Semigroup
-#else
-import Data.Monoid hiding((<>))
 #endif
 import Data.Sequence                            as Seq
 import Language.Haskell.Exts hiding (style)

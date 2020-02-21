@@ -183,15 +183,12 @@ cabalKnownExtensionToHseKnownExtension Cabal.UnliftedFFITypes = HSE.UnliftedFFIT
 -- cabalKnownExtensionToHseKnownExtension Cabal.Unsafe = HSE.Unsafe
 cabalKnownExtensionToHseKnownExtension Cabal.ViewPatterns = HSE.ViewPatterns
 cabalKnownExtensionToHseKnownExtension Cabal.XmlSyntax = HSE.XmlSyntax
-
-#if MIN_VERSION_haskell_src_exts(1,19,0)
 cabalKnownExtensionToHseKnownExtension Cabal.DeriveAnyClass = HSE.DeriveAnyClass
 cabalKnownExtensionToHseKnownExtension Cabal.DerivingStrategies = HSE.DerivingStrategies
 cabalKnownExtensionToHseKnownExtension Cabal.EmptyCase = HSE.EmptyCase
 cabalKnownExtensionToHseKnownExtension Cabal.JavaScriptFFI = HSE.JavaScriptFFI
 cabalKnownExtensionToHseKnownExtension Cabal.TypeFamilyDependencies = HSE.TypeFamilyDependencies
 cabalKnownExtensionToHseKnownExtension Cabal.UnboxedSums = HSE.UnboxedSums
-#endif
 
 cabalKnownExtensionToHseKnownExtension ex = error $ "Extension '" ++ show ex ++ "' unsupported"
 
