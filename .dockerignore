@@ -1,4 +1,5 @@
-.git
+.git/logs
+.git/objects
 .stack-work
 .cabal-sandbox
 dist
