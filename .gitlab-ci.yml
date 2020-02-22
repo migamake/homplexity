@@ -25,7 +25,7 @@ cache:
     - cabal install --dependencies-only --enable-tests
     - "sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal"
     - cabal configure --enable-tests
-    - "cabal build --enable-tests"
+    - cabal build
     - cabal test
     - cabal test
     - mkdir -p bin sdist
