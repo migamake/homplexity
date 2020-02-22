@@ -19,7 +19,7 @@ import Data.List hiding (head)
 import Data.Monoid
 import Data.Version
 
-import Development.GitRev (gitHash)
+import GitHash(giHash, giDirty, giCommitDate, tGitInfoCwdTry)
 import HFlags
 import Language.Haskell.Exts.Extension
 import Language.Haskell.Exts.SrcLoc
@@ -143,7 +143,17 @@ defineFlag "cabal" "" "Project cabal file"
 -- | This flag exists only to make sure that HFLags work.
 defineFlag "fakeFlag" Info "this flag is fake"
 
-versionString = unwords [showVersion version, "git revision", $(gitHash)]
+
+versionString = showVersion version <> gitString
+  where
+    gitString = case $$tGitInfoCwdTry of
+                  Left  err     -> "unknown revision: " <> err
+                  Right gitInfo -> unwords [
+                     "git rev",  giHash       gitInfo
+                    ,"dated",    giCommitDate gitInfo
+                    ,if          giDirty      gitInfo
+                        then     "dirty"
+                        else     ""]
 
 -- | Parse arguments and either process inputs (if available), or suggest proper usage.
 main :: IO ()
