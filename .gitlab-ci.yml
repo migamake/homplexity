@@ -22,7 +22,6 @@ cache:
     - cabal --version
     - ghc   --version
     - cabal update
-    - cabal install hspec-discover # til it is included in build image
     - cabal v1-sandbox init
     - "sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal"
     - cabal install --verbose --dependencies-only --enable-tests
@@ -43,7 +42,6 @@ cache:
     - cabal --version
     - ghc   --version
     - cabal update
-    - cabal install hspec-discover # til it is included in build image
     - cabal build --enable-tests
     - cabal test
     - mkdir -p bin sdist
@@ -95,6 +93,12 @@ test_distribution:
   artifacts:
     paths:
       - bin/homplexity-cli
+
+docker_build:
+  stage: test
+  script:
+    - docker build . -t homplexity-image -f Dockerfile
+    - docker run homplexity-image -v $PWD:/build /build/
 
 release_to_hackage:
   stage: release
