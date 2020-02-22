@@ -22,10 +22,11 @@ cache:
     - cabal --version
     - ghc   --version
     - cabal update
-    - cabal v1-sandbox init
+    - cabal install --dependencies-only --enable-tests
     - "sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal"
-    - cabal install --verbose --dependencies-only --enable-tests
     - cabal configure --enable-tests
+    - "cabal build --enable-tests"
+    - cabal test
     - cabal test
     - mkdir -p bin sdist
     - cabal install --bindir=bin/
