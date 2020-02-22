@@ -22,6 +22,7 @@ import Language.Haskell.Homplexity.Message
 #if MIN_VERSION_Cabal(3,0,0)
 import Distribution.PackageDescription.Parsec
 import Distribution.Parsec.Warning
+import Distribution.Types.GenericPackageDescription
 #elif MIN_VERSION_Cabal(2,0,0)
 import Distribution.PackageDescription.Parsec
 import Distribution.Types.GenericPackageDescription
