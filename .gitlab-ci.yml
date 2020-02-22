@@ -13,6 +13,8 @@ cache:
   paths:
     - .cabal-sandbox
 
+# Build for images up to 8.6, with `cabal-install` 2.x
+
 .build_exe:
   image: migamake/haskell-build:$GHC_VER
   stage: build
@@ -21,7 +23,7 @@ cache:
     - ghc   --version
     - cabal update
     - cabal install hspec-discover # til it is included in build image
-    - cabal sandbox init || cabal v1-sandbox init
+    - cabal v1-sandbox init
     - "sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal"
     - cabal install --verbose --dependencies-only --enable-tests
     - cabal configure --enable-tests
@@ -31,6 +33,24 @@ cache:
     - cabal sdist   --builddir=sdist/
     - cabal haddock --builddir hackage-docs --for-hackage
     - bin/homplexity-cli lib/
+
+# Build for images 8.8 and above with `cabal-install` v3.x
+
+.new_build_exe:
+  image: migamake/haskell-build:$GHC_VER
+  stage: build
+  script:
+    - cabal --version
+    - ghc   --version
+    - cabal update
+    - cabal install hspec-discover # til it is included in build image
+    - cabal build --enable-tests
+    - cabal test
+    - mkdir -p bin sdist
+    - cabal install --bindir=bin/
+    - cabal sdist   --builddir=sdist/
+    - cabal haddock --builddir hackage-docs --haddock-for-hackage
+    - cabal exec -- homplexity-cli lib/ # path is dist/build/homplexity-cli
 
 build_8_6:
   variables:
@@ -51,14 +71,14 @@ build_8_4:
 build_8_10:
   variables:
     GHC_VER: "8.10"
-  extends: .build_exe
+  extends: .new_build_exe
   retry: 2
   allow_failure: true
 
 build_8_8:
   variables:
     GHC_VER: "8.8"
-  extends: .build_exe
+  extends: .new_build_exe
   retry: 2
   allow_failure: true
 
