@@ -34,7 +34,7 @@ cache:
 
 build_8_6:
   variables:
-    GHC_VER: 8.6
+    GHC_VER: "8.6"
   extends: .build_exe
   artifacts:
     paths:
@@ -45,19 +45,19 @@ build_8_6:
 
 build_8_4:
   variables:
-    GHC_VER: 8.4
+    GHC_VER: "8.4"
   extends: .build_exe
 
 build_8_10:
   variables:
-    GHC_VER: 8.10
+    GHC_VER: "8.10"
   extends: .build_exe
   retry: 2
   allow_failure: true
 
 build_8_8:
   variables:
-    GHC_VER: 8.8
+    GHC_VER: "8.8"
   extends: .build_exe
   retry: 2
   allow_failure: true
