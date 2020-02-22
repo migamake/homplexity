@@ -21,7 +21,7 @@ cache:
     - ghc   --version
     - cabal update
     - cabal install hspec-discover # til it is included in build image
-    - cabal sandbox init
+    - cabal sandbox init || cabal v1-sandbox init
     - "sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal"
     - cabal install --verbose --dependencies-only --enable-tests
     - cabal configure --enable-tests
