@@ -23,8 +23,8 @@ cache:
     - ghc   --version
     - cabal update
     - cabal install --dependencies-only --enable-tests
-    - "sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal"
-    - cabal v1-configure --enable-tests
+    - "echo sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal" # disabled for latest Ubuntu
+    - cabal v1-configure --enable-tests --allow-newer
     - cabal v1-build
     - cabal v1-test
     - mkdir -p bin sdist
@@ -42,7 +42,7 @@ cache:
     - cabal --version
     - ghc   --version
     - cabal update
-    - cabal build --enable-tests
+    - cabal build --enable-tests --allow-newer
     - cabal test
     - mkdir -p bin sdist
     - cabal install --bindir=bin/
