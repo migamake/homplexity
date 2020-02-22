@@ -9,7 +9,7 @@ module Language.Haskell.Homplexity.Comments (
     CommentLink      (..)
   , CommentType      (..)
   , classifyComments
-  , findCommentType -- exposed for testing only
+  , findCommentType  -- exposed for testing only
   , CommentSite      (..)
   , commentable
 
@@ -67,13 +67,13 @@ newtype Ends   = End   { siteEnded   :: CommentSite }
   deriving (Eq, Show)
 
 compareStarts :: CommentSite -> CommentSite -> Ordering
-compareStarts = compare `on` start . siteSlice
+compareStarts = on compare (start . siteSlice)
 
 instance Ord Ends   where
-  compare = compareEnds `on` siteEnded
+  compare = on compareEnds siteEnded
 
 compareEnds :: CommentSite -> CommentSite -> Ordering
-compareEnds  = compare `on` end   . siteSlice
+compareEnds  = on compare (end   . siteSlice)
 
 start, end :: SrcSlice -> (Int, Int)
 start slice = (srcSpanStartColumn slice, srcSpanStartLine slice)
