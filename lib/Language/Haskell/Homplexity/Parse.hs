@@ -8,18 +8,18 @@
 -- | Parsing of Haskell source files, and error reporting for unparsable files.
 module Language.Haskell.Homplexity.Parse (parseSource, parseTest) where
 
-import Control.Exception as E
-import Data.Functor
-import Data.Maybe
-import           Data.Map.Strict    (Map)
-import qualified Data.Map.Strict as Map
+import           Control.Exception                    as E
+--import Data.Functor
+--import Data.Maybe
+import           Data.Map.Strict                      (Map)
+import qualified Data.Map.Strict                      as Map
 
-import Language.Haskell.Exts.Syntax
-import Language.Haskell.Exts.SrcLoc
-import Language.Haskell.Exts
-import Language.Haskell.Homplexity.Comments
-import Language.Haskell.Homplexity.Message
-import Language.Preprocessor.Cpphs
+import           Language.Haskell.Exts
+--import           Language.Haskell.Exts.SrcLoc
+--import           Language.Haskell.Exts.Syntax
+import           Language.Haskell.Homplexity.Comments
+import           Language.Haskell.Homplexity.Message
+import           Language.Preprocessor.Cpphs
 
 --import HFlags
 
@@ -104,4 +104,3 @@ parseTest testId testSource = do
     parseSourceInternal [] testId testSource >>= \case
         ParseOk (parsed, comments) -> return $ (getPointLoc <$> parsed, classifyComments comments)
         other                      -> error $ show other
-

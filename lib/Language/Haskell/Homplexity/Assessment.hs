@@ -3,26 +3,26 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE ViewPatterns          #-}
 -- | Main module parsing inputs, and running analysis.
 module Language.Haskell.Homplexity.Assessment where
 
-import Data.Data
-import Data.Monoid
+import           Data.Data
+--import           Data.Monoid
 
-import Language.Haskell.Homplexity.CodeFragment
-import Language.Haskell.Homplexity.Cyclomatic
-import Language.Haskell.Homplexity.Message
-import Language.Haskell.Homplexity.Metric
-import Language.Haskell.Homplexity.RecordFieldsCount
-import Language.Haskell.Homplexity.TypeClassComplexity
-import Language.Haskell.Homplexity.TypeComplexity
+import           Language.Haskell.Homplexity.CodeFragment
+import           Language.Haskell.Homplexity.Cyclomatic
+import           Language.Haskell.Homplexity.Message
+import           Language.Haskell.Homplexity.Metric
+import           Language.Haskell.Homplexity.RecordFieldsCount
+import           Language.Haskell.Homplexity.TypeClassComplexity
+import           Language.Haskell.Homplexity.TypeComplexity
 
-import HFlags
+import           HFlags
 
 {-
 numFunctions = length
@@ -200,4 +200,3 @@ metrics  = [ measureTopOccurs assessModuleLength       locT               module
            , measureTopOccurs assessTCNonTypeDeclCount nonTypeDeclCountT  typeClassT
            , measureTopOccurs assessTCAssocTypesCount  assocTypeCountT    typeClassT
            ]
-

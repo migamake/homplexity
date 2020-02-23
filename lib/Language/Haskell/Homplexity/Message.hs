@@ -1,9 +1,9 @@
 {-# LANGUAGE BangPatterns               #-}
 {-# LANGUAGE CPP                        #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE TemplateHaskell            #-}
-{-# LANGUAGE OverloadedStrings          #-}
 -- | Classifying messages by severity and filtering them.
 module Language.Haskell.Homplexity.Message (
     Log
@@ -18,24 +18,24 @@ module Language.Haskell.Homplexity.Message (
   , extract
   ) where
 
-import Control.Arrow
-import Control.DeepSeq
-import Data.Function                                        (on)
-import Data.Foldable                            as Foldable
+import           Control.Arrow
+import           Control.DeepSeq
+import           Data.Foldable                      as Foldable
+import           Data.Function                      (on)
 #if __GLASGOW_HASKELL__ >= 800
-import Data.Semigroup(Semigroup(..))
+import           Data.Semigroup                     (Semigroup (..))
 #else
-import Data.Monoid
+import           Data.Monoid
 #endif
-import Data.Sequence                            as Seq
-import Language.Haskell.Exts hiding (style)
-import Language.Haskell.TH.Syntax                           (Lift(..))
-import HFlags
+import           Data.Sequence                      as Seq
+import           HFlags
+import           Language.Haskell.Exts              hiding (style)
+import           Language.Haskell.TH.Syntax         (Lift (..))
 #ifdef HTML_OUTPUT
-import Prelude hiding (head, id, div, span)
-import Text.Blaze.Html4.Strict hiding (map, style)
-import Text.Blaze.Html4.Strict.Attributes hiding (title, span)
-import Text.Blaze.Renderer.Utf8 (renderMarkup)
+import           Prelude                            hiding (div, head, id, span)
+import           Text.Blaze.Html4.Strict            hiding (map, style)
+import           Text.Blaze.Html4.Strict.Attributes hiding (span, title)
+--import           Text.Blaze.Renderer.Utf8           (renderMarkup)
 #endif
 
 -- | Keeps a set of messages
@@ -57,10 +57,9 @@ data Message = Message { msgSeverity :: !Severity
   deriving (Eq)
 
 instance NFData Message where
-  rnf Message {..} = rnf msgSeverity `seq` rnf msgText `seq` rnf msgSrc
-
-instance NFData SrcLoc where
-  rnf SrcLoc {..} = rnf srcFilename `seq` rnf srcLine `seq` rnf srcColumn
+  rnf Message {msgSrc=SrcLoc{..},..} =
+    rnf msgSeverity `seq` rnf msgText `seq`
+    rnf srcFilename `seq` rnf srcLine `seq` rnf srcColumn
 
 instance Show Message where
   showsPrec _ Message {msgSrc=loc@SrcLoc{..}, ..} = shows msgSeverity
@@ -76,11 +75,11 @@ instance Show Message where
 
 #ifdef HTML_OUTPUT
 instance ToMarkup Message where
-  toMarkup Message {..} =
+  toMarkup Message {msgSrc=SrcLoc{..}, ..} =
     p ! classId $
      (toMarkup msgSeverity
        <> string ": "
-       <> toMarkup msgSrc
+       <> (a ! href (toValue srcFilename) $ (string srcFilename))
        <> string ": "
        <> string msgText)
     where
@@ -95,10 +94,6 @@ instance ToMarkup Severity where
   toMarkup Info     = span   ! class_ "severity" $ string (show Info)
   toMarkup Warning  = strong ! class_ "severity" $ string (show Warning)
   toMarkup Critical = strong ! class_ "severity" $ string (show Critical)
-
-instance ToMarkup SrcLoc where
-  toMarkup SrcLoc {..} = a ! href (toValue srcFilename) $ (string srcFilename)
-
 #endif
 
 -- | Message severity
@@ -162,4 +157,3 @@ extract severity = Foldable.toList
 instance Show Log where
   showsPrec _ l e = Foldable.foldr  shows e $
                     orderedMessages Debug l
-

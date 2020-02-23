@@ -6,8 +6,8 @@
 {-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
-{-# LANGUAGE ViewPatterns          #-}
 {-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE ViewPatterns          #-}
 -- | This module generalizes over types of code fragments
 -- that may need to be iterated upon and measured separately.
 module Language.Haskell.Homplexity.CodeFragment (
@@ -33,16 +33,16 @@ module Language.Haskell.Homplexity.CodeFragment (
   -- TODO: add ClassSignature
   ) where
 
-import Data.Data
-import Data.Functor
-import Data.Generics.Uniplate.Data
-import Data.List
-import Data.Maybe
-import Data.Monoid
-import Language.Haskell.Exts.Syntax
-import Language.Haskell.Exts.SrcLoc
-import Language.Haskell.Homplexity.SrcSlice
-import Language.Haskell.Homplexity.Utilities
+import           Data.Data
+--import           Data.Functor
+import           Data.Generics.Uniplate.Data
+import           Data.List
+import           Data.Maybe
+--import           Data.Monoid
+import           Language.Haskell.Exts.SrcLoc
+import           Language.Haskell.Exts.Syntax
+import           Language.Haskell.Homplexity.SrcSlice
+import           Language.Haskell.Homplexity.Utilities
 
 -- | Program
 newtype Program = Program { allModules :: [Module SrcLoc] }
@@ -72,7 +72,7 @@ functionT  = Proxy
 
 -- | Alias for a @data@ declaration
 data DataDef = DataDef {
-                 dataDefName :: String
+                 dataDefName  :: String
                , dataDefCtors :: Either [QualConDecl SrcLoc] [GadtDecl SrcLoc]
                }
   deriving (Data, Typeable, Show)
@@ -126,8 +126,6 @@ class (Show c, Data (AST c), Data c) => CodeFragment c where
 fragmentLoc :: (CodeFragment c) => c -> SrcLoc
 fragmentLoc =  getPointLoc
             .  fragmentSlice
-
-mergeBinds = catMaybes
 
 instance CodeFragment Function where
   type AST Function            = Decl SrcLoc

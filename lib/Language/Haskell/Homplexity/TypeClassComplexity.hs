@@ -1,5 +1,5 @@
-{-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
 -- | Measuring the complexity of type class declarations
 module Language.Haskell.Homplexity.TypeClassComplexity
   ( NonTypeDeclCount
@@ -8,14 +8,14 @@ module Language.Haskell.Homplexity.TypeClassComplexity
   , assocTypeCountT
   ) where
 
-import Data.Data
-import Data.Maybe
-import Data.Generics.Uniplate.Data
-import Language.Haskell.Exts.SrcLoc
-import Language.Haskell.Exts.Syntax
-import Language.Haskell.Homplexity.CodeFragment
-import Language.Haskell.Homplexity.Metric
-import Language.Haskell.Homplexity.Utilities
+import           Data.Data
+import           Data.Generics.Uniplate.Data              ()
+import           Data.Maybe
+--import Language.Haskell.Exts.SrcLoc
+import           Language.Haskell.Exts.Syntax
+import           Language.Haskell.Homplexity.CodeFragment
+import           Language.Haskell.Homplexity.Metric
+import           Language.Haskell.Homplexity.Utilities
 
 -- NOTE: It is non-trivial to decide whether a class declaration
 -- is a method or a value. To correctly do that, we would have to
@@ -35,7 +35,7 @@ instance Show NonTypeDeclCount where
                                     . shows mc
 
 instance Metric NonTypeDeclCount TypeClass where
-  measure x = NonTypeDeclCount . sumOf method . fromMaybe [] . tcDecls $ x where
+  measure = NonTypeDeclCount . sumOf method . fromMaybe [] . tcDecls where
 
     method :: ClassDecl l -> Int
     method (ClsDecl _ TypeSig{}) = 1
@@ -56,11 +56,10 @@ instance Show AssocTypeCount where
                                    . shows atc
 
 instance Metric AssocTypeCount TypeClass where
-  measure x = AssocTypeCount . sumOf assocType . fromMaybe [] . tcDecls $ x where
+  measure = AssocTypeCount . sumOf assocType . fromMaybe [] . tcDecls where
 
     assocType :: ClassDecl l -> Int
     assocType ClsTyFam{}   = 1
     assocType ClsTyDef{}   = 1
     assocType ClsDataFam{} = 1
     assocType _            = 0
-

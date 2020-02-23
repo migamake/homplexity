@@ -43,7 +43,7 @@ import qualified Data.ByteString.Lazy as B
 import Text.Blaze.Html
 import Text.Blaze.Html.Renderer.Utf8
 import Text.Blaze.Html4.Strict hiding (map)
-import Text.Blaze.Html4.Strict.Attributes hiding (title, style)
+--import Text.Blaze.Html4.Strict.Attributes hiding (title, style)
 #endif
 
 -- * Command line flag
@@ -143,9 +143,11 @@ defineFlag "cabal" "" "Project cabal file"
 -- | This flag exists only to make sure that HFLags work.
 defineFlag "fakeFlag" Info "this flag is fake"
 
-gitInfoValue = $$tGitInfoCwdTry
+gitInfoValue ::Either String GitHash.GitInfo
+gitInfoValue  = $$tGitInfoCwdTry
 
-versionString = showVersion version <> gitString
+versionString :: String
+versionString  = showVersion version <> gitString
   where
     gitString = case gitInfoValue of
                   Left  err     -> "unknown revision: " <> err
@@ -180,5 +182,3 @@ cabalExtensions
       parseCabalFile flags_cabal >>=
         either (\msg -> report (show msg) >> return [])
                (\cabal -> return $ languageExtensions Library cabal)
-
-

@@ -1,8 +1,8 @@
-{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
--- | Class for defining code metrics, and its simplest implementation - number of lines of code. 
+-- | Class for defining code metrics, and its simplest implementation - number of lines of code.
 module Language.Haskell.Homplexity.Metric (
     Metric (..)
   , LOC
@@ -11,16 +11,16 @@ module Language.Haskell.Homplexity.Metric (
   , measureFor
   ) where
 
-import Data.Data
-import Data.Function
-import Data.Functor
-import Data.Generics.Uniplate.Data
-import Data.List
-import Control.Arrow
-import Language.Haskell.Exts.SrcLoc
+import           Data.Data
+import           Data.Function
+--import Data.Functor
+import           Control.Arrow
+import           Data.Generics.Uniplate.Data
+import           Data.List
+import           Language.Haskell.Exts.SrcLoc
 --import Language.Haskell.Exts.Syntax
 
-import Language.Haskell.Homplexity.CodeFragment
+import           Language.Haskell.Homplexity.CodeFragment
 
 -- | Metric can be computed on a set of @CodeFragment@ fragments
 -- and then shown.
@@ -29,7 +29,7 @@ class (CodeFragment c, Show m) => Metric m c where
 
 -- | Number of lines of code
 -- (example metric)
-newtype LOC = LOC { asInt :: Int }
+newtype LOC = LOC { _asInt :: Int }
   deriving (Ord, Eq, Enum, Num, Real, Integral)
 
 -- | Proxy for passing @LOC@ type as parameter.
