@@ -25,19 +25,7 @@ cache:
   image: migamake/haskell-build:$GHC_VER
   stage: build
   script:
-    - cabal --version
-    - ghc   --version
-    - cabal update
-    - cabal install --dependencies-only --enable-tests
-    - "echo sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal" # disabled for latest Ubuntu
-    - cabal v1-configure --enable-tests --allow-newer
-    - cabal v1-build
-    - cabal v1-test
-    - mkdir -p bin sdist
-    - cabal install --bindir=bin/
-    - cabal sdist   --builddir=sdist/
-    - cabal haddock --builddir hackage-docs --for-hackage
-    - bin/homplexity-cli lib/
+    - ci/old-cabal-build.sh
 
 # Build for images 8.8 and above with `cabal-install` v3.x
 
@@ -45,16 +33,7 @@ cache:
   image: migamake/haskell-build:$GHC_VER
   stage: build
   script:
-    - cabal --version
-    - ghc   --version
-    - cabal update
-    - cabal build --enable-tests --allow-newer
-    - cabal test --allow-newer
-    - mkdir -p bin sdist
-    - cabal install --bindir=bin/ --allow-newer
-    - cabal sdist   --builddir=sdist/ --allow-newer
-    - cabal haddock --builddir hackage-docs --haddock-for-hackage --allow-newer
-    - cabal exec -- homplexity-cli lib/ # path is dist/build/homplexity-cli
+    - ci/new-cabal-build.sh
 
 build_8_6:
   variables:
@@ -106,7 +85,7 @@ docker_build:
   script:
     - mkdir -p workdir
     - docker build . -t migamake/homplexity -f Dockerfile
-    - docker run migamake/homplexity -v $PWD:/workdir /workdir
+    - docker run migamake/homplexity -v $PWD/lib:/workdir
     - docker save --output homplexity.docker migamake/homplexity:latest
     - ls -alth homplexity.docker
   artifacts:
