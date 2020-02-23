@@ -9,7 +9,6 @@ stages:
 variables:
   PACKAGE_NAME:       homplexity
   EXEC_NAME:          homplexity-cli
-  DOCKER_TLS_CERTDIR: "/certs"
 
 services:
   - docker:19.03.1-dind
@@ -17,6 +16,7 @@ services:
 cache:
   paths:
     - .cabal-sandbox
+    - /root/.cabal
 
 # Build for images up to 8.6, with `cabal-install` 2.x
 
@@ -102,9 +102,16 @@ test_distribution:
 docker_build:
   image: docker
   stage: docker
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - docker build . -t homplexity-image -f Dockerfile
     - docker run homplexity-image -v $PWD:/build /build/
+    - docker save --output /build/homplexity.docker homplexity-image:latest
+    - ls -alth /build/homplexity.docker
+  artifacts:
+    paths:
+      - /build/homplexity.docker
 
 release_to_hackage:
   stage: release
@@ -113,6 +120,18 @@ release_to_hackage:
     - cabal upload --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" -d hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
   dependencies:
     - build_8_6
+  when: manual
+  only:
+    - master
+
+release_to_dockerhub:
+  stage: release
+  script:
+    - docker load /build/homplexity.docker
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
+    - docker push migamake/homplexity;
+  dependencies:
+    - docker_build
   when: manual
   only:
     - master
