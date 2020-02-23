@@ -143,10 +143,11 @@ defineFlag "cabal" "" "Project cabal file"
 -- | This flag exists only to make sure that HFLags work.
 defineFlag "fakeFlag" Info "this flag is fake"
 
+gitInfoValue = $$tGitInfoCwdTry
 
 versionString = showVersion version <> gitString
   where
-    gitString = case $$tGitInfoCwdTry of
+    gitString = case gitInfoValue of
                   Left  err     -> "unknown revision: " <> err
                   Right gitInfo -> unwords [
                      "git rev",  giHash       gitInfo
