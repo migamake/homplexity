@@ -91,11 +91,22 @@ docker_build:
     paths:
       - homplexity.docker
 
-release_to_hackage:
-  stage: release
+upload_hackage_candidate:
+  stage: test
   script:
     - cabal upload --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" sdist/$PACKAGE_NAME-*[0-9].tar.gz
     - cabal upload --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" -d hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
+  dependencies:
+    - build_8_6
+  only:
+    - master
+  allow_failure: true
+
+release_to_hackage:
+  stage: release
+  script:
+    - cabal upload --publish --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" sdist/$PACKAGE_NAME-*[0-9].tar.gz
+    - cabal upload --publish --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" -d hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
   dependencies:
     - build_8_6
   when: manual
