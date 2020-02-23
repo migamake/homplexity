@@ -4,7 +4,10 @@
 .cabal-sandbox
 dist
 dist-newstyle
+sdist
 _pier
+.gitlab-ci.yml
+ci/*.sh
 static/homplexity
 Dockerfile
 haddock
