@@ -19,7 +19,7 @@ import Data.List hiding (head)
 import Data.Monoid
 import Data.Version
 
-import GitHash(giHash, giDirty, giCommitDate, tGitInfoCwdTry)
+import GitHash(giHash, giDirty, giCommitDate, tGitInfoCwdTry, GitInfo)
 import HFlags
 import Language.Haskell.Exts.Extension
 import Language.Haskell.Exts.SrcLoc
