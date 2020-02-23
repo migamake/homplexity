@@ -9,6 +9,7 @@ stages:
 variables:
   PACKAGE_NAME:       homplexity
   EXEC_NAME:          homplexity-cli
+  DOCKER_TLS_CERTDIR: "/certs"
 
 services:
   - docker:19.03.1-dind
@@ -102,16 +103,14 @@ test_distribution:
 docker_build:
   image: docker
   stage: docker
-  variables:
-    DOCKER_TLS_CERTDIR: "/certs"
   script:
-    - docker build . -t homplexity-image -f Dockerfile
-    - docker run homplexity-image -v $PWD:/build /build/
-    - docker save --output /build/homplexity.docker homplexity-image:latest
-    - ls -alth /build/homplexity.docker
+    - docker build . -t migamake/homplexity -f Dockerfile
+    - docker run migamake/homplexity -v $PWD:/workdir /workdir
+    - docker save --output homplexity.docker migamake/homplexity:latest
+    - ls -alth homplexity.docker
   artifacts:
     paths:
-      - /build/homplexity.docker
+      - homplexity.docker
 
 release_to_hackage:
   stage: release
@@ -125,9 +124,10 @@ release_to_hackage:
     - master
 
 release_to_dockerhub:
+  image: docker
   stage: release
   script:
-    - docker load /build/homplexity.docker
+    - docker load homplexity.docker
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
     - docker push migamake/homplexity;
   dependencies:
