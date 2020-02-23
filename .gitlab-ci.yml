@@ -7,8 +7,12 @@ stages:
   - release
 
 variables:
-  PACKAGE_NAME: homplexity
-  EXEC_NAME:    homplexity-cli
+  PACKAGE_NAME:       homplexity
+  EXEC_NAME:          homplexity-cli
+  DOCKER_TLS_CERTDIR: "/certs"
+
+services:
+  - docker:19.03.1-dind
 
 cache:
   paths:
