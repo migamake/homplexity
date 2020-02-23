@@ -9,7 +9,6 @@ ghc   --version
 message "Dependencies"
 cabal update
 cabal install --dependencies-only --enable-tests
-"echo sed --in-place 's/-- STATIC: //' $PACKAGE_NAME.cabal" # disabled for latest Ubuntu
 
 message "Build"
 cabal v1-configure --enable-tests --allow-newer
