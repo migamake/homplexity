@@ -106,7 +106,7 @@ release_to_dockerhub:
   image: docker
   stage: release
   script:
-    - docker load homplexity.docker
+    - docker load -i homplexity.docker
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
     - docker push migamake/homplexity;
   dependencies:
