@@ -22,7 +22,7 @@ RUN cabal install --bindir=/build/static --libexecdir=/build/static --reinstall
 RUN ls -alth /build/static
 
 FROM scratch AS homplexity
-RUN  mkdir -p /workdir
+COPY LICENSE /workdir
 COPY --from=homplexity-build /build/static/homplexity-cli /homplexity
 WORKDIR /workdir
 ENTRYPOINT ["/homplexity"]

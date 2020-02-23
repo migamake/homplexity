@@ -104,6 +104,7 @@ docker_build:
   image: docker
   stage: docker
   script:
+    - mkdir -p workdir
     - docker build . -t migamake/homplexity -f Dockerfile
     - docker run migamake/homplexity -v $PWD:/workdir /workdir
     - docker save --output homplexity.docker migamake/homplexity:latest
