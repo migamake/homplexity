@@ -16,7 +16,7 @@ license:             BSD3
 license-file:        LICENSE
 author:              Michal J. Gajda
 maintainer:          mjgajda@migamake.com
-copyright:           Copyright by Michal J. Gajda '2015-'2018
+copyright:           Copyright by Michal J. Gajda and contributors '2015-'2020 https://gitlab.com/migamake/homplexity/-/graphs/master
 category:            Language, Tools
 build-type:          Simple
 extra-source-files:  README.md changelog.md
@@ -24,8 +24,7 @@ cabal-version:       >=1.10
 bug-reports:         https://gitlab.com/migamake/homplexity/issues
 tested-with:         GHC==8.4.4
                    , GHC==8.6.5
-                   , GHC==8.8.1
-                   , GHC==8.10.1
+                   , GHC==8.8.2
 
 Flag Html
   Description: Enable HTML output via blaze-html
