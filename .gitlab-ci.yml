@@ -1,7 +1,6 @@
 image: migamake/haskell-build:8.6
 
 stages:
-  - docker
   - build
   - test
   - release
@@ -81,7 +80,7 @@ test_distribution:
 
 docker_build:
   image: docker
-  stage: docker
+  stage: build
   script:
     - mkdir -p workdir
     - docker build . -t migamake/homplexity -f Dockerfile
