@@ -22,7 +22,6 @@ import Data.Function
 import Data.Functor
 import Data.List
 import qualified Data.Map.Strict as Map
-import qualified Data.PQueue.Max as Prio
 
 import Language.Haskell.Homplexity.CodeFragment
 import Language.Haskell.Homplexity.SrcSlice
