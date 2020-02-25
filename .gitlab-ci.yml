@@ -92,12 +92,17 @@ docker_build:
       - homplexity.docker
 
 upload_hackage_candidate:
+  variables:
+    PACKAGE_VER: "0.4.6.0"
   stage: test
   script:
     - cabal upload --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" sdist/$PACKAGE_NAME-*[0-9].tar.gz
     - cabal upload --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" -d hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
   dependencies:
     - build_8_6
+  environment:
+    name: "hackage-candidate"
+    url:  "https://hackage.haskell.org/package/homplexity-${PACKAGE_VER}/candidate"
   only:
     - master
   allow_failure: true
