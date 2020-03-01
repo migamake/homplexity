@@ -34,7 +34,7 @@ cache:
   script:
     - ci/new-cabal-build.sh
 
-build_8_6:
+ghc_8_6:
   variables:
     GHC_VER: "8.6"
   extends: .build_exe
@@ -45,26 +45,26 @@ build_8_6:
       - bin/homplexity-cli
     expire_in: 2 weeks
 
-build_8_4:
+ghc_8_4:
   variables:
     GHC_VER: "8.4"
   extends: .build_exe
 
-build_8_10:
+ghc_8_10:
   variables:
     GHC_VER: "8.10"
   extends: .new_build_exe
   retry: 2
   allow_failure: true
 
-build_8_8:
+ghc_8_8:
   variables:
     GHC_VER: "8.8"
   extends: .new_build_exe
   retry: 2
   allow_failure: true
 
-test_distribution:
+tar_package:
   stage: test
   script:
     - cabal update
@@ -73,12 +73,12 @@ test_distribution:
     - tar xzf sdist/$PACKAGE_NAME*[0-9].tar.gz
     - bin/homplexity-cli homplexity-*/lib
   dependencies:
-    - build_8_6
+    - ghc_8_6
   artifacts:
     paths:
       - bin/homplexity-cli
 
-docker_build:
+docker_image:
   image: docker
   stage: build
   script:
@@ -91,29 +91,34 @@ docker_build:
     paths:
       - homplexity.docker
 
-upload_hackage_candidate:
+candidate_hackage:
+  variables:
+    PACKAGE_VER: "0.4.6.0"
   stage: test
   script:
     - cabal upload --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" sdist/$PACKAGE_NAME-*[0-9].tar.gz
     - cabal upload --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" -d hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
   dependencies:
-    - build_8_6
+    - ghc_8_6
+  environment:
+    name: "hackage-candidate"
+    url:  "https://hackage.haskell.org/package/homplexity-${PACKAGE_VER}/candidate"
   only:
     - master
   allow_failure: true
 
-release_to_hackage:
+hackage:
   stage: release
   script:
     - cabal upload --publish --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" sdist/$PACKAGE_NAME-*[0-9].tar.gz
     - cabal upload --publish --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" -d hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
   dependencies:
-    - build_8_6
+    - ghc_8_6
   when: manual
   only:
     - master
 
-release_to_dockerhub:
+dockerhub:
   image: docker
   stage: release
   script:
@@ -121,7 +126,7 @@ release_to_dockerhub:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
     - docker push migamake/homplexity;
   dependencies:
-    - docker_build
+    - docker_image
   when: manual
   only:
     - master
