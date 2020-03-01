@@ -6,14 +6,12 @@ their depth, and code-to-comment ratio.
 For parsing it uses [haskell-src-exts](http://hackage.haskell.org/package/haskell-src-exts),
 and [cppHs](http://hackage.haskell.org/package/cppHs).
 
-Builds across GHC versions: [![Build across GHC versions](https://api.travis-ci.org/mgajda/homplexity.svg?branch=master)](https://travis-ci.org/mgajda/homplexity)
-
 Builds with Stack: [![CircleCI (all branches)](https://img.shields.io/circleci/project/github/mgajda/homplexity.svg)](https://circleci.com/gh/mgajda/homplexity)
 
 Shippable CI:
 [![Run Status](https://api.shippable.com/projects/5bf3f8b259e32e0700e952aa/badge?branch=master)](https://app.shippable.com/github/mgajda/homplexity)
 
-GitLab CI:
+Cabal builds across GHC versions:
 ![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/migamake/homplexity.svg)
 
 [![Hackage](https://img.shields.io/hackage/v/homplexity.svg)](https://hackage.haskell.org/package/homplexity)
