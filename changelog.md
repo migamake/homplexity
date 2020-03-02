@@ -1,5 +1,8 @@
 Changelog
 =========
+    0.4.7.0  Mar 2020
+        * Fix revision string for building without Git repo.
+
     0.4.6.0  Feb 2020
         * HTML output
         * GHC 8.8, 8.10 support
