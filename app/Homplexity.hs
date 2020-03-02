@@ -150,7 +150,7 @@ versionString :: String
 versionString  = showVersion version <> gitString
   where
     gitString = case gitInfoValue of
-                  Left  err     -> "unknown revision: " <> err
+                  Left  err     -> ""
                   Right gitInfo -> unwords [
                      "git rev",  giHash       gitInfo
                     ,"dated",    giCommitDate gitInfo
