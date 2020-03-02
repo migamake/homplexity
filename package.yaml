@@ -1,0 +1,131 @@
+name: homplexity
+version: '0.4.7.0'
+synopsis: Haskell code quality tool
+description: ! 'Homplexity aims to measure code complexity,
+
+  warning about fragments that might have higher defect probability
+
+  due to bad coding style on-the-large:
+
+
+  * too large functions
+
+
+  * too deeply nested conditions
+
+
+  * too few comments'
+category: Language, Tools
+author: Michal J. Gajda
+maintainer: mjgajda@migamake.com
+copyright: Copyright by Michal J. Gajda and contributors '2015-'2020 https://gitlab.com/migamake/homplexity/-/graphs/master
+license: BSD3
+github: mgajda/homplexity.git
+homepage: https://gitlab.com/migamake/homplexity
+bug-reports: https://gitlab.com/migamake/homplexity/issues
+tested-with: GHC==8.4.4 GHC==8.6.5 GHC==8.8.2
+extra-source-files:
+- README.md
+- changelog.md
+dependencies:
+- base >=4.5 && <4.16
+- filepath >=1.2 && <1.5
+- haskell-src-exts >=1.20 && <1.24
+- template-haskell >=2.6 && <2.18
+library:
+  source-dirs: lib
+  other-extensions:
+  - BangPatterns
+  - DeriveDataTypeable
+  - FlexibleContexts
+  - FlexibleInstances
+  - GeneralizedNewtypeDeriving
+  - IncoherentInstances
+  - MultiParamTypeClasses
+  - OverlappingInstances
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TemplateHaskell
+  - TypeFamilies
+  - TypeSynonymInstances
+  - UndecidableInstances
+  - ViewPatterns
+  exposed-modules:
+  - Language.Haskell.Homplexity.Assessment
+  - Language.Haskell.Homplexity.CabalFiles
+  - Language.Haskell.Homplexity.CodeFragment
+  - Language.Haskell.Homplexity.Comments
+  - Language.Haskell.Homplexity.Cyclomatic
+  - Language.Haskell.Homplexity.Message
+  - Language.Haskell.Homplexity.Metric
+  - Language.Haskell.Homplexity.Parse
+  - Language.Haskell.Homplexity.SrcSlice
+  - Language.Haskell.Homplexity.RecordFieldsCount
+  - Language.Haskell.Homplexity.TypeClassComplexity
+  - Language.Haskell.Homplexity.TypeComplexity
+  - Language.Haskell.Homplexity.Utilities
+  dependencies:
+  - bytestring
+  - containers >=0.3 && <0.7
+  - cpphs >=1.5 && <1.21
+  - deepseq >=1.3 && <1.7
+  - directory >=1.1 && <1.4
+  - hflags >=0.3 && <0.5
+  - uniplate >=1.4 && <1.7
+  when:
+  - condition: impl(ghc >=8.8.1)
+    then:
+      dependencies:
+      - Cabal ==3.0.0.0
+    else:
+      dependencies:
+      - Cabal >=2.2.0.0
+  - condition: flag(html)
+    cpp-options: -DHTML_OUTPUT
+    dependencies:
+    - blaze-html >=0.9 && <1
+    - blaze-markup >=0.8 && <0.9
+executables:
+  homplexity-cli:
+    main: Homplexity.hs
+    source-dirs: app/
+    dependencies:
+    - homplexity
+    - containers >=0.3 && <0.7
+    - cpphs >=1.5 && <1.21
+    - deepseq >=1.3 && <1.7
+    - directory >=1.1 && <1.4
+    - githash >=0.1.2.0 && <1.0
+    - hflags >=0.3 && <0.5
+    - uniplate >=1.4 && <1.7
+    when:
+    - condition: flag(html)
+      cpp-options: -DHTML_OUTPUT
+      dependencies:
+      - blaze-html >=0.9 && <1
+      - bytestring >=0.10 && <0.11
+tests:
+  homplexity-tests:
+    main: Tests.hs
+    source-dirs: tests
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - homplexity
+    when:
+    - condition: impl(ghc >=8.8.0)
+      then:
+        dependencies:
+        - hspec >=2.7.0
+      else:
+        dependencies:
+        - hspec <2.6.0
+flags:
+  html:
+    description: Enable HTML output via blaze-html
+    manual: false
+    default: true
