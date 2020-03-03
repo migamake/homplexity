@@ -91,6 +91,7 @@ executables:
     main: Homplexity.hs
     source-dirs: app/
     dependencies:
+    - homplexity
     - containers >=0.3 && <0.7
     - cpphs >=1.5 && <1.21
     - deepseq >=1.3 && <1.7
@@ -113,6 +114,8 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    dependencies:
+      - homplexity
     when:
     - condition: impl(ghc >=8.8.0)
       then:
