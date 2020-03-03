@@ -20,7 +20,7 @@ RUN cabal install --only-dependencies -fstatic
 RUN cabal configure -fstatic
 RUN cabal install --bindir=/build/static --libexecdir=/build/static --reinstall -fstatic
 RUN ls -alth /build/static
-RUN ldd /build/static/homplexity-cli
+RUN ldd /build/static/homplexity-cli && exit 1 || exit 0
 
 FROM scratch AS homplexity
 COPY LICENSE /workdir/LICENSE
