@@ -10,15 +10,15 @@ digraph Concepts {
 
   expr -> Function;
   expr -> Program;
- 
+
   code -> types;
   types [label="Types"];
 
   types -> "Type signature";
   types -> TypeDecl;
   types -> ClassDecl;
-  TypeDecl		      [label="Type declaration",style="dashed"];
-  ClassDecl		      [label="Class declaration", style="dashed"];
+  TypeDecl		      [label="Record declaration"];
+  ClassDecl		      [label="Class declaration"];
 
   Metric -> code [label="is applied to"];
 
@@ -27,7 +27,7 @@ digraph Concepts {
   Metric -> TypeMetric;
   TypeMetric [label="Type metric"];
   Metric -> CommentMetric;
-  CommentMetric [label="Comment metric"];
+  CommentMetric [label="Comment metric",style="dashed"];
 
   CodeMetric -> "Lines of code";
   CodeMetric -> "Cyclomatic complexity";
@@ -35,14 +35,14 @@ digraph Concepts {
   CodeMetric -> ExprNodes;
   ExprNodes [label="Expression tree nodes",style="dashed"];
   CodeMetric -> CodeCommentRatio;
-  
+
   TypeMetric -> "Type tree nodes";
   TypeMetric -> "Number of function arguments";
-  
-  CommentMetric -> FleschComments;
-  FleschComments [label="Fleisch-Kincaid on comments",style="dashed"];
+
+  CommentMetric -> FleischComments;
+  FleischComments [label="Fleisch-Kincaid on comments",style="dashed"];
   CommentMetric -> CodeCommentRatio;
-  CodeCommentRatio [label="Code-to-comments ratio"];
+  CodeCommentRatio [label="Code-to-comments ratio",style="dashed"];
 
   Criterion [label="Validation criterion"];
   Criterion -> Metric    [label="uses"];
@@ -50,9 +50,4 @@ digraph Concepts {
   Criterion -> Threshold [label="meets"];
 
   Threshold -> Message   [label="displays"];
-
-  Message -> Debug;
-  Message -> Info;
-  Message -> Warning;
 }
-
