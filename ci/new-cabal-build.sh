@@ -2,10 +2,6 @@
 
 source ci/common.sh
 
-message "Versions"
-cabal --version
-ghc   --version
-
 message "Dependencies"
 cabal update
 
