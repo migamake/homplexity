@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 06a64c5bb621ed38daccb0c79e4f9103f393d693c7f6db045607f4531233a4ff
+-- hash: 508c41dda181fd76a93b30f86af8d30b91fa91bfa9312d5bda669e9adb03966d
 
 name:           homplexity
 version:        0.4.7.0
@@ -116,7 +116,6 @@ test-suite homplexity-tests
   type: exitcode-stdio-1.0
   main-is: Tests.hs
   other-modules:
-      ClientApp
       Test.Metrics.TypeClassComplexitySpec
       Test.Parse.CommentsSpec
       Test.Parse.ExtensionsSpec
