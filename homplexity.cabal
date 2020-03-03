@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 654295da167cd2f4e402598895e086ab2cbb9cfb2dd454f3bd4aa639643e8499
+-- hash: 06a64c5bb621ed38daccb0c79e4f9103f393d693c7f6db045607f4531233a4ff
 
 name:           homplexity
 version:        0.4.7.0
@@ -75,7 +75,7 @@ library
     , uniplate >=1.4 && <1.7
   if impl(ghc >=8.8.1)
     build-depends:
-        Cabal ==3.0.0.0
+        Cabal >=3.0.0.0
   else
     build-depends:
         Cabal >=2.2.0.0
@@ -89,7 +89,6 @@ library
 executable homplexity-cli
   main-is: Homplexity.hs
   other-modules:
-      DebugUtils
       Paths_homplexity
   hs-source-dirs:
       app/

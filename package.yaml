@@ -24,9 +24,6 @@ github: mgajda/homplexity.git
 homepage: https://gitlab.com/migamake/homplexity
 bug-reports: https://gitlab.com/migamake/homplexity/issues
 tested-with: GHC==8.4.4 GHC==8.6.5 GHC==8.8.2
-category:
-- Language
-- Tools
 extra-source-files:
 - README.md
 - changelog.md
