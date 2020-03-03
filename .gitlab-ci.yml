@@ -44,6 +44,7 @@ ghc_8_6:
       - hackage-docs/$PACKAGE_NAME-*-docs.tar.gz
       - bin/homplexity-cli
     expire_in: 2 weeks
+  allow_failure: false
 
 ghc_8_4:
   variables:
@@ -77,6 +78,7 @@ tar_package:
   artifacts:
     paths:
       - bin/homplexity-cli
+  allow_failure: false
 
 docker_image:
   image: docker
