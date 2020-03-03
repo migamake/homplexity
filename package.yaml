@@ -24,6 +24,9 @@ github: mgajda/homplexity.git
 homepage: https://gitlab.com/migamake/homplexity
 bug-reports: https://gitlab.com/migamake/homplexity/issues
 tested-with: GHC==8.4.4 GHC==8.6.5 GHC==8.8.2
+category:
+- Language
+- Tools
 extra-source-files:
 - README.md
 - changelog.md
@@ -77,7 +80,7 @@ library:
   - condition: impl(ghc >=8.8.1)
     then:
       dependencies:
-      - Cabal ==3.0.0.0
+      - Cabal >=3.0.0.0
     else:
       dependencies:
       - Cabal >=2.2.0.0
