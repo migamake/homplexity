@@ -14,11 +14,11 @@ RUN mkdir -p /build/.git
 WORKDIR /build
 RUN sed --in-place 's/-- STATIC: //' homplexity.cabal
 RUN rm -rf dist-newstyle dist
-RUN cabal sandbox init
+RUN cabal sandbox init -fstatic
 RUN cabal update
-RUN cabal install --only-dependencies
-RUN cabal configure
-RUN cabal install --bindir=/build/static --libexecdir=/build/static --reinstall
+RUN cabal install --only-dependencies -fstatic
+RUN cabal configure -fstatic
+RUN cabal install --bindir=/build/static --libexecdir=/build/static --reinstall -fstatic
 RUN ls -alth /build/static
 
 FROM scratch AS homplexity
