@@ -162,18 +162,23 @@ versionString  = showVersion version <> gitString
 main :: IO ()
 main = do
   args <- $initHFlags ("Homplexity " ++ versionString ++ " - automatic analysis of Haskell code quality")
-  when flags_version $
-    report $ unwords ["Version: ", versionString]
-
-  if null args
-    then do report ("Use Haskell source file or directory as an argument, " ++
-                    "or use --help to discover options.")
-            exitFailure
-    else do exts <- cabalExtensions
-            sums <- mapM (processFile exts) =<< concatMapM subTrees args
-            report $ unwords ["Correctly parsed", show $ length $ filter P.id sums,
-                              "out of",           show $ length               sums,
-                              "input files."]
+  if flags_version
+     then do report $ unwords ["Homplexity version: ", versionString]
+             exitSuccess
+     else if null args
+             then do report ("Use Haskell source file or directory as an argument, " ++
+                             "or use --help to discover options.")
+                     exitFailure
+             else do exts <- cabalExtensions
+                     sums <- mapM (processFile exts) =<< concatMapM subTrees args
+                     let successes  = length $ filter P.id sums
+                         totalFiles = length               sums
+                     report $ unwords ["Correctly parsed", show successes,
+                                       "out of",           show totalFiles,
+                                       "input files."]
+                     if (successes == totalFiles)
+                        then exitSuccess
+                        else exitFailure
 
 cabalExtensions :: IO [Extension]
 cabalExtensions

@@ -95,7 +95,7 @@ docker_image:
 
 candidate_hackage:
   variables:
-    PACKAGE_VER: "0.4.7.0"
+    PACKAGE_VER: "0.4.8.0"
   stage: test
   script:
     - cabal upload --username="$HACKAGE_USER" --password="$HACKAGE_PASSWORD" sdist/$PACKAGE_NAME-*[0-9].tar.gz

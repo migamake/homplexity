@@ -1,5 +1,8 @@
 Changelog
 =========
+    0.4.8.0  Mar 2020
+        * Do not return error when version number is requested.
+
     0.4.7.0  Mar 2020
         * Fix revision string for building without Git repo.
 
