@@ -17,7 +17,7 @@ Cabal builds across GHC versions:
 [![Hackage](https://img.shields.io/hackage/v/homplexity.svg)](https://hackage.haskell.org/package/homplexity)
 [![Hackage Dependencies](https://img.shields.io/hackage-deps/v/homplexity.svg?style=flat)](http://packdeps.haskellers.com/feed?needle=homplexity)
 
-If you just need latest static executable [it is always available here](https://gitlab.com/migamake/homplexity/-/jobs/artifacts/master/raw/bin/homplexity-cli?job=test_distribution).
+If you just need latest static executable [it is always available here](https://hub.docker.com/r/migamake/homplexity).
 
 Official releases are on [Hackage](https://hackage.haskell.org/package/homplexity)
 
