@@ -1,5 +1,8 @@
 homplexity
 ==========
+
+**The project moved to https://gitlab.com/migamake/homplexity**
+
 Aims to assess complexity and quality of Haskell code by measuring relative length of declarations,
 their depth, and code-to-comment ratio.
 
